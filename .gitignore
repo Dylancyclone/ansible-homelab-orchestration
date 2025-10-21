@@ -1,0 +1,4 @@
+*.retry
+
+inventories/*
+!inventories/example/
