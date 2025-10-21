@@ -1,0 +1,4 @@
+[http.middlewares]
+  [http.middlewares.blockExternal.ipallowlist]
+    sourceRange = ["192.168.0.0/16"]
+    rejectStatusCode = 404

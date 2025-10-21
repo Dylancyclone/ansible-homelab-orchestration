@@ -1,0 +1,40 @@
+---
+#
+# General Settings
+#
+
+computer_timezone: Etc/UTC
+
+#
+# Directories
+#
+
+# Where application data is stored. This should be backed up!
+# This data is all the persistent data for your containers, such as configuration, databases, etc
+docker_home: /mnt/docker
+
+# Where media and content is stored. This should be backed up!
+data_home: /mnt/data
+
+#
+# DNS settings
+#
+
+# Delete these if you don't want to use DNS and just want to use IP addresses
+dns_email: me@example.com # Used for Let's Encrypt SSL certificate generation
+dns_domain: example.com # The base domain for SSL certificates, e.g, [app].example.com
+traefik_enabled: true
+traefik_enable_dns_for_all: true # Make all apps accessible via DNS without exposing them externally
+# find the relevant name and environment variables for your DNS provider at https://go-acme.github.io/lego/dns/
+traefik_dns_provider: cloudflare
+traefik_environment_variables:
+  CF_DNS_API_TOKEN: "abcdabcd123412341234" # Example for Cloudflare, replace with your actual token
+
+#
+# Applications
+#
+
+portainer_enabled: true
+portainer_available_externally: true
+
+# ...add more!

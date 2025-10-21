@@ -1,0 +1,41 @@
+# Default variables for all hosts
+# Override these in inventories/[your_inventory]/group_vars/homelab.yml
+
+#
+# General
+#
+
+# List of timezone codes: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+computer_timezone: Etc/UTC
+
+# Used for Let's Encrypt SSL certificate generation
+dns_email: me@example.com
+# The base domain for SSL certificates, e.g, [app].example.com
+dns_domain: example.com
+
+#
+# Directories
+#
+
+# Where application data is stored. This should be backed up!
+# This data is all the persistent data for your containers, such as configuration, databases, etc
+docker_home: /mnt/docker
+
+# Where media and content is stored. This should be backed up!
+data_home: /mnt/data
+
+# Default directories for data
+# Directories are only created if used
+movies_root: "{{ data_home }}/movies"
+tv_root: "{{ data_home }}/tv"
+music_root: "{{ data_home }}/music"
+audiobooks_root: "{{ data_home }}/audiobooks"
+books_root: "{{ data_home }}/books"
+comics_root: "{{ data_home }}/comics"
+podcasts_root: "{{ data_home }}/podcasts"
+photos_root: "{{ data_home }}/photos"
+documents_root: "{{ data_home }}/documents" # For example PDFs and where paperless-ngx operates
+downloads_root: "{{ data_home }}/downloads" # General downloads and incomplete files
+torrents_root: "{{ data_home }}/torrents"
+code_root: "{{ data_home }}/code" # Git repositories and other code
+

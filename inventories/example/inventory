@@ -1,0 +1,6 @@
+[all]
+## Replace the IP address with the actual IP of your homelab server
+# ansible-homelab ansible_host=192.168.1.5
+
+[homelab]
+ansible-homelab

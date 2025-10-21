@@ -1,0 +1,51 @@
+---
+- name: Start Traefik
+  when: traefik_enabled
+  block:
+    - name: Create Traefik Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      with_items:
+        - "{{ traefik_data_directory }}"
+        - "{{ traefik_data_directory }}/letsencrypt"
+
+    - name: Template Traefik config.toml
+      ansible.builtin.template:
+        src: traefik.toml
+        dest: "{{ traefik_data_directory }}/traefik.toml"
+        mode: "0755"
+      register: traefik_template_static_config
+
+    - name: Template Traefik blockExternal.toml
+      ansible.builtin.template:
+        src: blockExternal.toml
+        dest: "{{ traefik_data_directory }}/blockExternal.toml"
+        mode: "0755"
+      register: traefik_template_dynamic_config
+
+    - name: Traefik Docker Container
+      community.docker.docker_container:
+        name: "{{ traefik_container_name }}"
+        image: "{{ traefik_image_name }}:{{ traefik_image_version }}"
+        pull: true
+        network_mode: host
+        volumes:
+          - "{{ traefik_data_directory }}/traefik.toml:/etc/traefik/traefik.toml:ro"
+          - "{{ traefik_data_directory }}/blockExternal.toml:/etc/traefik/blockExternal.toml:ro"
+          - "{{ traefik_data_directory }}/letsencrypt:/letsencrypt:rw"
+          - "/var/run/docker.sock:/var/run/docker.sock:ro"
+        env: "{{ traefik_environment_variables }}"
+        restart_policy: unless-stopped
+        memory: "{{ traefik_memory }}"
+        recreate: "{{ traefik_template_static_config is changed or traefik_template_dynamic_config is changed }}"
+        dns_servers: ["8.8.8.8"]
+
+- name: Stop Traefik
+  when: not traefik_enabled
+  block:
+    - name: Stop Traefik
+      community.docker.docker_container:
+        name: "{{ traefik_container_name }}"
+        state: absent

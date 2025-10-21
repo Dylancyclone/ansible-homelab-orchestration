@@ -1,0 +1,49 @@
+---
+
+# External Access
+# Traefik can allow access to certain applications externally. To enable this you will need either:
+# - A domain that points to your static IP address
+# - A dynamic DNS provider that points to your dynamic IP address such as duckdns (This can be set up with the included`ddns_updater` application)
+# You'll also need to map ports 80 and 443 from your router to your server
+# settings.
+traefik_enabled: false
+# If the following is true, traefik will enable accessing all apps with a dns name, but will not expose them externally
+# Make sure to set up internal DNS to be able to access your apps
+traefik_enable_dns_for_all: false
+# To make an app available externally, you must set `[app]_available_externally` to true
+# as well as either `traefik_enable_dns_for_all` to true or `[app]_dns_accessible` to true
+
+# traefik_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+# traefik_available_externally: false
+
+# directories
+traefik_data_directory: "{{ docker_home }}/traefik"
+
+# network
+traefik_http_port: 80
+traefik_https_port: 443
+traefik_ui_port: 8083
+
+# containers
+traefik_container_name: traefik
+traefik_image_name: traefik
+traefik_image_version: latest
+traefik_log_level: INFO
+
+traefik_container_names: # Used to check if app is running
+  - "{{ traefik_container_name }}"
+
+# config
+# find the relevant name and environment variables for your DNS provider at https://go-acme.github.io/lego/dns/
+traefik_dns_provider: cloudflare
+traefik_environment_variables:
+  CF_DNS_API_TOKEN: abcdabcd123412341234
+
+# This playbook requests a wildcard certificate for your domain, so there should be no reason to have to use the staging
+# letsencrypt acme server. If you do want to flip between staging/production, you might need to stop Traefik and clear
+# the "{{ docker_home }}/traefik" after changing this setting.
+# traefik_acme_server: https://acme-staging-v02.api.letsencrypt.org/directory # staging
+traefik_acme_server: https://acme-v02.api.letsencrypt.org/directory # production
+
+# specs
+traefik_memory: 1g

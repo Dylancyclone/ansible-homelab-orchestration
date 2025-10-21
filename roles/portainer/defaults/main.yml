@@ -1,0 +1,22 @@
+---
+portainer_enabled: false
+portainer_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+portainer_available_externally: false
+
+# directories
+portainer_data_directory: "{{ docker_home }}/portainer/config"
+
+# network
+portainer_hostname: portainer
+portainer_port: 9000
+
+# containers
+portainer_container_name: portainer
+portainer_image_name: portainer/portainer-ce
+portainer_image_version: latest
+
+portainer_container_names: # Used to check if app is running
+  - "{{ portainer_container_name }}"
+
+# specs
+portainer_memory: 1g

@@ -1,0 +1,25 @@
+---
+- name: Ansible Homelab Orchestration
+  hosts: all
+
+  pre_tasks:
+    - name: Run docker ps
+      ansible.builtin.command:
+        cmd: docker ps --format "{{ '{{' }} .Names {{ '}}' }}"
+      register: _running_containers
+
+    - name: Set running_containers fact
+      ansible.builtin.set_fact:
+        running_containers: "{{ _running_containers.stdout_lines }}"
+
+  roles:
+    - role: ansible-homelab-orchestration-general
+      tags: general
+
+    - role: traefik
+      tags: traefik
+      when: traefik_enabled or (traefik_container_names | intersect(running_containers) | length > 0)
+
+    - role: portainer
+      tags: portainer
+      when: portainer_enabled or (portainer_container_names | intersect(running_containers) | length > 0)
