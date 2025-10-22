@@ -1,6 +1,12 @@
 ---
 - name: Start Traefik
   block:
+    - name: Check for Traefik Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking-changes
+      vars:
+        application: traefik
+
     - name: Create Traefik Directories
       ansible.builtin.file:
         path: "{{ item }}"

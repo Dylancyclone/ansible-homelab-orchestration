@@ -1,0 +1,21 @@
+---
+- block:
+    - name: Check {{ application }} for Breaking Changes
+      ansible.builtin.command:
+        cmd: python3 breaking_changes.py "{{ application }}"
+      args:
+        chdir: "{{ role_path }}/files"
+      register: breaking_changes_result
+      delegate_to: localhost
+
+  rescue:
+    - ansible.builtin.assert:
+        that:
+          - breaking_changes_result.rc == 0
+        fail_msg: |-
+          Breaking Changes Detected!
+          ---
+          Breaking changes detected for {{ application }}! Please review the breaking changes documentation.
+          When resolved, delete the corresponding `BREAKING_CHANGE_{{ application }}.txt` file in the state directory and rerun the playbook.
+          To temporarily ignore this application, add `--skip-tags="{{ application }}"` to your ansible-playbook command. This will let you deploy other applications while you address the breaking changes.
+          ---
