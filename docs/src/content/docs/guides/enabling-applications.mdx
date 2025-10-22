@@ -1,0 +1,85 @@
+---
+title: Enabling applications
+description: How to enable applications in Ansible Homelab Orchestration
+sidebar:
+  order: 3
+---
+
+import { Aside } from "@astrojs/starlight/components"
+
+Ansible Homelab Orchestration relies on Ansible's [precedence rules](https://docs.ansible.com/ansible/latest/reference_appendices/general_precedence.html) to enable and disable applications.
+
+To enable and configure applications, just declare the varibles in your `inventories/[your_inventory]/group_vars/homelab.yml` file, and that will override the defaults set by the role.
+All variables are prepended with the application name, for example, to enable Portainer, you would set `portainer_enabled: true`.
+Each application has a number of common variables, for example for Portainer, you can be sure that the following variables exist:
+
+```yaml
+portainer_enabled: false # Enable or disable the application
+portainer_dns_accessible: "{{ traefik_enable_dns_for_all }}" # Whether the application is accessible via DNS, see the "DNS Access" guide for more information
+portainer_available_externally: false # Whether the application is accessible from outside your local network, see the "DNS Access" guide for more information
+
+# network
+portainer_hostname: portainer # The hostname used for DNS access (e.g. portainer.example.com)
+portainer_port: 9000 # The port the application listens on the internal network (e.g. 192.168.1.5:9000)
+
+# specs
+portainer_memory: 1g # Limit the amount of memory the container can use
+```
+
+Applications will also let you configure the Docker image used, volumes, environment variables, and other application-specific settings.
+For example for Portainer:
+
+```yaml
+portainer_container_name: portainer
+portainer_image_name: portainer/portainer-ce
+portainer_image_version: latest
+```
+
+You can find the full list of variables and their default values for each application at `roles/[application_name]/defaults/main.yml`.
+
+Then, run the playbook again:
+
+```sh
+ansible-playbook -i inventories/homelab/inventory playbook.yml
+```
+
+<Aside type="tip">
+	By default this will go through all your applications and apply any changes
+	you have made. If you only want to apply changes for a specific application,
+	you can use the `--tags` option with `ansible-playbook`, for example, to save
+   time and only apply changes for Portainer:
+   ```sh
+   ansible-playbook -i inventories/homelab/inventory playbook.yml --tags="portainer"
+   ```
+</Aside>
+
+## Examples
+
+To enable Portainer using all the default settings, only the following is required:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+portainer_enabled: true
+```
+
+To enable Portainer, make it accessible via DNS externally, and make it accessible on the hostname `my-portainer.example.com`, use the following:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+portainer_enabled: true
+portainer_available_externally: true
+portainer_hostname: my-portainer
+```
+
+<Aside type="tip">
+	To enable DNS access for applications, see the{" "}
+	<a href="/guides/dns-access">DNS Access</a> guide.
+</Aside>
+
+To enable Portainer, and pin it to a particular version of a particular fork (for example a custom build), use the following:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+portainer_enabled: true
+portainer_image_name: myusername/portainer
+portainer_image_version: dev
+```
+
+Make sure to check each application at `roles/[application_name]/defaults/main.yml` for what is available!
