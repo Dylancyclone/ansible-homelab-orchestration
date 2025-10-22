@@ -1,0 +1,29 @@
+---
+import { Badge } from "@astrojs/starlight/components"
+
+interface Props {
+	tags: string[]
+}
+
+const { tags } = Astro.props
+---
+
+<style>
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+</style>
+{
+	tags?.length > 0 ? (
+		<div class="tags">
+			Tags:{" "}
+			{tags.map((tag) => (
+				<a href={`/ansible-homelab-orchestration/tags/${tag}`}>
+					<Badge text={tag} />
+				</a>
+			))}
+		</div>
+	) : null
+}

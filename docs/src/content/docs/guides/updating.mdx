@@ -1,0 +1,48 @@
+---
+title: Updating Ansible Homelab Orchestration
+description: How to update the Ansible Homelab Orchestration playbook
+sidebar:
+  order: 5
+---
+
+import { Steps } from "@astrojs/starlight/components"
+import { Aside } from "@astrojs/starlight/components"
+
+To update Ansible Homelab Orchestration to get the latest applications and fixes, follow these steps:
+
+<Steps>
+
+1. Pull the latest changes from the GitHub repository:
+
+   ```sh
+   git pull
+   ```
+
+2. Make any changes in your inventory you would like, for example, enabling a new application
+3. Run the playbook:
+   ```sh
+   ansible-playbook -i inventories/homelab/inventory playbook.yml
+   ```
+
+</Steps>
+
+## Handling Breaking Changes
+
+If your playbook fails to run after updating, check the error message for information.
+Most likely, there has been a breaking change that needs your attention before a certain application can be deployed again.
+
+Breaking changes can happen for a couple reasons, such as:
+- An application has changed its configuration options and manual changes are needed from you
+   - For example, an application changed the format of an API key and the user needs to update it before updating the application
+   - If a change can be made without the user's input (such as renaming an environment variable), you will not need to do anything
+- A mistake was made in a previous version of this playbook that can't be fixed automatically
+
+<Aside type="tip">
+	If you would like to temporarily ignore an application with a breaking change,
+	add `--skip-tags="[app_name]"` (e.g. `--skip-tags="portainer"`) to your
+	ansible-playbook command. This will let you deploy other applications while
+	you address the breaking changes.
+</Aside>
+
+Look at the breaking change file located at `state/BREAKING_CHANGE_[app_name].txt` and the documentation page for that application to see what changes are required.
+Required actions can range from updating your configuration to performing manual steps on your homelab server.

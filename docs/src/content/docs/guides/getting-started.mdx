@@ -1,0 +1,49 @@
+---
+title: Getting Started
+description: How to install Ansible Homelab Orchestration
+sidebar:
+   order: 2
+---
+
+import { Steps } from "@astrojs/starlight/components"
+import { Aside } from "@astrojs/starlight/components"
+
+## Installation
+
+### Requirements
+
+- Ansible installed on your computer (A control node, see the [Ansible docs](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) for help)
+- SSH access to your homelab server that has Docker installed. Currently, the following operating systems have been tested (older versions and other OSs may work, but most testing occurs on Ubuntu):
+   - Ubuntu 24.04 LTS+
+   - Debian 13+
+   - Fedora 42+
+
+<Aside type="tip">
+	A second computer is optional, you can orchestrate containers on your local
+	machine if you wish.
+</Aside>
+
+### Installation
+
+<Steps>
+
+1. Clone the repository to your local machine:
+
+   ```sh
+   git clone https://github.com/Dylancyclone/ansible-homelab-orchestration.git && cd ansible-homelab-orchestration
+   ```
+
+2. Make a copy of the example inventory file:
+
+   ```sh
+   cp -r inventory/example inventory/homelab
+   ```
+
+3. Edit `inventory/homelab/inventory` to add your homelab server's IP address
+4. Edit `inventory/homelab/group_vars/homelab.yml` and update the default variables to suit your setup
+5. Run the playbook:
+   ```sh
+   ansible-playbook -i inventories/homelab/inventory playbook.yml
+   ```
+
+</Steps>

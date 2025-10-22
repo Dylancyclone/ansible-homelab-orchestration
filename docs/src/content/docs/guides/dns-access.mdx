@@ -1,0 +1,87 @@
+---
+title: DNS Access
+description: How to access applications via DNS in Ansible Homelab Orchestration
+sidebar:
+  order: 6
+---
+
+Ansible Homelab Orchestration uses Traefik as a reverse proxy to provide DNS access to applications.
+There are two halves to DNS access: making an application accessible via DNS internally, and making it accessible externally.
+By default, all applications are only accessible via the IP address of the homelab server on the port the application is running on (e.g. `http://192.168.1.5:9000` for Portainer).
+In order to be able to access an application through a hostname (e.g. `http://portainer.example.com`), a few steps are required.
+
+import { Aside } from "@astrojs/starlight/components"
+
+<Aside type="danger">
+	Enabling external DNS access **does not** automatically secure the
+	application. If an application can be accessed without authentication,
+	enabling external access will expose it without authentication to the
+	internet.
+</Aside>
+<Aside type="tip">
+	Ansible Homelab Orchestration will, however, automatically set up HTTPS using
+	Let's Encrypt for any application that is made accessible externally.
+</Aside>
+
+## Requirements
+
+You must own or control a domain name and direct traffic for that domain to your homelab server.
+If you don't own a domain, you can use a Dynamic DNS (DDNS) service such as [DuckDNS](https://www.duckdns.org/) or [No-IP](https://www.noip.com/).
+
+## Setting up Traefik
+
+Traefik routes traffic from ports 80 (HTTP) and 443 (HTTPS) on your server to the relevant application, based on hostname.
+Add the following variables to your `inventories/[your_inventory]/group_vars/homelab.yml` file to enable Traefik:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+dns_email: me@example.com # Used for Let's Encrypt SSL certificate generation
+dns_domain: example.com # The base domain for SSL certificates, e.g, [app].example.com
+traefik_enabled: true
+traefik_enable_dns_for_all: true # Optional, make all apps accessible via DNS without exposing them externally
+# find the relevant name and environment variables for your DNS provider at https://go-acme.github.io/lego/dns/
+traefik_dns_provider: cloudflare
+traefik_environment_variables:
+  CF_DNS_API_TOKEN: "abcdabcd123412341234" # Example for Cloudflare, replace with your actual token
+```
+
+Then, make sure ports `80` and `443` are mapped to your homelab server in your router settings.
+
+You can enable DNS access for containers in two ways, either globally for all applications by setting `traefik_enable_dns_for_all: true` as shown above, or on a per-application basis by setting `[app_name]_enable_dns: true` (e.g. `portainer_enable_dns: true`).
+This will only make the application accessible via DNS internally by default.
+To make the application accessible externally, you also need to set `[app_name]_available_externally: true` (e.g. `portainer_available_externally: true`).
+
+## Internal DNS Access
+
+In order to access applications via DNS internally (e.g. `portainer.example.com`), you need to set up your local DNS server or your router's DNS settings to resolve the domain to your homelab server's internal IP address.
+
+The steps to do this will vary depending on your router or DNS server.
+
+For example, using AdGuard Home, under `Filters -> DNS rewrites`, you can add a rewrite rule to point `*.example.com` to your homelab server's internal IP address.
+
+For example, using Pi-Hole, under `Settings -> Local DNS Records`, you can add a DNS record to point `*.example.com` to your homelab server’s internal IP address.
+
+## External DNS Access
+
+To make applications accessible externally via DNS (e.g. `portainer.example.com` from outside your local network), you need to set `[app_name]_available_externally: true` for each application you want to expose.
+
+## Full Example
+The minimum configuration to enable External DNS access for Portainer at `portainer.example.com` would look like this:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+# Set up Traefik
+dns_email: me@example.com
+dns_domain: example.com
+traefik_enabled: true
+traefik_enable_dns_for_all: true
+traefik_dns_provider: cloudflare
+traefik_environment_variables:
+  CF_DNS_API_TOKEN: "abcdabcd123412341234"
+
+# Enable other applications
+portainer_enable: true
+portainer_available_externally: true
+```
+
+Note `portainer_enable_dns: true` is not required here because `traefik_enable_dns_for_all: true` is set.
+
+To disable external access for portainer while keeping it accessible internally at `portainer.example.com`, just remove `portainer_available_externally: true`

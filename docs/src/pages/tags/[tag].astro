@@ -1,0 +1,51 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro"
+import { LinkCard } from "@astrojs/starlight/components"
+
+export async function getStaticPaths() {
+	const allApps = Object.values(
+		import.meta.glob("../../content/docs/applications/*.mdx", { eager: true })
+	)
+	const uniqueTags = [
+		...new Set(allApps.map((app: any) => app.frontmatter.tags).flat()),
+	].filter(Boolean)
+	return uniqueTags.map((tag) => {
+		const filteredApps = allApps
+			.filter((app: any) => app.frontmatter.tags?.includes(tag))
+			.map((app: any) => ({
+				...app,
+				url: app.url
+					.replace("src/content/docs/", "/ansible-homelab-orchestration/")
+					.replace(".mdx", ""),
+			}))
+		return {
+			params: { tag },
+			props: { apps: filteredApps },
+		}
+	})
+}
+
+const { tag } = Astro.params
+const { apps } = Astro.props
+---
+
+<StarlightPage frontmatter={{ title: `Tag: ${tag}` }}>
+	<p>Applications tagged with {tag}:</p>
+	<br />
+	<div style="display: grid; gap: 0.5rem;">
+		{
+			apps.map((app: any) => {
+				const otherTags = app.frontmatter.tags.filter((t: string) => t !== tag)
+				return (
+					<LinkCard
+						title={app.frontmatter.title}
+						description={
+							!!otherTags.length ? `(${otherTags.join(", ")})` : undefined
+						}
+						href={app.url}
+					/>
+				)
+			})
+		}
+	</div>
+</StarlightPage>

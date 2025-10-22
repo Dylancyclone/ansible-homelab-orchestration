@@ -1,0 +1,53 @@
+---
+import type { MarkdownInstance } from "astro"
+interface Frontmatter {
+	title: string
+	tags?: string[]
+}
+
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro"
+import { LinkCard } from "@astrojs/starlight/components"
+
+// Sort keys alphabetically
+function sortObjectByKeys(obj: { [key: string]: number }) {
+	return Object.keys(obj)
+		.sort()
+		.reduce((result: { [key: string]: number }, key) => {
+			result[key] = obj[key]
+			return result
+		}, {})
+}
+
+const allApps = Object.values<MarkdownInstance<Frontmatter>>(
+	import.meta.glob("../../content/docs/applications/*.mdx", { eager: true })
+)
+
+const tagCounts: { [tag: string]: number } = {}
+
+allApps.forEach((app) => {
+	const tags = app.frontmatter.tags || []
+	tags.forEach((tag: string) => {
+		if (tag in tagCounts) {
+			tagCounts[tag] += 1
+		} else {
+			tagCounts[tag] = 1
+		}
+	})
+})
+
+const sortedTagCounts = sortObjectByKeys(tagCounts)
+---
+
+<StarlightPage frontmatter={{ title: `Tags` }}>
+	<div style="display: grid; gap: 0.5rem;">
+		{
+			Object.keys(sortedTagCounts).map((tag: any) => (
+				<LinkCard
+					title={tag}
+					description={`${sortedTagCounts[tag]} apps`}
+					href={`./tags/${tag}`}
+				/>
+			))
+		}
+	</div>
+</StarlightPage>

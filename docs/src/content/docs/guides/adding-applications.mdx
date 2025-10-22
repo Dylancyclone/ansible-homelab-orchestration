@@ -1,0 +1,41 @@
+---
+title: Adding Applications
+description: How to add applications to Ansible Homelab Orchestration
+sidebar:
+  order: 4
+---
+
+Creating a new role for an application is greatly assisted by a Python script that generates a basic role based on user input.
+
+You can run the script with:
+
+```bash
+python3 scripts/generate_role.py
+```
+
+It will then ask you a number of questions about the application you are adding, then generate a role in the `roles/` directory as well as boilerplate documentation in the `docs/src/content/docs/applications/` directory.
+Make sure to review and update the generated files to ensure your application is configured correctly.
+
+## Testing Changes
+
+Ansible Homelab Orchestration also comes with a suite of automated tests to ensure clean code and functionality.
+For example, the tests ensure:
+
+- All created containers and networks are removed when stopping applications
+- All applications have consistent variable names and settings
+- All applications properly implement DNS and external access settings
+- No port conflicts between applications
+- etc
+
+To run the tests, run:
+
+```bash
+python tests/test.py
+```
+
+Make sure all tests pass before submitting a pull request!
+
+## Contributing your Application
+
+Contributions to Ansible Homelab Orchestration are welcome and encouraged!
+Check out the [Contributing](../guides/contributing/) guide for more information on how to contribute your application.

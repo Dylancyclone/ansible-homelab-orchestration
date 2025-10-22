@@ -1,0 +1,25 @@
+---
+title: Introduction
+description: What is Ansible Homelab Orchestration
+sidebar:
+   order: 1
+---
+
+Ansible Homelab Orchestration is a project that sets up and installs applications on your homelab using Docker.
+It is greatly inspired by [Ansible-NAS](https://github.com/davestephens/ansible-nas), but has a number of important differences:
+
+- Does not require root to run
+- Runs containers with minimum privileges (no root unless absolutely necessary)
+- Allow any application to have it's name, image name and version overridden (in case of version pinning or running forks)
+- Does not modify existing system settings/configuration
+- Separates DNS access from external access (for example, access `portainer.example.com` on local network without exposing it to the internet)
+- Notifies the user of breaking changes in an application's ansible role before updating them
+- Everything is optional, doesn't install anything except what's configured by the user
+- Cleans up networks and containers more gracefully after disabling applications, and ensure nothing is left dangling
+- Supports more OSs than just Ubuntu
+- Includes suite of tests to ensure clean code and functionality
+   - All created containers and networks are removed when stopping applications
+   - Ensures all applications have consistent variable names and settings
+   - Ensures all applications properly implement DNS and external access settings
+   - Ensures no port conflicts between applications
+   - etc
