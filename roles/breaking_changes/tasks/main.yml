@@ -1,0 +1,27 @@
+---
+- name: Check for Breaking Changes for {{ breaking_changes_application }}
+  block:
+    - name: Check for Breaking Changes for {{ breaking_changes_application }}
+      ansible.builtin.command:
+        cmd: python3 breaking_changes.py "{{ breaking_changes_application }}"
+      args:
+        chdir: "{{ role_path }}/files"
+      register: breaking_changes_result
+      changed_when: breaking_changes_result.rc != 0
+      delegate_to: localhost
+
+  rescue:
+    - name: Inform user of Breaking Changes for {{ breaking_changes_application }}
+      ansible.builtin.assert:
+        that:
+          - breaking_changes_result.rc == 0
+        fail_msg: |-
+          Breaking Changes Detected!
+          ---
+          Breaking changes detected for {{ breaking_changes_application }}!
+          Please review the documentation for this application:
+          https://dylancyclone.github.io/ansible-homelab-orchestration/applications/{{ breaking_changes_application }}.
+          When resolved, delete the corresponding `BREAKING_CHANGE_{{ breaking_changes_application }}.txt` file in the state directory and rerun the playbook.
+          To temporarily ignore this application, add `--skip-tags="{{ breaking_changes_application }}"` to your ansible-playbook command.
+          This will let you deploy other applications while you address the breaking changes.
+          ---

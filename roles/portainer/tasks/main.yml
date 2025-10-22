@@ -2,6 +2,12 @@
 - name: Start Portainer
   when: portainer_enabled
   block:
+    - name: Check for Portainer Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: portainer
+
     - name: Create Portainer Directories
       ansible.builtin.file:
         path: "{{ item }}"

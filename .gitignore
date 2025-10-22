@@ -1,4 +1,10 @@
+# Ansible
 *.retry
 
+# User-defined inventories
 inventories/*
 !inventories/example/
+
+# Breaking change detection
+state/*
+!state/README.md
