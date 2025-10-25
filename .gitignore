@@ -1,5 +1,6 @@
 # Ansible
 *.retry
+.ansible/
 
 # User-defined inventories
 inventories/*

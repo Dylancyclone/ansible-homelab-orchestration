@@ -1,0 +1,9 @@
+---
+exclude_paths:
+  - .ansible/
+  - .git/
+  - .github/
+  - roles/personal/
+
+skip_list:
+  - role-name[path] # Allow roles in `personal` folder
