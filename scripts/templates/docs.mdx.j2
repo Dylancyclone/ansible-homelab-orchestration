@@ -1,0 +1,34 @@
+---
+title: {{ full_name }}
+tags: []
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage]({/* REPLACE WITH PROJECT HOMEPAGE (Remove line if only has a repository) */}) |
+[Repository]({/* REPLACE WITH PROJECT REPOSITORY */})
+
+<Tags tags={frontmatter.tags} />
+
+TODO: Add a short description of {{ full_name }} here.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+{{ short_name }}_enabled: true
+```
+
+{% if default_port %}
+By default, {{ full_name }} can be accessed at `http://[your_server_ip]:{{ default_port }}` or `https://{{ short_name }}.[your_domain].com` if you have [DNS access](../../guides/dns-access) configured.
+{% endif %}
+
+## Configuration
+
+See the default configuration options for {{ full_name }} at [`roles/{{ short_name }}/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/{{ short_name }}/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

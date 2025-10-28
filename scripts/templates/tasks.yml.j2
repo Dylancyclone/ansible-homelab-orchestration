@@ -1,0 +1,65 @@
+---
+- name: Start {{ full_name }}
+  when: {{ short_name }}_enabled
+  block:
+    - name: Check for {{ full_name }} Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: {{ short_name }}
+
+{% if has_directories %}
+    - name: Create {{ full_name }} Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      with_items:
+        - "{{ "{{" }} {{ short_name }}_data_directory {{ "}}" }}"
+
+{% endif %}
+{% if has_docker_network %}
+    - name: Create {{ full_name }} network
+      community.docker.docker_network:
+        name: "{{ "{{" }} {{ short_name }}_network_name {{ "}}" }}"
+
+{% endif %}
+    - name: {{ full_name }} Docker Container
+      community.docker.docker_container:
+        name: "{{ "{{" }} {{ short_name }}_container_name {{ "}}" }}"
+        image: "{{ "{{" }} {{ short_name }}_image_name {{ "}}" }}:{{ "{{" }} {{ short_name }}_image_version {{ "}}" }}"
+        pull: true
+{% if has_directories %}
+        volumes:
+          - "{{ "{{" }} {{ short_name }}_data_directory {{ "}}" }}:/data:rw"
+{% endif %}
+{% if default_port %}
+        ports:
+          - "{{ "{{" }} {{ short_name }}_port {{ "}}" }}:{{ default_port }}"
+{% endif %}
+        restart_policy: unless-stopped
+        memory: "{{ "{{" }} {{ short_name }}_memory {{ "}}" }}"
+{% if network_enabled %}
+        labels:
+          traefik.enable: "{{ "{{" }} ({{ short_name }}_dns_accessible or {{ short_name }}_available_externally) | string {{ "}}" }}"
+          traefik.http.services.{{ short_name }}.loadbalancer.server.port: "{{ default_port }}"
+          traefik.http.routers.{{ short_name }}.rule: "Host(`{{ "{{" }} {{ short_name }}_hostname {{ "}}" }}.{{ "{{" }} dns_domain {{ "}}" }}`)"
+          traefik.http.routers.{{ short_name }}.tls.domains[0].main: "{{ "{{" }} dns_domain {{ "}}" }}"
+          traefik.http.routers.{{ short_name }}.tls.domains[0].sans: "*.{{ "{{" }} dns_domain {{ "}}" }}"
+          traefik.http.routers.{{ short_name }}.tls.certresolver: "letsencrypt"
+          traefik.http.routers.{{ short_name }}.middlewares: "{{ "{{" }} omit if {{ short_name }}_available_externally else 'blockExternal@file' {{ "}}" }}"
+{% endif %}
+
+- name: Stop {{ full_name }}
+  when: not {{ short_name }}_enabled
+  block:
+    - name: Stop {{ full_name }}
+      community.docker.docker_container:
+        name: "{{ "{{" }} {{ short_name }}_container_name {{ "}}" }}"
+        state: absent
+{% if has_docker_network %}
+    - name: Remove {{ full_name }} Network
+      community.docker.docker_network:
+        name: "{{ "{{" }} {{ short_name }}_network_name {{ "}}" }}"
+        state: absent
+{% endif %}

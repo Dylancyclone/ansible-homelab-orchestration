@@ -1,0 +1,36 @@
+---
+{{ short_name }}_enabled: false
+{% if network_enabled %}
+{{ short_name }}_dns_accessible: "{{ "{{" }} traefik_enable_dns_for_all {{ "}}" }}"
+{{ short_name }}_available_externally: false
+{% endif %}
+
+{% if has_directories %}
+# directories
+{{ short_name }}_data_directory: "{{ "{{" }} docker_home {{ "}}" }}/{{ short_name }}/"
+{% endif %}
+
+{% if default_port %}
+# network
+{% endif %}
+{% if network_enabled %}
+{{ short_name }}_hostname: {{ short_name }}
+{% endif %}
+{% if has_docker_network %}
+{{ short_name }}_network_name: {{ short_name }}
+{% endif %}
+{% if default_port %}
+{{ short_name }}_port: {{ default_port }}
+{% endif %}
+
+# containers
+{{ short_name }}_container_name: {{ short_name }}
+{{ short_name }}_image_name: {{ docker_container }}
+{{ short_name }}_image_version: {{ docker_tag }}
+
+{{ short_name }}_container_names: # Used to check if app is running
+  - "{{ "{{" }} {{ short_name }}_container_name {{ "}}" }}"
+
+# specs
+{{ short_name }}_memory: 1g
+
