@@ -6,6 +6,10 @@
 inventories/*
 !inventories/example/
 
+# Personal roles
+roles/personal/*
+!roles/personal/README.md
+
 # Breaking change detection
 state/*
 !state/README.md

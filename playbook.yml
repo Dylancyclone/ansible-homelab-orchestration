@@ -392,3 +392,4 @@
       tags: woodpecker_ci
       when: woodpecker_ci_enabled or (woodpecker_ci_container_names | intersect(running_containers) | length > 0)
 
+    # Personal Applications (in personal/ folder)
