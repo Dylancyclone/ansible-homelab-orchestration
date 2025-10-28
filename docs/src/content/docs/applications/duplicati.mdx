@@ -1,0 +1,37 @@
+---
+title: Duplicati
+tags: ["Backups"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://duplicati.com/) |
+[Repository](https://github.com/linuxserver/docker-duplicati)
+
+<Tags tags={frontmatter.tags} />
+
+Duplicati is a backup client that securely stores encrypted, incremental, compressed backups on local storage, cloud storage services and remote file servers. It works with standard protocols like FTP, SSH, WebDAV as well as popular services like Microsoft OneDrive, Amazon S3, Google Drive, box.com, Mega, B2, and many others.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+duplicati_enabled: true
+
+# You should change the database encryption key to something unique and secure
+duplicati_encryption_key: "changeme"
+# You should change the web UI password to something unique and secure
+duplicati_webui_password: "changeme"
+```
+
+By default, Duplicati can be accessed at `http://[your_server_ip]:8200` or `https://duplicati.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Duplicati at [`roles/duplicati/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/duplicati/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

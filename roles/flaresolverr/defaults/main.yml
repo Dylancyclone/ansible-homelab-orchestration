@@ -1,0 +1,22 @@
+---
+flaresolverr_enabled: false
+flaresolverr_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+flaresolverr_available_externally: false
+
+# directories
+flaresolverr_config_directory: "{{ docker_home }}/flaresolverr"
+
+# network
+flaresolverr_hostname: flaresolverr
+flaresolverr_port: 8191
+
+# containers
+flaresolverr_container_name: flaresolverr
+flaresolverr_image_name: flaresolverr/flaresolverr
+flaresolverr_image_version: latest
+
+flaresolverr_container_names: # Used to check if app is running
+  - "{{ flaresolverr_container_name }}"
+
+# specs
+flaresolverr_memory: 200m

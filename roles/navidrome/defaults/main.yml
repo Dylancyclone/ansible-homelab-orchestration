@@ -1,0 +1,28 @@
+---
+navidrome_enabled: false
+navidrome_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+navidrome_available_externally: false
+
+# directories
+navidrome_data_directory: "{{ docker_home }}/navidrome"
+navidrome_music_directory: "{{ music_root }}"
+
+# network
+navidrome_hostname: navidrome
+navidrome_port: 4533
+
+# containers
+navidrome_container_name: navidrome
+navidrome_image_name: deluan/navidrome
+navidrome_image_version: latest
+
+navidrome_container_names: # Used to check if app is running
+  - "{{ navidrome_container_name }}"
+
+# specs
+navidrome_memory: 1g
+
+# default config
+navidrome_scan_schedule: "@every 1m" # Cron syntax (https://en.wikipedia.org/wiki/Cron)
+navidrome_log_level: "info"
+navidrome_session_timeout: "24h"

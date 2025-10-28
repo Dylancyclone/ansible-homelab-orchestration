@@ -1,0 +1,37 @@
+---
+title: Deluge
+tags: ["Download Manager"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://deluge-torrent.org/) |
+[Repository](https://github.com/linuxserver/docker-deluge)
+
+<Tags tags={frontmatter.tags} />
+
+Deluge is a lightweight, Free Software, cross-platform BitTorrent client.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+deluge_enabled: true
+```
+
+By default, Deluge can be accessed at `http://[your_server_ip]:8112` or `https://deluge.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Deluge at [`roles/deluge/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/deluge/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+## Alternatives
+
+- [qBittorrent](./qbittorrent)
+- [Transmission](./transmission)
+
+{/* 
+
+## Breaking Changes
+
+*/}

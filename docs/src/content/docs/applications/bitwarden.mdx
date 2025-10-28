@@ -1,0 +1,43 @@
+---
+title: Bitwarden
+tags: ["Password Manager", "Security"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Repository](https://github.com/dani-garcia/vaultwarden)
+
+<Tags tags={frontmatter.tags} />
+
+Unofficial Bitwarden compatible server written in Rust and compatible with official Bitwarden clients, perfect for self-hosted deployment where running the official resource-heavy service might not be ideal.
+
+This role also contains a backup solution using [Bruceforce's Vaultwarden Backup](https://gitlab.com/1O/vaultwarden-backup)
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+bitwarden_enabled: true
+
+# You will want to change the default admin token
+# This token can be anything, but it's recommended to use a long, randomly generated string of characters,
+# for example running openssl rand -base64 48
+bitwarden_admin_token: qwertyuiop1234567890poiuytrewq0987654321
+
+# To create a user set this to "true" and run the playbook.
+# Once you have created your user, set to "false" and run the playbook again.
+# Target just Bitwarden by running: ansible-playbook -i inventory homelab.yml --tags="bitwarden"
+bitwarden_allow_signups: false
+```
+
+By default, Bitwarden can be accessed at `http://[your_server_ip]:19080` or `https://bitwarden.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Bitwarden at [`roles/bitwarden/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/bitwarden/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

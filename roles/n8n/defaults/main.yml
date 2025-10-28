@@ -1,0 +1,26 @@
+---
+n8n_enabled: false
+n8n_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+n8n_available_externally: false
+
+# Directories
+n8n_data_directory: "{{ docker_home }}/n8n"
+
+# Network
+n8n_hostname: n8n
+n8n_port: 5678
+
+# Security
+n8n_basic_auth_user: n8n_user
+n8n_basic_auth_password: n8n_change_me
+
+# containers
+n8n_container_name: n8n
+n8n_image_name: docker.n8n.io/n8nio/n8n
+n8n_image_version: latest
+
+n8n_container_names: # Used to check if app is running
+  - "{{ n8n_container_name }}"
+
+# specs
+n8n_memory: 1g

@@ -1,0 +1,40 @@
+---
+title: Krusader
+tags: ["File Manager"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://krusader.org/) |
+[Repository](https://github.com/binhex/arch-krusader)
+
+<Tags tags={frontmatter.tags} />
+
+Krusader is an advanced orthodox file manager for KDE and other desktops in the Unix world. It is similar to the console-based GNU Midnight Commander, GNOME Commander for the GNOME desktop environment, or Total Commander for Windows, all of which can trace their paradigmatic features to the original Norton Commander for DOS. It supports extensive archive handling, mounted filesystem support, FTP, advanced search, viewer/editor, directory synchronisation, file content comparisons, batch renaming, etc.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+krusader_enabled: true
+
+# You'll want to change the vnc password
+# MUST be greater than 6 characters, otherwise it will be ignored
+krusader_vnc_password: topsecret
+```
+
+By default, Krusader can be accessed at `http://[your_server_ip]:6080` or `https://krusader.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Krusader at [`roles/krusader/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/krusader/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+## Alternatives
+
+- [Cloud Commander](./cloudcmd)
+
+{/* 
+
+## Breaking Changes
+
+*/}

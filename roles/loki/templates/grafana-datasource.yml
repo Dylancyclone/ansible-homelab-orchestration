@@ -1,0 +1,11 @@
+---
+apiVersion: 1
+
+datasources:
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ loki_http_port }}
+    basicAuth: false
+    version: 1
+    editable: true 

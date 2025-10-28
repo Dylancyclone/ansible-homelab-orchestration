@@ -1,0 +1,32 @@
+---
+title: TiddlyWiki
+tags: ["Wiki"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://tiddlywiki.com/) |
+[Repository](https://github.com/TiddlyWiki/TiddlyWiki5)
+
+<Tags tags={frontmatter.tags} />
+
+TiddlyWiki is a complete interactive wiki in JavaScript. It can be used as a single HTML file in the browser or as a powerful Node.js application. It is highly customisable: the entire user interface is itself implemented in hackable [WikiText](https://tiddlywiki.com/static/WikiText.html).
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+tiddlywiki_enabled: true
+```
+
+By default, TiddlyWiki can be accessed at `http://[your_server_ip]:8092` or `https://tiddlywiki.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for TiddlyWiki at [`roles/tiddlywiki/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/tiddlywiki/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

@@ -1,0 +1,32 @@
+---
+title: MiniDLNA
+tags: ["Media Server", "Movies", "TV"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://sourceforge.net/projects/minidlna/) |
+[Repository](https://github.com/vladgh/docker_base_images/tree/main/minidlna)
+
+<Tags tags={frontmatter.tags} />
+
+MiniDLNA is a simple media server software, with the aim of being fully compliant with DLNA/UPnP-AV clients.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+minidlna_enabled: true
+```
+
+By default, MiniDLNA can be accessed at `http://[your_server_ip]:8201` or `https://minidlna.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for MiniDLNA at [`roles/minidlna/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/minidlna/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

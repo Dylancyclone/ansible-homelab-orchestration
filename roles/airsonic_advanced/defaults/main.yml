@@ -1,0 +1,24 @@
+---
+airsonic_advanced_enabled: false
+airsonic_advanced_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+airsonic_advanced_available_externally: false
+
+# directories
+airsonic_advanced_data_directory: "{{ docker_home }}/airsonic"
+airsonic_advanced_music_directory: "{{ music_root }}"
+airsonic_advanced_podcasts_directory: "{{ podcasts_root }}"
+
+# network
+airsonic_advanced_port: 4040
+airsonic_advanced_hostname: airsonic
+
+# containers
+airsonic_advanced_container_name: airsonic
+airsonic_advanced_image_name: airsonicadvanced/airsonic-advanced
+airsonic_advanced_image_version: latest
+
+airsonic_advanced_container_names: # Used to check if app is running
+  - "{{ airsonic_advanced_container_name }}"
+
+# specs
+airsonic_advanced_memory: 1g

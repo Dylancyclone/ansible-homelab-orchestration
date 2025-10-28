@@ -1,0 +1,32 @@
+---
+title: ZNC
+tags: ["IRC"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://znc.in/) |
+[Repository](https://github.com/znc/znc)
+
+<Tags tags={frontmatter.tags} />
+
+ZNC is an advanced [IRC bouncer](http://en.wikipedia.org/wiki/BNC_%28software%29#IRC) that is left connected so an IRC client can disconnect/reconnect without losing the chat session
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+znc_enabled: true
+```
+
+By default, ZNC can be accessed at `http://[your_server_ip]:6677` or `https://znc.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for ZNC at [`roles/znc/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/znc/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

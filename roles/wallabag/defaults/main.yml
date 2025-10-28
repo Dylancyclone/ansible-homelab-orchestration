@@ -1,0 +1,22 @@
+---
+wallabag_enabled: false
+wallabag_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+wallabag_available_externally: false
+
+# Directories
+wallabag_data_directory: "{{ docker_home }}/wallabag"
+
+# Networking
+wallabag_hostname: wallabag
+wallabag_port: 7780
+
+# Container
+wallabag_container_name: wallabag
+wallabag_image_name: wallabag/wallabag
+wallabag_image_version: latest
+
+wallabag_container_names: # Used to check if app is running
+  - "{{ wallabag_container_name }}"
+
+# Specs
+wallabag_memory: 1g

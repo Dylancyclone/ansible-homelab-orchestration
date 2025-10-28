@@ -1,0 +1,26 @@
+---
+dokuwiki_enabled: false
+dokuwiki_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+dokuwiki_available_externally: false
+
+# directories
+dokuwiki_data_directory: "{{ docker_home }}/dokuwiki"
+
+# uid / gid
+dokuwiki_user_id: "1000"
+dokuwiki_group_id: "1000"
+
+# network
+dokuwiki_hostname: dokuwiki
+dokuwiki_port: 8085
+
+# containers
+dokuwiki_container_name: dokuwiki
+dokuwiki_image_name: linuxserver/dokuwiki
+dokuwiki_image_version: latest
+
+dokuwiki_container_names: # Used to check if app is running
+  - "{{ dokuwiki_container_name }}"
+
+# specs
+dokuwiki_memory: 1g

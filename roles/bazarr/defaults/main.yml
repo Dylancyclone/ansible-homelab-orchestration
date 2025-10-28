@@ -1,0 +1,28 @@
+---
+bazarr_enabled: false
+bazarr_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+bazarr_available_externally: false
+
+# directories
+bazarr_data_directory: "{{ docker_home }}/bazarr/config"
+bazarr_tv_directory: "{{ tv_root }}"
+bazarr_movies_directory: "{{ movies_root }}"
+
+# uid/gid
+bazarr_user_id: "1000"
+bazarr_group_id: "1000"
+
+# network
+bazarr_hostname: bazarr
+bazarr_port: 6767
+
+# containers
+bazarr_container_name: bazarr
+bazarr_image_name: linuxserver/bazarr
+bazarr_image_version: latest
+
+bazarr_container_names: # Used to check if app is running
+  - "{{ bazarr_container_name }}"
+
+# specs
+bazarr_memory: 1g

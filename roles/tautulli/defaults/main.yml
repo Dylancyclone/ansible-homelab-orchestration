@@ -1,0 +1,26 @@
+---
+tautulli_enabled: false
+tautulli_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+tautulli_available_externally: false
+
+# directories
+tautulli_config_directory: "{{ docker_home }}/tautulli/config"
+
+# uid / gid
+tautulli_user_id: "1000"
+tautulli_group_id: "1000"
+
+# network
+tautulli_hostname: tautulli
+tautulli_port: 8185
+
+# containers
+tautulli_container_name: tautulli
+tautulli_image_name: linuxserver/tautulli
+tautulli_image_version: latest
+
+tautulli_container_names: # Used to check if app is running
+  - "{{ tautulli_container_name }}"
+
+# specs
+tautulli_memory: 1g

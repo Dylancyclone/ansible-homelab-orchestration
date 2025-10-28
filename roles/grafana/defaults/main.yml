@@ -1,0 +1,27 @@
+---
+grafana_enabled: false
+grafana_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+grafana_available_externally: false
+
+# directories
+grafana_data_directory: "{{ docker_home }}/grafana/data"
+grafana_config_directory: "{{ docker_home }}/grafana/config"
+
+# network
+grafana_hostname: grafana
+grafana_port: 3000
+
+# uid/gid
+grafana_user_id: "1000"
+grafana_group_id: "1000"
+
+# containers
+grafana_container_name: grafana
+grafana_image_name: grafana/grafana
+grafana_image_version: latest
+
+grafana_container_names: # Used to check if app is running
+  - "{{ grafana_container_name }}"
+
+# specs
+grafana_memory: 1g

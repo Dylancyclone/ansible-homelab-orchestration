@@ -1,0 +1,32 @@
+---
+title: Navidrome
+tags: ["Music", "Media Server"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://www.navidrome.org/) |
+[Repository](https://github.com/navidrome/navidrome)
+
+<Tags tags={frontmatter.tags} />
+
+Navidrome is an open source web-based music collection server and streamer. It gives you freedom to listen to your music collection from any browser or mobile device. It's like your personal Spotify!
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+navidrome_enabled: true
+```
+
+By default, Navidrome can be accessed at `http://[your_server_ip]:4533` or `https://navidrome.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Navidrome at [`roles/navidrome/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/navidrome/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

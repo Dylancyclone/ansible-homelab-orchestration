@@ -1,0 +1,22 @@
+---
+heimdall_enabled: false
+heimdall_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+heimdall_available_externally: false
+
+# directories
+heimdall_data_directory: "{{ docker_home }}/heimdall"
+
+# network
+heimdall_hostname: heimdall
+heimdall_http_port: 11112
+
+# containers
+heimdall_container_name: heimdall
+heimdall_image_name: linuxserver/heimdall
+heimdall_image_version: latest
+
+heimdall_container_names: # Used to check if app is running
+  - "{{ heimdall_container_name }}"
+
+# specs
+heimdall_memory: 1g

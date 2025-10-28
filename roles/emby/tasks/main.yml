@@ -1,0 +1,54 @@
+---
+- name: Start Emby
+  when: emby_enabled
+  block:
+    - name: Check for Emby Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: emby
+
+    - name: Create Emby Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ emby_config_directory }}"
+        - "{{ emby_movies_directory }}"
+        - "{{ emby_tv_directory }}"
+
+    - name: Emby Docker Container
+      community.docker.docker_container:
+        name: "{{ emby_container_name }}"
+        image: "{{ emby_image_name }}:{{ emby_image_version }}"
+        pull: true
+        volumes:
+          - "{{ emby_config_directory }}:/config:rw"
+          - "{{ emby_movies_directory }}:/movies:{{ emby_movies_permissions }}"
+          - "{{ emby_tv_directory }}:/tv:{{ emby_tv_permissions }}"
+        ports:
+          - "{{ emby_http_port }}:8096"
+          - "{{ emby_https_port }}:8920"
+        devices: "{{ emby_devices | default(omit) }}"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ emby_user_id }}"
+          PGID: "{{ emby_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ emby_memory }}"
+        labels:
+          traefik.enable: "{{ (emby_dns_accessible or emby_available_externally) | string }}"
+          traefik.http.services.emby.loadbalancer.server.port: "8096"
+          traefik.http.routers.emby.rule: "Host(`{{ emby_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.emby.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.emby.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.emby.tls.certresolver: "letsencrypt"
+          traefik.http.routers.emby.middlewares: "{{ omit if emby_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Emby
+  when: not emby_enabled
+  block:
+    - name: Stop Emby
+      community.docker.docker_container:
+        name: "{{ emby_container_name }}"
+        state: absent

@@ -1,0 +1,50 @@
+---
+- name: Start Mumble
+  when: mumble_enabled
+  block:
+    - name: Check for Mumble Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: mumble
+
+    - name: Create Mumble Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        # The mumble image gets uid/gid at build time, and uses 1000 for both, by default.
+        owner: 1000
+        group: 1000
+      with_items:
+        - "{{ mumble_data_directory }}"
+
+    - name: Mumble Docker Container
+      community.docker.docker_container:
+        name: "{{ mumble_container_name }}"
+        image: "{{ mumble_image_name }}:{{ mumble_image_version }}"
+        pull: true
+        volumes:
+          - "{{ mumble_data_directory }}:/data:rw"
+        ports:
+          - "{{ mumble_tcp_port }}:64738/tcp"
+          - "{{ mumble_udp_port }}:64738/udp"
+        env:
+          MUMBLE_CONFIG_SERVER_PASSWORD: "{{ mumble_server_password }}"
+        restart_policy: unless-stopped
+        memory: "{{ mumble_memory }}"
+        labels:
+          traefik.enable: "{{ (mumble_dns_accessible or mumble_available_externally) | string }}"
+          traefik.http.services.mumble.loadbalancer.server.port: "64738"
+          traefik.http.routers.mumble.rule: "Host(`{{ mumble_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.mumble.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.mumble.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.mumble.tls.certresolver: "letsencrypt"
+          traefik.http.routers.mumble.middlewares: "{{ omit if mumble_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Mumble
+  when: not mumble_enabled
+  block:
+    - name: Stop Mumble
+      community.docker.docker_container:
+        name: "{{ mumble_container_name }}"
+        state: absent

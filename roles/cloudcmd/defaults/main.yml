@@ -1,0 +1,27 @@
+---
+cloudcmd_enabled: false
+cloudcmd_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+cloudcmd_available_externally: false
+
+# directories
+cloudcmd_data_directory: "{{ docker_home }}/cloudcmd/config"
+cloudcmd_browse_directory: "/"
+
+# uid / gid
+cloudcmd_user_id: "1000"
+cloudcmd_group_id: "1000"
+
+# network
+cloudcmd_hostname: cloudcmd
+cloudcmd_port: 7373
+
+# containers
+cloudcmd_container_name: cloudcmd
+cloudcmd_image_name: coderaiser/cloudcmd
+cloudcmd_image_version: latest
+
+cloudcmd_container_names: # Used to check if app is running
+  - "{{ cloudcmd_container_name }}"
+
+# specs
+cloudcmd_memory: 1g

@@ -1,0 +1,38 @@
+---
+title: ddns-route53
+tags: ["Dynamic DNS", "AWS"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://crazymax.dev/ddns-route53/) |
+[Repository](https://github.com/crazy-max/ddns-route53)
+
+<Tags tags={frontmatter.tags} />
+
+ddns-route53 is a CLI application written in Go that lets you run your own Dynamic DNS service with [Amazon Route 53](https://aws.amazon.com/route53/) on a time-based schedule.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+route53_ddns_enabled: true
+
+# AWS access credentials
+route53_ddns_key_id: ""
+route53_ddns_secret_key: ""
+
+# Managed DNS zone ID
+route53_ddns_hosted_zone_id: ""
+```
+
+
+## Configuration
+
+See the default configuration options for ddns-route53 at [`roles/route53_ddns/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/route53_ddns/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

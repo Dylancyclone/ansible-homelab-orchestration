@@ -1,0 +1,28 @@
+---
+octoprint_enabled: false
+octoprint_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+octoprint_available_externally: false
+
+# directories
+octoprint_data_directory: "{{ docker_home }}/octoprint"
+
+# network
+octoprint_hostname: octoprint
+octoprint_port: 8100
+
+# containers
+octoprint_container_name: octoprint
+octoprint_image_name: octoprint/octoprint
+octoprint_image_version: latest
+
+octoprint_container_names: # Used to check if app is running
+  - "{{ octoprint_container_name }}"
+
+# devices
+octoprint_printer_mountpoint: "/dev/ttyUSB0"
+
+octoprint_enable_webcam: false
+octoprint_webcam_mountpoint: "/dev/video0"
+
+# specs
+octoprint_memory: 1g

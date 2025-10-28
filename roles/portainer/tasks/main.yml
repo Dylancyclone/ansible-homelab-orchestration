@@ -12,7 +12,6 @@
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
-        mode: "0755"
       with_items:
         - "{{ portainer_data_directory }}"
 

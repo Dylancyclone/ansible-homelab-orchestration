@@ -1,0 +1,27 @@
+---
+telegraf_enabled: false
+
+# directories
+telegraf_config_directory: "{{ docker_home }}/telegraf/config"
+
+# network
+telegraf_port: 9273
+telegraf_influxdb_port: 8086
+
+# uid/gid
+telegraf_user_id: "1000"
+telegraf_group_id: "1000"
+
+# containers
+telegraf_container_name: telegraf
+telegraf_image_name: telegraf
+telegraf_image_version: latest
+
+telegraf_container_names: # Used to check if app is running
+  - "{{ telegraf_container_name }}"
+
+# specs
+telegraf_memory: 1g
+
+# config
+telegraf_collection_interval: 15s

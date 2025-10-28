@@ -1,0 +1,38 @@
+---
+title: Prometheus
+tags: ["Monitoring"]
+---
+
+import { Aside } from "@astrojs/starlight/components"
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://prometheus.io/) |
+[Repository](https://github.com/prometheus/prometheus)
+
+<Tags tags={frontmatter.tags} />
+
+<Aside>
+	This application is part of the [Monitoring Applications](../../application_combos/monitoring) combo.
+  On it's own, it won't do much
+</Aside>
+
+Prometheus, a Cloud Native Computing Foundation project, is a systems and service monitoring system. It collects metrics from configured targets at given intervals, evaluates rule expressions, displays the results, and can trigger alerts when specified conditions are observed.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+prometheus_enabled: true
+```
+
+By default, Prometheus can be accessed at `http://[your_server_ip]:9090` or `https://prometheus.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Prometheus at [`roles/prometheus/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/prometheus/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

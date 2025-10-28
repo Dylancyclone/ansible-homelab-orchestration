@@ -12,7 +12,6 @@
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
-        mode: "0755"
       with_items:
         - "{{ traefik_data_directory }}"
         - "{{ traefik_data_directory }}/letsencrypt"
@@ -21,14 +20,12 @@
       ansible.builtin.template:
         src: traefik.toml
         dest: "{{ traefik_data_directory }}/traefik.toml"
-        mode: "0755"
       register: traefik_template_static_config
 
     - name: Template Traefik blockExternal.toml
       ansible.builtin.template:
         src: blockExternal.toml
         dest: "{{ traefik_data_directory }}/blockExternal.toml"
-        mode: "0755"
       register: traefik_template_dynamic_config
 
     - name: Traefik Docker Container

@@ -1,0 +1,34 @@
+---
+calibre_enabled: false
+calibre_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+calibre_available_externally: false
+
+# directories
+calibre_data_directory: "{{ docker_home }}/calibre"
+calibre_books_directory: "{{ books_root }}"
+calibre_comics_directory: "{{ comics_root }}"
+
+# uid / gid
+calibre_user_id: "0"
+calibre_group_id: "0"
+
+# network
+calibre_hostname: calibre
+calibre_port: 8093
+calibre_webserver_port: 8094
+
+# containers
+calibre_container_name: calibre
+calibre_image_name: linuxserver/calibre
+calibre_image_version: latest
+
+calibre_container_names: # Used to check if app is running
+  - "{{ calibre_container_name }}"
+
+# env
+calibre_password: ""
+calibre_cli_args: ""
+calibre_security_opts: "seccomp=unconfined" # For why this is here, see https://github.com/linuxserver/docker-calibre/issues/102
+
+# specs
+calibre_memory: 1g

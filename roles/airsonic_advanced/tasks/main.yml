@@ -1,0 +1,50 @@
+---
+- name: Start Airsonic Advanced
+  when: airsonic_advanced_enabled
+  block:
+    - name: Check for Airsonic Advanced Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: airsonic_advanced
+
+    - name: Create Airsonic Advanced Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ airsonic_advanced_data_directory }}/data"
+        - "{{ airsonic_advanced_data_directory }}/playlists"
+        - "{{ airsonic_advanced_music_directory }}"
+        - "{{ airsonic_advanced_podcasts_directory }}"
+
+    - name: Airsonic Advanced Docker Container
+      community.docker.docker_container:
+        name: "{{ airsonic_advanced_container_name }}"
+        image: "{{ airsonic_advanced_image_name }}:{{ airsonic_advanced_image_version }}"
+        pull: true
+        volumes:
+          - "{{ airsonic_advanced_data_directory }}/data:/airsonic/data:rw"
+          - "{{ airsonic_advanced_data_directory }}/playlists:/airsonic/playlists:rw"
+          - "{{ airsonic_advanced_music_directory }}:/airsonic/music:rw"
+          - "{{ airsonic_advanced_podcasts_directory }}:/airsonic/podcasts:rw"
+        ports:
+          - "{{ airsonic_advanced_port }}:4040"
+        restart_policy: unless-stopped
+        memory: "{{ airsonic_advanced_memory }}"
+        labels:
+          traefik.enable: "{{ (airsonic_advanced_dns_accessible or airsonic_advanced_available_externally) | string }}"
+          traefik.http.services.airsonic_advanced.loadbalancer.server.port: "4040"
+          traefik.http.routers.airsonic_advanced.rule: "Host(`{{ airsonic_advanced_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.airsonic_advanced.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.airsonic_advanced.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.airsonic_advanced.tls.certresolver: "letsencrypt"
+          traefik.http.routers.airsonic_advanced.middlewares: "{{ omit if airsonic_advanced_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Airsonic Advanced
+  when: not airsonic_advanced_enabled
+  block:
+    - name: Stop Airsonic Advanced
+      community.docker.docker_container:
+        name: "{{ airsonic_advanced_container_name }}"
+        state: absent

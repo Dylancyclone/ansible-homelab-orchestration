@@ -1,0 +1,32 @@
+---
+title: pyTivo
+tags: ["Media Server"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://www.pytivodesktop.com/) |
+[Repository](https://github.com/Dan203/pytivo)
+
+<Tags tags={frontmatter.tags} />
+
+Download shows from, and share music, photos and videos with, your TiVo© DVR. pyTivo lets you stream most videos from your PC to your unhacked tivo. 
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+pytivo_enabled: true
+```
+
+By default, pyTivo can be accessed at `http://[your_server_ip]:9032` or `https://pytivo.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for pyTivo at [`roles/pytivo/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/pytivo/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

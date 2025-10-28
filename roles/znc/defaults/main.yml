@@ -1,0 +1,33 @@
+---
+znc_enabled: false
+znc_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+znc_available_externally: false
+
+# directories
+znc_data_directory: "{{ docker_home }}/znc"
+
+# uid / gid
+znc_user_id: "1000"
+znc_group_id: "1000"
+
+# network
+znc_hostname: znc
+znc_port: 6677
+
+# containers
+znc_container_name: znc
+znc_image_name: znc
+znc_image_version: latest
+
+znc_container_names: # Used to check if app is running
+  - "{{ znc_container_name }}"
+
+# specs
+znc_memory: 1g
+
+# znc
+znc_user_password: password
+znc_user_nick: user
+znc_user_altnick: user_
+znc_user_ident: user
+znc_user_real_name: User Name

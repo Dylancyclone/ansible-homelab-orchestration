@@ -1,0 +1,60 @@
+---
+- name: Start Jellyfin
+  when: jellyfin_enabled
+  block:
+    - name: Check for Jellyfin Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: jellyfin
+
+    - name: Create Jellyfin Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ jellyfin_config_directory }}"
+        - "{{ jellyfin_movies_directory }}"
+        - "{{ jellyfin_music_directory }}"
+        - "{{ jellyfin_photos_directory }}"
+        - "{{ jellyfin_tv_directory }}"
+        - "{{ jellyfin_books_directory }}"
+        - "{{ jellyfin_audiobooks_directory }}"
+
+    - name: Jellyfin Docker Container
+      community.docker.docker_container:
+        name: "{{ jellyfin_container_name }}"
+        image: "{{ jellyfin_image_name }}:{{ jellyfin_image_version }}"
+        pull: true
+        volumes:
+          - "{{ jellyfin_config_directory }}:/config:rw"
+          - "{{ jellyfin_movies_directory }}:/movies:{{ jellyfin_movies_permissions }}"
+          - "{{ jellyfin_music_directory }}:/music:{{ jellyfin_music_permissions }}"
+          - "{{ jellyfin_photos_directory }}:/photos:{{ jellyfin_photos_permissions }}"
+          - "{{ jellyfin_tv_directory }}:/tv:{{ jellyfin_tv_permissions }}"
+          - "{{ jellyfin_books_directory }}:/books:{{ jellyfin_books_permissions }}"
+          - "{{ jellyfin_audiobooks_directory }}:/audiobooks:{{ jellyfin_audiobooks_permissions }}"
+        ports:
+          - "{{ jellyfin_http_port }}:8096"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ jellyfin_user_id }}"
+          PGID: "{{ jellyfin_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ jellyfin_memory }}"
+        labels:
+          traefik.enable: "{{ (jellyfin_dns_accessible or jellyfin_available_externally) | string }}"
+          traefik.http.services.jellyfin.loadbalancer.server.port: "8096"
+          traefik.http.routers.jellyfin.rule: "Host(`{{ jellyfin_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.jellyfin.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.jellyfin.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.jellyfin.tls.certresolver: "letsencrypt"
+          traefik.http.routers.jellyfin.middlewares: "{{ omit if jellyfin_available_externally else 'blockExternal@file' }}"
+
+- name: Stop jellyfin
+  when: not jellyfin_enabled
+  block:
+    - name: Stop jellyfin
+      community.docker.docker_container:
+        name: "{{ jellyfin_container_name }}"
+        state: absent

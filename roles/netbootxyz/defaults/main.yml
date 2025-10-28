@@ -1,0 +1,29 @@
+---
+netbootxyz_enabled: false
+netbootxyz_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+netbootxyz_available_externally: false
+
+# directories
+netbootxyz_config_directory: "{{ docker_home }}/netbootxyz/config"
+netbootxyz_assets_directory: "{{ docker_home }}/netbootxyz/assets"
+
+# network
+netbootxyz_hostname: netbootxyz
+netbootxyz_web_port: 3003
+netbootxyz_assets_port: 5803
+netbootxyz_tftp_port: 69
+
+# uid/gid
+netbootxyz_user_id: "1000"
+netbootxyz_group_id: "1000"
+
+# containers
+netbootxyz_container_name: netbootxyz
+netbootxyz_image_name: netbootxyz/netbootxyz
+netbootxyz_image_version: latest
+
+netbootxyz_container_names: # Used to check if app is running
+  - "{{ netbootxyz_container_name }}"
+
+# specs
+netbootxyz_memory: 1g

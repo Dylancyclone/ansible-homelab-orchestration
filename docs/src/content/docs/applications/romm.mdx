@@ -1,0 +1,51 @@
+---
+title: RomM
+tags: ["Games"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://romm.app/) |
+[Repository](https://github.com/rommapp/romm)
+
+<Tags tags={frontmatter.tags} />
+
+RomM (ROM Manager) allows you to scan, enrich, browse and play your game collection with a clean and responsive interface. With support for multiple platforms, various naming schemes, and custom tags, RomM is a must-have for anyone who plays on emulators.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+romm_enabled: true
+
+# You'll want to change the default credentials
+romm_auth_username: admin
+romm_auth_password: admin
+romm_auth_secret_key: aaaabbbbccccdddd # Generate a key with `openssl rand -hex 32`
+```
+
+By default, Romm can be accessed at `http://[your_server_ip]:8484` or `https://romm.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+RomM can integrate with several other services:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+# IGDB auth credentials - see https://github.com/zurdi15/romm/tree/release#-docker for more info
+romm_igdb_client_id: abcd
+romm_igdb_client_secret: abcd
+
+# MobyGames auth credentials
+romm_mobygames_client_id: abcd
+
+# SteamGridDB auth credentials
+romm_steamgriddb_client_id: abcd
+```
+
+See the default configuration options for Romm at [`roles/romm/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/romm/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

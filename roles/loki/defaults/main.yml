@@ -1,0 +1,28 @@
+---
+loki_enabled: false
+loki_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+loki_available_externally: false
+
+# directories
+loki_data_directory: "{{ docker_home }}/loki"
+
+# network
+loki_hostname: loki
+loki_http_port: 3100
+loki_memberlist_port: 7946
+loki_grpc_port: 9095
+
+# containers
+loki_container_name: loki
+loki_image_name: grafana/loki
+loki_image_version: latest
+
+loki_container_names: # Used to check if app is running
+  - "{{ loki_container_name }}"
+
+# specs
+loki_memory: 1g
+
+# config
+loki_log_retention: 672h
+loki_log_level: info

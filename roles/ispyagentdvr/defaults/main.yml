@@ -1,0 +1,29 @@
+---
+ispyagentdvr_enabled: false
+ispyagentdvr_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+ispyagentdvr_available_externally: false
+
+# directories
+ispyagentdvr_config_directory: "{{ docker_home }}/ispyagentdvr/config"
+ispyagentdvr_commands_directory: "{{ docker_home }}/ispyagentdvr/commands"
+ispyagentdvr_recordings_directory: "{{ downloads_root }}/recordings"
+
+# uid / gid
+ispyagentdvr_user_id: "1000"
+ispyagentdvr_group_id: "1000"
+
+# network
+ispyagentdvr_webui_port: 8098
+ispyagentdvr_turn_port: 3478
+ispyagentdvr_agentdvr_host_port: "50000-50100"
+
+# containers
+ispyagentdvr_container_name: ispyagentdvr
+ispyagentdvr_image_name: mekayelanik/ispyagentdvr
+ispyagentdvr_image_version: latest
+
+ispyagentdvr_container_names: # Used to check if app is running
+  - "{{ ispyagentdvr_container_name }}"
+
+# specs
+ispyagentdvr_memory: 1g

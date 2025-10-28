@@ -1,0 +1,22 @@
+---
+rssbridge_enabled: false
+rssbridge_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+rssbridge_available_externally: false
+
+# directories
+rssbridge_data_directory: "{{ docker_home }}/rssbridge"
+
+# network
+rssbridge_hostname: rssbridge
+rssbridge_port: 8091
+
+# containers
+rssbridge_container_name: rssbridge
+rssbridge_image_name: rssbridge/rss-bridge
+rssbridge_image_version: latest
+
+rssbridge_container_names: # Used to check if app is running
+  - "{{ rssbridge_container_name }}"
+
+# specs
+rssbridge_memory: 1g

@@ -1,0 +1,44 @@
+---
+- name: Start Threadfin
+  when: threadfin_enabled
+  block:
+    - name: Check for Threadfin Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: threadfin
+
+    - name: Create Threadfin Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ threadfin_data_directory }}"
+
+    - name: Threadfin Docker Container
+      community.docker.docker_container:
+        name: "{{ threadfin_container_name }}"
+        image: "{{ threadfin_image_name }}:{{ threadfin_image_version }}"
+        pull: true
+        ports:
+          - "{{ threadfin_port }}:34400"
+        volumes:
+          - "{{ threadfin_data_directory }}:/home/threadfin/conf"
+        restart_policy: unless-stopped
+        memory: "{{ threadfin_memory }}"
+        labels:
+          traefik.enable: "{{ (threadfin_dns_accessible or threadfin_available_externally) | string }}"
+          traefik.http.services.threadfin.loadbalancer.server.port: "34400"
+          traefik.http.routers.threadfin.rule: "Host(`{{ threadfin_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.threadfin.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.threadfin.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.threadfin.tls.certresolver: "letsencrypt"
+          traefik.http.routers.threadfin.middlewares: "{{ omit if threadfin_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Threadfin
+  when: not threadfin_enabled
+  block:
+    - name: Stop Threadfin
+      community.docker.docker_container:
+        name: "{{ threadfin_container_name }}"
+        state: absent

@@ -1,0 +1,35 @@
+---
+title: The Lounge
+tags: ["IRC"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://thelounge.chat/) |
+[Repository](https://github.com/thelounge/thelounge)
+
+<Tags tags={frontmatter.tags} />
+
+Modern, responsive, cross-platform, self-hosted web IRC client
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+thelounge_enabled: true
+```
+
+The Lounge starts up in "private mode" with no users, meaning there are no valid logins on first start.
+See this page for instructions on [creating your first user](https://thelounge.chat/docs/users).
+
+By default, The Lounge can be accessed at `http://[your_server_ip]:9002` or `https://thelounge.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for The Lounge at [`roles/thelounge/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/thelounge/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

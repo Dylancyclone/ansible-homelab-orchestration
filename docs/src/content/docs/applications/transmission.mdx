@@ -1,0 +1,32 @@
+---
+title: Transmission
+tags: ["Download Manager"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://transmissionbt.com/) |
+[Repository](https://github.com/transmission/transmission)
+
+<Tags tags={frontmatter.tags} />
+
+Transmission is a fast, easy, and free BitTorrent client.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+transmission_enabled: true
+```
+
+By default, Transmission can be accessed at `http://[your_server_ip]:9092` or `https://transmission.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Transmission at [`roles/transmission/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/transmission/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

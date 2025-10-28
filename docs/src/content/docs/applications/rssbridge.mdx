@@ -1,0 +1,32 @@
+---
+title: RSS-Bridge
+tags: ["RSS"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://rss-bridge.org/bridge01/) |
+[Repository](https://github.com/RSS-Bridge/rss-bridge)
+
+<Tags tags={frontmatter.tags} />
+
+RSS-Bridge generates web feeds for websites that don't have one.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+rssbridge_enabled: true
+```
+
+By default, RSS-Bridge can be accessed at `http://[your_server_ip]:8091` or `https://rssbridge.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for RSS-Bridge at [`roles/rssbridge/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/rssbridge/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

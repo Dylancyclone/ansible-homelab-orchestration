@@ -1,0 +1,32 @@
+---
+ddns_route53_enabled: false
+
+# Directories
+ddns_route53_data_directory: "{{ docker_home }}/route53_ddns"
+
+# AWS access credentials
+ddns_route53_key_id: "{{ mandatory }}"
+ddns_route53_secret_key: "{{ mandatory }}"
+
+# Managed DNS zone ID
+ddns_route53_hosted_zone_id: "{{ mandatory }}"
+
+# The hostname to update
+ddns_route53_host: "*.{{ dns_domain }}"
+
+# The Time-To-Live for the DNS entry
+ddns_route53_ttl: 600
+
+# The CRON string schedule for checking and updating
+ddns_route53_schedule: "*/30 * * * *"
+
+# Container
+ddns_route53_container_name: ddns-route53
+ddns_route53_image_name: crazymax/ddns-route53
+ddns_route53_image_version: latest
+
+ddns_route53_container_names: # Used to check if app is running
+  - "{{ ddns_route53_container_name }}"
+
+# Specs
+ddns_route53_memory: 512MB

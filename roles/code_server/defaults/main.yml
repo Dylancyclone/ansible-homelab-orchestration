@@ -1,0 +1,27 @@
+---
+code_server_enabled: false
+code_server_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+code_server_available_externally: false
+
+# directories
+code_server_config_directory: "{{ docker_home }}/code_server"
+code_server_projects_directory: "{{ code_root }}"
+
+# uid / gid
+code_server_user_id: "1000"
+code_server_group_id: "1000"
+
+# network
+code_server_hostname: code-server
+code_server_port: 8443
+
+# containers
+code_server_container_name: code_server
+code_server_image_name: linuxserver/code-server
+code_server_image_version: latest
+
+code_server_container_names: # Used to check if app is running
+  - "{{ code_server_container_name }}"
+
+# specs
+code_server_memory: 1g

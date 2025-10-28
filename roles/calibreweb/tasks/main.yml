@@ -1,0 +1,51 @@
+---
+- name: Start Calibre-web
+  when: calibreweb_enabled
+  block:
+    - name: Check for Calibre-web Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: calibreweb
+
+    - name: Create Calibre-web Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ calibreweb_data_directory }}/config"
+        - "{{ calibreweb_data_directory }}/data"
+
+    - name: Calibre-web Docker Container
+      community.docker.docker_container:
+        name: "{{ calibreweb_container_name }}"
+        image: "{{ calibreweb_image_name }}:{{ calibreweb_image_version }}"
+        pull: true
+        volumes:
+          - "{{ calibreweb_data_directory }}/config:/config"
+          - "{{ calibreweb_books_root }}:/books"
+          - "{{ calibreweb_data_directory }}/data:/data"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ calibreweb_user_id }}"
+          PGID: "{{ calibreweb_group_id }}"
+        ports:
+          - "{{ calibreweb_port }}:8083"
+        restart_policy: unless-stopped
+        memory: "{{ calibreweb_memory }}"
+        labels:
+          traefik.enable: "{{ (calibreweb_dns_accessible or calibreweb_available_externally) | string }}"
+          traefik.http.services.calibreweb.loadbalancer.server.port: "8083"
+          traefik.http.routers.calibreweb.rule: "Host(`{{ calibreweb_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.calibreweb.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.calibreweb.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.calibreweb.tls.certresolver: "letsencrypt"
+          traefik.http.routers.calibreweb.middlewares: "{{ omit if calibreweb_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Calibre-web
+  when: not calibreweb_enabled
+  block:
+    - name: Stop Calibre-web
+      community.docker.docker_container:
+        name: "{{ calibreweb_container_name }}"
+        state: absent

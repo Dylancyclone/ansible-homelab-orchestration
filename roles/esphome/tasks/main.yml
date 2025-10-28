@@ -1,0 +1,49 @@
+---
+- name: Start EspHome
+  when: esphome_enabled
+  block:
+    - name: Check for EspHome Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: esphome
+
+    - name: Create EspHome Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ esphome_data_directory }}/data"
+
+    - name: EspHome Docker Container
+      community.docker.docker_container:
+        name: "{{ esphome_container_name }}"
+        image: "{{ esphome_image_name }}:{{ esphome_image_version }}"
+        pull: true
+        volumes:
+          - "{{ esphome_data_directory }}:/config:rw"
+          - "/etc/localtime:/etc/localtime:ro"
+        ports:
+          - "{{ esphome_port }}:6052"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ esphome_user_id }}"
+          PGID: "{{ esphome_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ esphome_memory }}"
+        labels:
+          traefik.enable: "{{ (esphome_dns_accessible or esphome_available_externally) | string }}"
+          traefik.http.services.esphome.loadbalancer.server.port: "6052"
+          traefik.http.routers.esphome.rule: "Host(`{{ esphome_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.esphome.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.esphome.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.esphome.tls.certresolver: "letsencrypt"
+          traefik.http.routers.esphome.middlewares: "{{ omit if esphome_available_externally else 'blockExternal@file' }}"
+
+- name: Stop EspHome
+  when: not esphome_enabled
+  block:
+    - name: Stop EspHome
+      community.docker.docker_container:
+        name: "{{ esphome_container_name }}"
+        state: absent

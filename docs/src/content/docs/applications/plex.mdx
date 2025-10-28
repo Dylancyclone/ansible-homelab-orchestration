@@ -1,0 +1,45 @@
+---
+title: Plex
+tags: ["Media Server", "Movies", "TV", "Music", "Photos"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://www.plex.tv/) |
+[Repository](https://github.com/linuxserver/docker-plex)
+
+<Tags tags={frontmatter.tags} />
+
+Plex organizes video, music and photos from personal media libraries and streams them to smart TVs, streaming boxes and mobile devices.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+plex_enabled: true
+```
+
+By default, Plex can be accessed at `http://[your_server_ip]:32400` or `https://plex.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+Plex can take advantage of hardware acceleration for transcoding:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+# Device mappings for the docker container. E.g. To enable hardware transcoding:
+plex_devices:
+  - "/dev/dri:/dev/dri"
+```
+
+See the default configuration options for Plex at [`roles/plex/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/plex/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+## Alternatives
+
+- [Jellyfin](./jellyfin)
+- [Emby](./emby)
+
+{/* 
+
+## Breaking Changes
+
+*/}

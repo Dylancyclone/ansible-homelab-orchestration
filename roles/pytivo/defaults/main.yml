@@ -1,0 +1,32 @@
+---
+pytivo_enabled: false
+pytivo_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+pytivo_available_externally: false
+
+# directories
+pytivo_config_directory: "{{ docker_home }}/pytivo/config"
+pytivo_movies_directory: "{{ movies_root }}"
+pytivo_tv_directory: "{{ tv_root }}"
+pytivo_photos_directory: "{{ photos_root }}"
+pytivo_music_directory: "{{ music_root }}"
+pytivo_podcasts_directory: "{{ podcasts_root }}"
+
+# network
+pytivo_hostname: pytivo
+pytivo_port: 9032
+pytivo_udp_port: 2190
+
+# uid / gid
+pytivo_user_id: "0"
+pytivo_group_id: "0"
+
+# containers
+pytivo_container_name: pytivo
+pytivo_image_name: pinion/docker-pytivo
+pytivo_image_version: latest
+
+pytivo_container_names: # Used to check if app is running
+  - "{{ pytivo_container_name }}"
+
+# specs
+pytivo_memory: 1g

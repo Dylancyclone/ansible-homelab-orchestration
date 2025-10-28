@@ -1,0 +1,50 @@
+---
+- name: Start Tautulli
+  when: tautulli_enabled
+  block:
+    - name: Check for Tautulli Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: tautulli
+
+    - name: Create Tautulli Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ tautulli_config_directory }}"
+        - "{{ plex_logs }}"
+
+    - name: Tautulli Docker Container
+      community.docker.docker_container:
+        name: "{{ tautulli_container_name }}"
+        image: "{{ tautulli_image_name }}:{{ tautulli_image_version }}"
+        pull: true
+        volumes:
+          - "{{ tautulli_config_directory }}:/config:rw"
+          - "{{ plex_logs }}:/logs:ro"
+        ports:
+          - "{{ tautulli_port }}:8181"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ tautulli_user_id }}"
+          PGID: "{{ tautulli_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ tautulli_memory }}"
+        labels:
+          traefik.enable: "{{ (tautulli_dns_accessible or tautulli_available_externally) | string }}"
+          traefik.http.services.tautulli.loadbalancer.server.port: "8181"
+          traefik.http.routers.tautulli.rule: "Host(`{{ tautulli_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.tautulli.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.tautulli.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.tautulli.tls.certresolver: "letsencrypt"
+          traefik.http.routers.tautulli.middlewares: "{{ omit if tautulli_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Tautulli
+  when: not tautulli_enabled
+  block:
+    - name: Stop Tautulli
+      community.docker.docker_container:
+        name: "{{ tautulli_container_name }}"
+        state: absent

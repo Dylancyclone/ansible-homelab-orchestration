@@ -1,0 +1,27 @@
+---
+pyload_enabled: false
+pyload_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+pyload_available_externally: false
+
+# directories
+pyload_config_directory: "{{ docker_home }}/pyload"
+pyload_download_directory: "{{ downloads_root }}"
+
+# uid / gid
+pyload_user_id: "0"
+pyload_group_id: "0"
+
+# network
+pyload_hostname: pyload
+pyload_port: 8000
+
+# containers
+pyload_container_name: pyload
+pyload_image_name: mobilistics/pyload
+pyload_image_version: latest
+
+pyload_container_names: # Used to check if app is running
+  - "{{ pyload_container_name }}"
+
+# specs
+pyload_memory: 1g

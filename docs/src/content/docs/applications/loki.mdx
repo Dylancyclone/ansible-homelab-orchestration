@@ -1,0 +1,38 @@
+---
+title: Loki
+tags: ["Monitoring"]
+---
+
+import { Aside } from "@astrojs/starlight/components"
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://grafana.com/loki) |
+[Repository](https://github.com/grafana/loki)
+
+<Tags tags={frontmatter.tags} />
+
+<Aside>
+	This application is part of the [Monitoring Applications](../../application_combos/monitoring) combo.
+  On it's own, it won't do much
+</Aside>
+
+Loki is a horizontally-scalable, highly-available, multi-tenant log aggregation system inspired by [Prometheus](../prometheus). It is designed to be very cost effective and easy to operate. It does not index the contents of the logs, but rather a set of labels for each log stream.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+loki_enabled: true
+```
+
+By default, Loki can be accessed at `http://[your_server_ip]:3100/metrics` or `https://loki.[your_domain].com/metrics` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Loki at [`roles/loki/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/loki/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

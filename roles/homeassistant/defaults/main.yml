@@ -1,0 +1,21 @@
+---
+homeassistant_enabled: false
+homeassistant_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+homeassistant_available_externally: false
+
+# directories
+homeassistant_data_directory: "{{ docker_home }}/homeassistant"
+
+# network
+homeassistant_hostname: homeassistant
+
+# containers
+homeassistant_container_name: homeassistant
+homeassistant_image_name: homeassistant/home-assistant
+homeassistant_image_version: latest
+
+homeassistant_container_names: # Used to check if app is running
+  - "{{ homeassistant_container_name }}"
+
+# specs
+homeassistant_memory: 1g

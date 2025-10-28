@@ -1,0 +1,35 @@
+---
+title: SilverBullet
+tags: ["Knowledge Management"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://silverbullet.md/) |
+[Repository](https://github.com/silverbulletmd/silverbullet)
+
+<Tags tags={frontmatter.tags} />
+
+SilverBullet is an open source personal productivity platform built on Markdown, turbo charged with the scripting power of Lua. You self host it on your server, access it via any modern browser on any device (desktop, laptop, mobile). Since SilverBullet is built as a Local First PWA, it is fully offline capable. Temporarily don't have network access? No problem, SilverBullet will sync your content when you get back online.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+silverbullet_enabled: true
+
+# You'll want to change the default admin password
+silverbullet_password: topSecret
+```
+
+By default, SilverBullet can be accessed at `http://[your_server_ip]:3002` or `https://silverbullet.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for SilverBullet at [`roles/silverbullet/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/silverbullet/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

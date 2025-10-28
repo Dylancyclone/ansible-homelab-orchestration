@@ -1,0 +1,26 @@
+---
+mealie_enabled: false
+mealie_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+mealie_available_externally: false
+
+# directories
+mealie_data_directory: "{{ docker_home }}/mealie"
+
+# uid / gid
+mealie_user_id: "1000"
+mealie_group_id: "1000"
+
+# network
+mealie_hostname: mealie
+mealie_port: 9925
+
+# containers
+mealie_container_name: mealie
+mealie_image_name: hkotel/mealie
+mealie_image_version: latest
+
+mealie_container_names: # Used to check if app is running
+  - "{{ mealie_container_name }}"
+
+# specs
+mealie_memory: 1g

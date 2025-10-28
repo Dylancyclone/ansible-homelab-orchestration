@@ -1,0 +1,31 @@
+---
+title: FlareSolverr
+tags: ["Proxy"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Repository](https://github.com/FlareSolverr/FlareSolverr)
+
+<Tags tags={frontmatter.tags} />
+
+FlareSolverr is a proxy server to bypass Cloudflare and DDoS-GUARD protection.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+flaresolverr_enabled: true
+```
+
+By default, FlareSolverr can be accessed at `http://[your_server_ip]:8191` or `https://flaresolverr.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for FlareSolverr at [`roles/flaresolverr/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/flaresolverr/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

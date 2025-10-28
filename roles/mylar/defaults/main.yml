@@ -1,0 +1,28 @@
+---
+mylar_enabled: false
+mylar_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+mylar_available_externally: false
+
+# directories
+mylar_data_directory: "{{ docker_home }}/mylar"
+mylar_comics_directory: "{{ comics_root }}"
+mylar_downloads_directory: "{{ downloads_root }}"
+
+# uid / gid
+mylar_user_id: "1000"
+mylar_group_id: "1000"
+
+# network
+mylar_hostname: mylar
+mylar_http_port: 8585
+
+# containers
+mylar_container_name: mylar
+mylar_image_name: linuxserver/mylar3
+mylar_image_version: latest
+
+mylar_container_names: # Used to check if app is running
+  - "{{ mylar_container_name }}"
+
+# specs
+mylar_memory: 1g

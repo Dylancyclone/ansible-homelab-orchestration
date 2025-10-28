@@ -1,0 +1,81 @@
+---
+- name: Start Gitea
+  when: gitea_enabled
+  block:
+    - name: Check for Gitea Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: gitea
+
+    - name: Create Gitea Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        recurse: true
+      with_items:
+        - "{{ gitea_data_directory }}/gitea"
+        - "{{ gitea_data_directory }}/mysql"
+
+    - name: Create MySQL container for Gitea
+      community.docker.docker_container:
+        name: "{{ gitea_mysql_container_name }}"
+        image: "{{ gitea_mysql_image_name }}:{{ gitea_mysql_image_version }}"
+        pull: true
+        volumes:
+          - "{{ gitea_data_directory }}/mysql:/var/lib/mysql:rw"
+        env:
+          MYSQL_DATABASE: "gitea"
+          MYSQL_USER: "gitea"
+          MYSQL_PASSWORD: "gitea"
+          MYSQL_ROOT_PASSWORD: "gitea"
+        restart_policy: unless-stopped
+        memory: "{{ gitea_mysql_memory }}"
+
+    - name: Create Gitea container
+      community.docker.docker_container:
+        name: "{{ gitea_container_name }}"
+        image: "{{ gitea_image_name }}:{{ gitea_image_version }}"
+        pull: true
+        volumes:
+          - "{{ gitea_data_directory }}/gitea:/data:rw"
+        ports:
+          - "{{ gitea_http_port }}:3000"
+          - "{{ gitea_ssh_port }}:22"
+        links:
+          - "{{ gitea_mysql_container_name }}:db"
+        env:
+          DB_TYPE: "mysql"
+          DB_HOST: "db:3306"
+          DB_NAME: "gitea"
+          DB_USER: "gitea"
+          DB_PASSWD: "gitea"
+          RUN_MODE: "prod"
+          SSH_DOMAIN: "{{ inventory_hostname }}"
+          SSH_PORT: "22"
+          ROOT_URL: "http://{{ gitea_hostname }}:{{ gitea_http_port }}/"
+          USER_UID: "1000"
+          USER_GID: "1000"
+        restart_policy: unless-stopped
+        memory: "{{ gitea_memory }}"
+        labels:
+          traefik.enable: "{{ (gitea_dns_accessible or gitea_available_externally) | string }}"
+          traefik.http.services.gitea.loadbalancer.server.port: "3000"
+          traefik.http.routers.gitea.rule: "Host(`{{ gitea_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.gitea.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.gitea.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.gitea.tls.certresolver: "letsencrypt"
+          traefik.http.routers.gitea.middlewares: "{{ omit if gitea_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Gitea
+  when: not gitea_enabled
+  block:
+    - name: Stop Gitea
+      community.docker.docker_container:
+        name: "{{ gitea_container_name }}"
+        state: absent
+
+    - name: Stop Gitea Mysql
+      community.docker.docker_container:
+        name: "{{ gitea_mysql_container_name }}"
+        state: absent

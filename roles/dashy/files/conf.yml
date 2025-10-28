@@ -1,0 +1,33 @@
+---
+# Page meta info, like heading, footer text and nav links
+pageInfo:
+  title: "{{ inventory_hostname }} Dashboard"
+  description: Welcome to your Ansible Homelab Orchestration dashboard
+  navLinks:
+    - title: Ansible Homelab Orchestration
+      path: https://github.com/Dylancyclone/ansible-homelab-orchestration
+    - title: Documentation
+      path: https://dylancyclone.github.io/ansible-homelab-orchestration/
+
+# Optional app settings and configuration
+appConfig:
+  theme: colorful
+
+# Main content - An array of sections, each containing an array of items
+sections:
+  - name: Applications
+    icon: fas fa-tasks
+    displayData:
+      sortBy: most-used
+      sectionLayout: grid
+      itemCountX: 5
+      cols: 2
+    items:
+  - name: Clock
+    icon: fas fa-clock
+    widgets:
+      - type: clock
+        options:
+          timeZone: "{{ computer_timezone }}"
+          format: en-US
+          hideDate: false

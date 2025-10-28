@@ -1,0 +1,32 @@
+---
+title: Piwigo
+tags: ["Photos", "Media Server"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://piwigo.org/) |
+[Repository](https://github.com/Piwigo/Piwigo)
+
+<Tags tags={frontmatter.tags} />
+
+Manage your photos with Piwigo, a full featured open source photo gallery application for the web. Star us on Github! More than 200 plugins and themes available.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+piwigo_enabled: true
+```
+
+By default, Piwigo can be accessed at `http://[your_server_ip]:16923` or `https://piwigo.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Piwigo at [`roles/piwigo/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/piwigo/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

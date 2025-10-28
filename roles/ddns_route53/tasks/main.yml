@@ -1,0 +1,41 @@
+---
+- name: Start AWS Route53 Dynamic DNS
+  when: ddns_route53_enabled
+  block:
+    - name: Check for AWS Route53 Dynamic DNS Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: ddns_route53
+
+    - name: Create AWS Route53 Dynamic DNS Directories
+      ansible.builtin.file:
+        path: "{{ ddns_route53_data_directory }}"
+        state: directory
+
+    - name: Generate AWS Route53 Dynamic DNS config file
+      ansible.builtin.template:
+        src: config.yml
+        dest: "{{ ddns_route53_data_directory }}/ddns-route53.yml"
+      register: ddns_route53_template_config
+
+    - name: AWS Route53 Dynamic DNS Container
+      community.docker.docker_container:
+        name: "{{ ddns_route53_container_name }}"
+        image: "{{ ddns_route53_image_name }}:{{ ddns_route53_image_version }}"
+        pull: true
+        env:
+          SCHEDULE: "{{ ddns_route53_schedule | string }}"
+        volumes:
+          - "{{ ddns_route53_data_directory }}/ddns-route53.yml:/etc/ddns-route53/ddns-route53.yml"
+        restart_policy: unless-stopped
+        memory: "{{ ddns_route53_memory }}"
+        recreate: "{{ ddns_route53_template_config is changed }}"
+
+- name: Stop AWS Route53 Dynamic DNS
+  when: not ddns_route53_enabled
+  block:
+    - name: Stop AWS Route53 Dynamic DNS
+      community.docker.docker_container:
+        name: "{{ ddns_route53_container_name }}"
+        state: absent

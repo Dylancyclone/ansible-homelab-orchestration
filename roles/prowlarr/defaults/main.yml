@@ -1,0 +1,26 @@
+---
+prowlarr_enabled: false
+prowlarr_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+prowlarr_available_externally: false
+
+# directories
+prowlarr_data_directory: "{{ docker_home }}/prowlarr/config"
+
+# uid / gid
+prowlarr_user_id: "1000"
+prowlarr_group_id: "1000"
+
+# network
+prowlarr_hostname: prowlarr
+prowlarr_port: 9696
+
+# containers
+prowlarr_container_name: prowlarr
+prowlarr_image_name: ghcr.io/linuxserver/prowlarr
+prowlarr_image_version: develop
+
+prowlarr_container_names: # Used to check if app is running
+  - "{{ prowlarr_container_name }}"
+
+# specs
+prowlarr_memory: 1g

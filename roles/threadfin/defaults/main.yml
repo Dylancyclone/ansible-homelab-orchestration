@@ -1,0 +1,22 @@
+---
+threadfin_enabled: false
+threadfin_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+threadfin_available_externally: false
+
+# directories
+threadfin_data_directory: "{{ docker_home }}/threadfin"
+
+# network
+threadfin_hostname: threadfin
+threadfin_port: 34400
+
+# containers
+threadfin_container_name: threadfin
+threadfin_image_name: fyb3roptik/threadfin
+threadfin_image_version: latest
+
+threadfin_container_names: # Used to check if app is running
+  - "{{ threadfin_container_name }}"
+
+# specs
+threadfin_memory: 1g

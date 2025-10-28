@@ -1,0 +1,38 @@
+---
+title: Dashy
+tags: ["Dashboard"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://dashy.to/) |
+[Repository](https://github.com/Lissy93/dashy)
+
+<Tags tags={frontmatter.tags} />
+
+A self-hostable personal dashboard built for you. Includes status-checking, widgets, themes, icon packs, a UI editor and tons more!
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+dashy_enabled: true
+```
+
+By default, Dashy can be accessed at `http://[your_server_ip]:8082` or `https://dashy.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Dashy at [`roles/dashy/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/dashy/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+## Alternatives
+
+- [Heimdall](./heimdall)
+- [Homepage](./homepage)
+- [Organizr](./organizr)
+
+{/* 
+
+## Breaking Changes
+
+*/}

@@ -1,0 +1,47 @@
+---
+- name: Start Heimdall
+  when: heimdall_enabled
+  block:
+    - name: Check for Heimdall Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: heimdall
+
+    - name: Create Heimdall Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0775"
+      with_items:
+        - "{{ heimdall_data_directory }}"
+
+    - name: Create Heimdall container
+      community.docker.docker_container:
+        name: "{{ heimdall_container_name }}"
+        image: "{{ heimdall_image_name }}:{{ heimdall_image_version }}"
+        pull: true
+        volumes:
+          - "{{ heimdall_data_directory }}:/config:rw"
+        env:
+          TZ: "{{ computer_timezone }}"
+        ports:
+          - "{{ heimdall_http_port }}:80"
+        restart_policy: unless-stopped
+        memory: "{{ heimdall_memory }}"
+        labels:
+          traefik.enable: "{{ (heimdall_dns_accessible or heimdall_available_externally) | string }}"
+          traefik.http.services.heimdall.loadbalancer.server.port: "80"
+          traefik.http.routers.heimdall.rule: "Host(`{{ heimdall_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.heimdall.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.heimdall.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.heimdall.tls.certresolver: "letsencrypt"
+          traefik.http.routers.heimdall.middlewares: "{{ omit if heimdall_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Heimdall
+  when: not heimdall_enabled
+  block:
+    - name: Stop Heimdall
+      community.docker.docker_container:
+        name: "{{ heimdall_container_name }}"
+        state: absent

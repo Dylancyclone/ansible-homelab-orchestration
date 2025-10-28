@@ -7,3 +7,5 @@ exclude_paths:
 
 skip_list:
   - role-name[path] # Allow roles in `personal` folder
+  - risky-file-permissions # Some containers (like postgres) will automatically change file permissions on first run, so we shouldn't fail when that happens, or change the permissions back
+

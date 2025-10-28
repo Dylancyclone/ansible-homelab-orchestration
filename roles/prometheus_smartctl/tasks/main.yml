@@ -1,0 +1,28 @@
+---
+- name: Start Prometheus Smartctl
+  when: prometheus_smartctl_enabled
+  block:
+    - name: Check for Prometheus Smartctl Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: prometheus_smartctl
+
+    - name: Prometheus Smartctl Docker Container
+      community.docker.docker_container:
+        name: "{{ prometheus_smartctl_container_name }}"
+        image: "{{ prometheus_smartctl_image_name }}:{{ prometheus_smartctl_image_version }}"
+        pull: true
+        privileged: true
+        ports:
+          - "{{ prometheus_smartctl_port }}:9902"
+        restart_policy: unless-stopped
+        memory: "{{ prometheus_smartctl_memory }}"
+
+- name: Stop Prometheus Smartctl
+  when: not prometheus_smartctl_enabled
+  block:
+    - name: Stop Prometheus Smartctl
+      community.docker.docker_container:
+        name: "{{ prometheus_smartctl_container_name }}"
+        state: absent

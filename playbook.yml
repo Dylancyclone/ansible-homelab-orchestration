@@ -3,23 +3,392 @@
   hosts: all
 
   pre_tasks:
-    - name: Run docker ps
-      ansible.builtin.command:
-        cmd: docker ps --format "{{ '{{' }} .Names {{ '}}' }}"
-      register: _running_containers
+    - name: Get running docker containers
+      tags: always
+      block:
+        - name: Run docker ps
+          ansible.builtin.command:
+            cmd: docker ps --format "{{ '{{' }} .Names {{ '}}' }}"
+          register: _running_containers
+          changed_when: true
 
-    - name: Set running_containers fact
-      ansible.builtin.set_fact:
-        running_containers: "{{ _running_containers.stdout_lines }}"
+        - name: Set running_containers fact
+          ansible.builtin.set_fact:
+            running_containers: "{{ _running_containers.stdout_lines }}"
 
   roles:
-    - role: ansible-homelab-orchestration-general
+    # Roles to do before everything else
+    - role: ansible_homelab_orchestration_general
       tags: general
+
+    # Application roles
+    - role: airsonic_advanced
+      tags: airsonic_advanced
+      when: airsonic_advanced_enabled or (airsonic_advanced_container_names | intersect(running_containers) | length > 0)
+
+    - role: alloy
+      tags: alloy
+      when: alloy_enabled or (alloy_container_names | intersect(running_containers) | length > 0)
+
+    - role: apcupsd
+      tags: apcupsd
+      when: apcupsd_enabled or (apcupsd_container_names | intersect(running_containers) | length > 0)
+
+    - role: bazarr
+      tags: bazarr
+      when: bazarr_enabled or (bazarr_container_names | intersect(running_containers) | length > 0)
+
+    - role: bitwarden
+      tags: bitwarden
+      when: bitwarden_enabled or (bitwarden_container_names | intersect(running_containers) | length > 0)
+
+    - role: calibre
+      tags: calibre
+      when: calibre_enabled or (calibre_container_names | intersect(running_containers) | length > 0)
+
+    - role: calibreweb
+      tags: calibreweb
+      when: calibreweb_enabled or (calibreweb_container_names | intersect(running_containers) | length > 0)
+
+    - role: cloudcmd
+      tags: cloudcmd
+      when: cloudcmd_enabled or (cloudcmd_container_names | intersect(running_containers) | length > 0)
+
+
+    - role: code_server
+      tags: code_server
+      when: code_server_enabled or (code_server_container_names | intersect(running_containers) | length > 0)
+
+    - role: dashy
+      tags: dashy
+      when: dashy_enabled or (dashy_container_names | intersect(running_containers) | length > 0)
+
+    - role: ddns_route53
+      tags: ddns_route53
+      when: ddns_route53_enabled or (ddns_route53_container_names | intersect(running_containers) | length > 0)
+
+    - role: ddns_updater
+      tags: ddns_updater
+      when: ddns_updater_enabled or (ddns_updater_container_names | intersect(running_containers) | length > 0)
+
+    - role: deluge
+      tags: deluge
+      when: deluge_enabled or (deluge_container_names | intersect(running_containers) | length > 0)
+
+    - role: dokuwiki
+      tags: dokuwiki
+      when: dokuwiki_enabled or (dokuwiki_container_names | intersect(running_containers) | length > 0)
+
+    - role: duplicati
+      tags: duplicati
+      when: duplicati_enabled or (duplicati_container_names | intersect(running_containers) | length > 0)
+
+    - role: emby
+      tags: emby
+      when: emby_enabled or (emby_container_names | intersect(running_containers) | length > 0)
+
+    - role: esphome
+      tags: esphome
+      when: esphome_enabled or (esphome_container_names | intersect(running_containers) | length > 0)
+
+    - role: firefly
+      tags: firefly
+      when: firefly_enabled or (firefly_container_names | intersect(running_containers) | length > 0)
+
+    - role: flaresolverr
+      tags: flaresolverr
+      when: flaresolverr_enabled or (flaresolverr_container_names | intersect(running_containers) | length > 0)
+
+    - role: freshrss
+      tags: freshrss
+      when: freshrss_enabled or (freshrss_container_names | intersect(running_containers) | length > 0)
+
+    - role: get_iplayer
+      tags: get_iplayer
+      when: get_iplayer_enabled or (get_iplayer_container_names | intersect(running_containers) | length > 0)
+
+    - role: gitea
+      tags: gitea
+      when: gitea_enabled or (gitea_container_names | intersect(running_containers) | length > 0)
+
+    - role: gitlab
+      tags: gitlab
+      when: gitlab_enabled or (gitlab_container_names | intersect(running_containers) | length > 0)
+
+    - role: glances
+      tags: glances
+      when: glances_enabled or (glances_container_names | intersect(running_containers) | length > 0)
+
+    - role: gotify
+      tags: gotify
+      when: gotify_enabled or (gotify_container_names | intersect(running_containers) | length > 0)
+
+    - role: grafana
+      tags: grafana
+      when: grafana_enabled or (grafana_container_names | intersect(running_containers) | length > 0)
+
+    - role: guacamole
+      tags: guacamole
+      when: guacamole_enabled or (guacamole_container_names | intersect(running_containers) | length > 0)
+
+    - role: healthchecksio
+      tags: healthchecksio
+      when: healthchecksio_enabled or (healthchecksio_container_names | intersect(running_containers) | length > 0)
+
+    - role: heimdall
+      tags: heimdall
+      when: heimdall_enabled or (heimdall_container_names | intersect(running_containers) | length > 0)
+
+    - role: homeassistant
+      tags: homeassistant
+      when: homeassistant_enabled or (homeassistant_container_names | intersect(running_containers) | length > 0)
+
+    - role: homebridge
+      tags: homebridge
+      when: homebridge_enabled or (homebridge_container_names | intersect(running_containers) | length > 0)
+
+    - role: homepage
+      tags: homepage
+      when: homepage_enabled or (homepage_container_names | intersect(running_containers) | length > 0)
+
+    - role: ispyagentdvr
+      tags: ispyagentdvr
+      when: ispyagentdvr_enabled or (ispyagentdvr_container_names | intersect(running_containers) | length > 0)
+
+    - role: jackett
+      tags: jackett
+      when: jackett_enabled or (jackett_container_names | intersect(running_containers) | length > 0)
+
+    - role: jellyfin
+      tags: jellyfin
+      when: jellyfin_enabled or (jellyfin_container_names | intersect(running_containers) | length > 0)
+
+    - role: joomla
+      tags: joomla
+      when: joomla_enabled or (joomla_container_names | intersect(running_containers) | length > 0)
+
+    - role: komga
+      tags: komga
+      when: komga_enabled or (komga_container_names | intersect(running_containers) | length > 0)
+
+    - role: krusader
+      tags: krusader
+      when: krusader_enabled or (krusader_container_names | intersect(running_containers) | length > 0)
+
+    - role: lidarr
+      tags: lidarr
+      when: lidarr_enabled or (lidarr_container_names | intersect(running_containers) | length > 0)
+
+    - role: mealie
+      tags: mealie
+      when: mealie_enabled or (mealie_container_names | intersect(running_containers) | length > 0)
+
+    - role: minidlna
+      tags: minidlna
+      when: minidlna_enabled or (minidlna_container_names | intersect(running_containers) | length > 0)
+
+    - role: miniflux
+      tags: miniflux
+      when: miniflux_enabled or (miniflux_container_names | intersect(running_containers) | length > 0)
+
+    - role: minio
+      tags: minio
+      when: minio_enabled or (minio_container_names | intersect(running_containers) | length > 0)
+
+    - role: mumble
+      tags: mumble
+      when: mumble_enabled or (mumble_container_names | intersect(running_containers) | length > 0)
+
+    - role: mylar
+      tags: mylar
+      when: mylar_enabled or (mylar_container_names | intersect(running_containers) | length > 0)
+
+    - role: n8n
+      tags: n8n
+      when: n8n_enabled or (n8n_container_names | intersect(running_containers) | length > 0)
+
+    - role: navidrome
+      tags: navidrome
+      when: navidrome_enabled or (navidrome_container_names | intersect(running_containers) | length > 0)
+
+    - role: netbootxyz
+      tags: netbootxyz
+      when: netbootxyz_enabled or (netbootxyz_container_names | intersect(running_containers) | length > 0)
+
+    - role: netdata
+      tags: netdata
+      when: netdata_enabled or (netdata_container_names | intersect(running_containers) | length > 0)
+
+    - role: nextcloud
+      tags: nextcloud
+      when: nextcloud_enabled or (nextcloud_container_names | intersect(running_containers) | length > 0)
+
+    - role: nzbget
+      tags: nzbget
+      when: nzbget_enabled or (nzbget_container_names | intersect(running_containers) | length > 0)
+
+    - role: octoprint
+      tags: octoprint
+      when: octoprint_enabled or (octoprint_container_names | intersect(running_containers) | length > 0)
+
+    - role: ombi
+      tags: ombi
+      when: ombi_enabled or (ombi_container_names | intersect(running_containers) | length > 0)
+
+    - role: openhab
+      tags: openhab
+      when: openhab_enabled or (openhab_container_names | intersect(running_containers) | length > 0)
+
+    - role: organizr
+      tags: organizr
+      when: organizr_enabled or (organizr_container_names | intersect(running_containers) | length > 0)
+
+    - role: overseerr
+      tags: overseerr
+      when: overseerr_enabled or (overseerr_container_names | intersect(running_containers) | length > 0)
+
+    - role: piwigo
+      tags: piwigo
+      when: piwigo_enabled or (piwigo_container_names | intersect(running_containers) | length > 0)
+
+    - role: plex
+      tags: plex
+      when: plex_enabled or (plex_container_names | intersect(running_containers) | length > 0)
+
+    - role: portainer
+      tags: portainer
+      when: portainer_enabled or (portainer_container_names | intersect(running_containers) | length > 0)
+
+    - role: prometheus
+      tags: prometheus
+      when: prometheus_enabled or (prometheus_container_names | intersect(running_containers) | length > 0)
+
+    - role: prometheus_hddtemp
+      tags: prometheus_hddtemp
+      when: prometheus_hddtemp_enabled or (prometheus_hddtemp_container_names | intersect(running_containers) | length > 0)
+
+    - role: prometheus_smartctl
+      tags: prometheus_smartctl
+      when: prometheus_smartctl_enabled or (prometheus_smartctl_container_names | intersect(running_containers) | length > 0)
+
+    - role: prometheus_speedtest
+      tags: prometheus_speedtest
+      when: prometheus_speedtest_enabled or (prometheus_speedtest_container_names | intersect(running_containers) | length > 0)
+
+    - role: prowlarr
+      tags: prowlarr
+      when: prowlarr_enabled or (prowlarr_container_names | intersect(running_containers) | length > 0)
+
+    - role: pyload
+      tags: pyload
+      when: pyload_enabled or (pyload_container_names | intersect(running_containers) | length > 0)
+
+    - role: pytivo
+      tags: pytivo
+      when: pytivo_enabled or (pytivo_container_names | intersect(running_containers) | length > 0)
+
+    - role: qbittorrent
+      tags: qbittorrent
+      when: qbittorrent_enabled or (qbittorrent_container_names | intersect(running_containers) | length > 0)
+
+    - role: radarr
+      tags: radarr
+      when: radarr_enabled or (radarr_container_names | intersect(running_containers) | length > 0)
+
+    - role: romm
+      tags: romm
+      when: romm_enabled or (romm_container_names | intersect(running_containers) | length > 0)
+
+    - role: rssbridge
+      tags: rssbridge
+      when: rssbridge_enabled or (rssbridge_container_names | intersect(running_containers) | length > 0)
+
+    - role: sabnzbd
+      tags: sabnzbd
+      when: sabnzbd_enabled or (sabnzbd_container_names | intersect(running_containers) | length > 0)
+
+    - role: slskd
+      tags: slskd
+      when: slskd_enabled or (slskd_container_names | intersect(running_containers) | length > 0)
+
+    - role: silverbullet
+      tags: silverbullet
+      when: silverbullet_enabled or (silverbullet_container_names | intersect(running_containers) | length > 0)
+
+    - role: sonarr
+      tags: sonarr
+      when: sonarr_enabled or (sonarr_container_names | intersect(running_containers) | length > 0)
+
+    - role: speedtest_tracker
+      tags: speedtest_tracker
+      when: speedtest_tracker_enabled or (speedtest_tracker_container_names | intersect(running_containers) | length > 0)
+
+    - role: syncthing
+      tags: syncthing
+      when: syncthing_enabled or (syncthing_container_names | intersect(running_containers) | length > 0)
+
+    - role: tautulli
+      tags: tautulli
+      when: tautulli_enabled or (tautulli_container_names | intersect(running_containers) | length > 0)
+
+    - role: telegraf
+      tags: telegraf
+      when: telegraf_enabled or (telegraf_container_names | intersect(running_containers) | length > 0)
+
+    - role: thelounge
+      tags: thelounge
+      when: thelounge_enabled or (thelounge_container_names | intersect(running_containers) | length > 0)
+
+    - role: threadfin
+      tags: threadfin
+      when: threadfin_enabled or (threadfin_container_names | intersect(running_containers) | length > 0)
+
+    - role: tiddlywiki
+      tags: tiddlywiki
+      when: tiddlywiki_enabled or (tiddlywiki_container_names | intersect(running_containers) | length > 0)
 
     - role: traefik
       tags: traefik
       when: traefik_enabled or (traefik_container_names | intersect(running_containers) | length > 0)
 
-    - role: portainer
-      tags: portainer
-      when: portainer_enabled or (portainer_container_names | intersect(running_containers) | length > 0)
+    - role: transmission
+      tags: transmission
+      when: transmission_enabled or (transmission_container_names | intersect(running_containers) | length > 0)
+
+    - role: ubooquity
+      tags: ubooquity
+      when: ubooquity_enabled or (ubooquity_container_names | intersect(running_containers) | length > 0)
+
+    - role: wallabag
+      tags: wallabag
+      when: wallabag_enabled or (wallabag_container_names | intersect(running_containers) | length > 0)
+
+    - role: watchtower
+      tags: watchtower
+      when: watchtower_enabled or (watchtower_container_names | intersect(running_containers) | length > 0)
+
+    - role: wireshark
+      tags: wireshark
+      when: wireshark_enabled or (wireshark_container_names | intersect(running_containers) | length > 0)
+
+    - role: youtubedlmaterial
+      tags: youtubedlmaterial
+      when: youtubedlmaterial_enabled or (youtubedlmaterial_container_names | intersect(running_containers) | length > 0)
+
+    - role: znc
+      tags: znc
+      when: znc_enabled or (znc_container_names | intersect(running_containers) | length > 0)
+
+    # Dependent Applications
+    - role: drone_ci
+      tags: drone_ci
+      when: drone_ci_enabled or (drone_ci_container_names | intersect(running_containers) | length > 0)
+
+    - role: loki
+      tags: loki
+      when: loki_enabled or (loki_container_names | intersect(running_containers) | length > 0)
+
+    - role: woodpecker_ci
+      tags: woodpecker_ci
+      when: woodpecker_ci_enabled or (woodpecker_ci_container_names | intersect(running_containers) | length > 0)
+

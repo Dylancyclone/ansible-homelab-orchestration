@@ -1,0 +1,27 @@
+---
+minio_enabled: false
+minio_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+minio_available_externally: false
+
+# directories
+minio_data_directory: "{{ docker_home }}/minio"
+
+# env
+minio_admin_username: admin
+minio_admin_password: supersecure
+
+# network
+minio_hostname: minio
+minio_api_port: 9001
+minio_console_port: 9009
+
+# containers
+minio_container_name: minio
+minio_image_name: minio/minio
+minio_image_version: latest
+
+minio_container_names: # Used to check if app is running
+  - "{{ minio_container_name }}"
+
+# specs
+minio_memory: 1g

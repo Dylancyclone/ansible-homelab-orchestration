@@ -1,0 +1,24 @@
+---
+glances_enabled: false
+glances_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+glances_available_externally: false
+
+# network
+glances_hostname: glances
+glances_web_port: 61208
+glances_tcp_port: 61209
+
+# security options
+glances_security_options:
+  - "apparmor=unconfined"
+
+# containers
+glances_container_name: glances
+glances_image_name: nicolargo/glances
+glances_image_version: latest
+
+glances_container_names: # Used to check if app is running
+  - "{{ glances_container_name }}"
+
+# specs
+glances_memory: 1g

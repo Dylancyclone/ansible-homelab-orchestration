@@ -1,0 +1,37 @@
+---
+title: Jellyfin
+tags: ["Media Server", "Movies", "TV", "Music", "Photos", "Audiobooks"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://jellyfin.org/) |
+[Repository](https://github.com/jellyfin/jellyfin)
+
+<Tags tags={frontmatter.tags} />
+
+Jellyfin is a Free Software Media System that puts you in control of managing and streaming your media. It is an alternative to the proprietary [Emby](../emby) and [Plex](../plex), to provide media from a dedicated server to end-user devices via multiple apps. Jellyfin is descended from Emby's 3.5.2 release and ported to the .NET platform to enable full cross-platform support.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+jellyfin_enabled: true
+```
+
+By default, Jellyfin can be accessed at `http://[your_server_ip]:8096` or `https://jellyfin.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Jellyfin at [`roles/jellyfin/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/jellyfin/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+## Alternatives
+
+- [Emby](./emby)
+- [Plex](./plex)
+
+{/* 
+
+## Breaking Changes
+
+*/}

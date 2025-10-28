@@ -1,0 +1,49 @@
+---
+- name: Start FreshRSS
+  when: freshrss_enabled
+  block:
+    - name: Check for FreshRSS Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: freshrss
+
+    - name: Create FreshRSS Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ freshrss_data_directory }}/data"
+        - "{{ freshrss_extensions_directory }}/extensions"
+
+    - name: FreshRSS Docker Container
+      community.docker.docker_container:
+        name: "{{ freshrss_container_name }}"
+        image: "{{ freshrss_image_name }}:{{ freshrss_image_version }}"
+        pull: true
+        volumes:
+          - "{{ freshrss_data_directory }}/data:/var/www/FreshRSS/data:rw"
+          - "{{ freshrss_extensions_directory }}/extensions:/var/www/FreshRSS/extensions:rw"
+        ports:
+          - "{{ freshrss_port }}:80"
+        env:
+          TZ: "{{ computer_timezone }}"
+          CRON_MIN: "1,31"
+        restart_policy: unless-stopped
+        memory: "{{ freshrss_memory }}"
+        labels:
+          traefik.enable: "{{ (freshrss_dns_accessible or freshrss_available_externally) | string }}"
+          traefik.http.services.freshrss.loadbalancer.server.port: "80"
+          traefik.http.routers.freshrss.rule: "Host(`{{ freshrss_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.freshrss.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.freshrss.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.freshrss.tls.certresolver: "letsencrypt"
+          traefik.http.routers.freshrss.middlewares: "{{ omit if freshrss_available_externally else 'blockExternal@file' }}"
+
+- name: Stop FreshRSS
+  when: not freshrss_enabled
+  block:
+    - name: Stop FreshRSS
+      community.docker.docker_container:
+        name: "{{ freshrss_container_name }}"
+        state: absent

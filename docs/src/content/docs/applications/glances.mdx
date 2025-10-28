@@ -1,0 +1,35 @@
+---
+title: Glances
+tags: ["Monitoring"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://nicolargo.github.io/glances/) |
+[Repository](https://github.com/nicolargo/glances)
+
+<Tags tags={frontmatter.tags} />
+
+An Eye on your system. A top/htop alternative for GNU/Linux, BSD, Mac OS and Windows operating systems.
+
+Glances is an open-source system cross-platform monitoring tool. It allows real-time monitoring of various aspects of your system such as CPU, memory, disk, network usage etc. It also allows monitoring of running processes, logged in users, temperatures, voltages, fan speeds etc. It also supports container monitoring, it supports different container management systems such as Docker, LXC. The information is presented in an easy to read dashboard and can also be used for remote monitoring of systems via a web interface or command line interface. It is easy to install and use and can be customized to show only the information that you are interested in.
+
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+glances_enabled: true
+```
+
+By default, Glances can be accessed at `http://[your_server_ip]:61208` or `https://glances.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Glances at [`roles/glances/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/glances/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

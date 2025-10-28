@@ -1,0 +1,51 @@
+---
+- name: Start Code Server
+  when: code_server_enabled
+  block:
+    - name: Check for Code Server Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: code_server
+
+    - name: Create Code Server Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ code_server_config_directory }}"
+        - "{{ code_server_projects_directory }}"
+
+    - name: Code Server Docker Container
+      community.docker.docker_container:
+        name: "{{ code_server_container_name }}"
+        image: "{{ code_server_image_name }}:{{ code_server_image_version }}"
+        pull: true
+        volumes:
+          - "{{ code_server_config_directory }}:/config"
+          - "{{ code_server_projects_directory }}:/code:rw"
+        ports:
+          - "{{ code_server_port }}:8443"
+        env:
+          TZ: "{{ computer_timezone }}"
+          DEFAULT_WORKSPACE: "/code"
+          PUID: "{{ code_server_user_id }}"
+          PGID: "{{ code_server_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ code_server_memory }}"
+        labels:
+          traefik.enable: "{{ (code_server_dns_accessible or code_server_available_externally) | string }}"
+          traefik.http.services.code_server.loadbalancer.server.port: "8443"
+          traefik.http.routers.code_server.rule: "Host(`{{ code_server_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.code_server.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.code_server.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.code_server.tls.certresolver: "letsencrypt"
+          traefik.http.routers.code_server.middlewares: "{{ omit if code_server_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Code Server
+  when: not code_server_enabled
+  block:
+    - name: Stop Code Server
+      community.docker.docker_container:
+        name: "{{ code_server_container_name }}"
+        state: absent

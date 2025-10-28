@@ -1,0 +1,28 @@
+---
+komga_enabled: false
+komga_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+komga_available_externally: false
+
+# directories
+komga_data_directory: "{{ docker_home }}/komga"
+komga_books_directory: "{{ books_root }}"
+komga_comics_directory: "{{ comics_root }}"
+
+# uid / gid
+komga_user_id: "1000"
+komga_group_id: "1000"
+
+# network
+komga_hostname: komga
+komga_http_port: 8088
+
+# containers
+komga_container_name: komga
+komga_image_name: gotson/komga
+komga_image_version: latest
+
+komga_container_names: # Used to check if app is running
+  - "{{ komga_container_name }}"
+
+# specs
+komga_memory: 1g

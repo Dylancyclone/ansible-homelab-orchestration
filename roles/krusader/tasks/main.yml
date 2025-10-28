@@ -1,0 +1,56 @@
+---
+- name: Start Krusader
+  when: krusader_enabled
+  block:
+    - name: Check for Krusader Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: krusader
+
+    - name: Krusader Directory
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ krusader_config_directory }}/krusader"
+        - "{{ krusader_browse_directory }}"
+
+    - name: Krusader Docker Container
+      community.docker.docker_container:
+        name: "{{ krusader_container_name }}"
+        image: "{{ krusader_image_name }}:{{ krusader_image_version }}"
+        pull: true
+        privileged: true
+        volumes:
+          - "{{ krusader_config_directory }}:/config:rw"
+          - "{{ krusader_browse_directory }}:/mnt/fs"
+        ports:
+          - "{{ krusader_http_port }}:{{ krusader_http_port }}"
+          - "{{ krusader_vnc_port }}:5900"
+        env:
+          PUID: "{{ krusader_user_id }}"
+          PGID: "{{ krusader_group_id }}"
+          VNC_PASSWORD: "{{ krusader_vnc_password }}"
+          TEMP_FOLDER: "{{ krusader_temp_folder }}"
+          WEBUI_PORT: "{{ krusader_http_port | string }}"
+          WEBPAGE_TITLE: "{{ krusader_webpage_title }}"
+          UMASK: "{{ krusader_umask }}"
+        restart_policy: unless-stopped
+        memory: "{{ krusader_memory }}"
+        labels:
+          traefik.enable: "{{ (krusader_dns_accessible or krusader_available_externally) | string }}"
+          traefik.http.services.krusader.loadbalancer.server.port: "{{ krusader_http_port }}"
+          traefik.http.routers.krusader.rule: "Host(`{{ krusader_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.krusader.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.krusader.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.krusader.tls.certresolver: "letsencrypt"
+          traefik.http.routers.krusader.middlewares: "{{ omit if krusader_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Krusader
+  when: not krusader_enabled
+  block:
+    - name: Stop Krusader
+      community.docker.docker_container:
+        name: "{{ krusader_container_name }}"
+        state: absent

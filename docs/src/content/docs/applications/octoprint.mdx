@@ -1,0 +1,39 @@
+---
+title: OctoPrint
+tags: ["3D Printing"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://octoprint.org/) |
+[Repository](https://github.com/OctoPrint/OctoPrint)
+
+<Tags tags={frontmatter.tags} />
+
+OctoPrint provides a snappy web interface for controlling consumer 3D printers.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+octoprint_enabled: true
+
+# Where your printer is connected
+octoprint_printer_mountpoint: "/dev/ttyUSB0"
+
+# Optionally, where the webcam for your printer is connected
+octoprint_enable_webcam: false
+octoprint_webcam_mountpoint: "/dev/video0"
+```
+
+By default, OctoPrint can be accessed at `http://[your_server_ip]:8100` or `https://octoprint.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for OctoPrint at [`roles/octoprint/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/octoprint/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

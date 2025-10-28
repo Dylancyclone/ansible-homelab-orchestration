@@ -1,0 +1,36 @@
+---
+title: Ombi
+tags: ["*arr"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://ombi.io/) |
+[Repository](https://github.com/Ombi-app/Ombi)
+
+<Tags tags={frontmatter.tags} />
+
+Ombi is your friendly media request tool, automatically syncs with your media servers! Don't worry, it's grandma friendly, and more importantly; has wife approval certification 😂
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+ombi_enabled: true
+```
+
+By default, Ombi can be accessed at `http://[your_server_ip]:3579` or `https://ombi.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Ombi at [`roles/ombi/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/ombi/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+## Alternatives
+
+- [Overseerr](./overseerr)
+
+{/* 
+
+## Breaking Changes
+
+*/}

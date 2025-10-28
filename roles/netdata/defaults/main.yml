@@ -1,0 +1,23 @@
+---
+netdata_enabled: false
+netdata_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+netdata_available_externally: false
+
+# directories
+netdata_data_directory: "{{ docker_home }}/netdata/data"
+netdata_config_directory: "{{ docker_home }}/netdata/config"
+netdata_cache_directory: "{{ docker_home }}/netdata/cache"
+
+# network
+netdata_hostname: netdata
+
+# containers
+netdata_container_name: netdata
+netdata_image_name: netdata/netdata
+netdata_image_version: latest
+
+netdata_container_names: # Used to check if app is running
+  - "{{ netdata_container_name }}"
+
+# specs
+netdata_memory: 1g

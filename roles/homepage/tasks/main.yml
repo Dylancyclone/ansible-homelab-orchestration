@@ -1,0 +1,61 @@
+---
+- name: Start Homepage
+  when: homepage_enabled
+  block:
+    - name: Check for Homepage Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: homepage
+
+    - name: Create Homepage Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ homepage_data_directory }}"
+
+    - name: Template config files
+      ansible.builtin.template:
+        src: "{{ item }}"
+        dest: "{{ homepage_data_directory }}/{{ item }}"
+      with_items:
+        - bookmarks.yaml
+        - docker.yaml
+        - settings.yaml
+        - services.yaml
+        - widgets.yaml
+      register: homepage_config
+
+    - name: Create Homepage Docker Container
+      community.docker.docker_container:
+        name: "{{ homepage_container_name }}"
+        image: "{{ homepage_image_name }}:{{ homepage_image_tag }}"
+        pull: true
+        volumes:
+          - "{{ homepage_data_directory }}:/app/config"
+          - "/var/run/docker.sock:/var/run/docker.sock"
+        env:
+          TZ: "{{ computer_timezone }}"
+          HOMEPAGE_ALLOWED_HOSTS: "{{ homepage_allowed_hosts }}"
+        ports:
+          - "{{ homepage_port }}:3000"
+        restart_policy: unless-stopped
+        restart: "{{ homepage_config is changed }}"
+        memory: "{{ homepage_memory }}"
+        labels:
+          traefik.enable: "{{ (homepage_dns_accessible or homepage_available_externally) | string }}"
+          traefik.http.services.homepage.loadbalancer.server.port: "3000"
+          traefik.http.routers.homepage.rule: "Host(`{{ homepage_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.homepage.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.homepage.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.homepage.tls.certresolver: "letsencrypt"
+          traefik.http.routers.homepage.middlewares: "{{ omit if homepage_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Homepage
+  when: not homepage_enabled
+  block:
+    - name: Stop Homepage
+      community.docker.docker_container:
+        name: "{{ homepage_container_name }}"
+        state: absent

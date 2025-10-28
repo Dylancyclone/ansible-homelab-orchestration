@@ -1,0 +1,32 @@
+---
+title: qBittorrent
+tags: ["Download Manager"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://www.qbittorrent.org/) |
+[Repository](https://github.com/qbittorrent/qBittorrent)
+
+<Tags tags={frontmatter.tags} />
+
+The qBittorrent project aims to provide an open-source software alternative to µTorrent. qBittorrent is fast, stable and provides unicode support as well as many features.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+qbittorrent_enabled: true
+```
+
+By default, qBittorrent can be accessed at `http://[your_server_ip]:8113` or `https://qbittorrent.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for qBittorrent at [`roles/qbittorrent/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/qbittorrent/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

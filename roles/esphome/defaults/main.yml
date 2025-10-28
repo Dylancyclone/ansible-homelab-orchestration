@@ -1,0 +1,26 @@
+---
+esphome_enabled: false
+esphome_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+esphome_available_externally: false
+
+# directories
+esphome_data_directory: "{{ docker_home }}/esphome"
+
+# uid / gid
+esphome_user_id: "1000"
+esphome_group_id: "1000"
+
+# network
+esphome_hostname: esphome
+esphome_port: 6052
+
+# containers
+esphome_container_name: esphome
+esphome_image_name: esphome/esphome
+esphome_image_version: latest
+
+esphome_container_names: # Used to check if app is running
+  - "{{ esphome_container_name }}"
+
+# specs
+esphome_memory: 1g

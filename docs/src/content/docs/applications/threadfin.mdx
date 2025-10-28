@@ -1,0 +1,31 @@
+---
+title: Threadfin
+tags: ["TV"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Repository](https://github.com/Threadfin/Threadfin)
+
+<Tags tags={frontmatter.tags} />
+
+M3U Proxy for Plex DVR and Emby/Jellyfin Live TV. Based on xTeVe.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+threadfin_enabled: true
+```
+
+By default, Threadfin can be accessed at `http://[your_server_ip]:34400` or `https://threadfin.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Threadfin at [`roles/threadfin/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/threadfin/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

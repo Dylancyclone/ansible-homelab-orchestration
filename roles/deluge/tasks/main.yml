@@ -1,0 +1,51 @@
+---
+- name: Start Deluge
+  when: deluge_enabled
+  block:
+    - name: Check for Deluge Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: deluge
+
+    - name: Create Deluge Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ deluge_config_directory }}"
+        - "{{ deluge_download_directory }}"
+        - "{{ deluge_watch_directory }}"
+
+    - name: Deluge Docker Container
+      community.docker.docker_container:
+        name: "{{ deluge_container_name }}"
+        image: "{{ deluge_image_name }}:{{ deluge_image_version }}"
+        pull: true
+        volumes:
+          - "{{ deluge_config_directory }}:/config:rw"
+          - "{{ deluge_download_directory }}:/downloads:rw"
+        ports:
+          - "{{ deluge_port }}:8112"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ deluge_user_id }}"
+          PGID: "{{ deluge_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ deluge_memory }}"
+        labels:
+          traefik.enable: "{{ (deluge_dns_accessible or deluge_available_externally) | string }}"
+          traefik.http.services.deluge.loadbalancer.server.port: "8112"
+          traefik.http.routers.deluge.rule: "Host(`{{ deluge_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.deluge.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.deluge.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.deluge.tls.certresolver: "letsencrypt"
+          traefik.http.routers.deluge.middlewares: "{{ omit if deluge_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Deluge
+  when: not deluge_enabled
+  block:
+    - name: Stop Deluge
+      community.docker.docker_container:
+        name: "{{ deluge_container_name }}"
+        state: absent

@@ -1,0 +1,23 @@
+---
+jackett_enabled: false
+jackett_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+jackett_available_externally: false
+
+# directories
+jackett_data_directory: "{{ docker_home }}/jackett"
+jackett_torrents_root: "{{ torrents_root }}"
+
+# network
+jackett_hostname: jackett
+jackett_port: 9117
+
+# containers
+jackett_container_name: jackett
+jackett_image_name: linuxserver/jackett
+jackett_image_version: latest
+
+jackett_container_names: # Used to check if app is running
+  - "{{ jackett_container_name }}"
+
+# specs
+jackett_memory: 1g

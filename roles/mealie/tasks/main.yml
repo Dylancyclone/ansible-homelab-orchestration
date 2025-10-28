@@ -1,0 +1,49 @@
+---
+- name: Start Mealie
+  when: mealie_enabled
+  block:
+    - name: Check for Mealie Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: mealie
+
+    - name: Create Mealie Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ mealie_data_directory }}/data"
+
+    - name: Mealie Docker Container
+      community.docker.docker_container:
+        name: "{{ mealie_container_name }}"
+        image: "{{ mealie_image_name }}:{{ mealie_image_version }}"
+        pull: true
+        volumes:
+          - "{{ mealie_data_directory }}:/app/data:rw"
+        ports:
+          - "{{ mealie_port }}:9000"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ mealie_user_id }}"
+          PGID: "{{ mealie_group_id }}"
+          BASE_URL: "{{ dns_domain }}:{{ mealie_port }}"
+        restart_policy: unless-stopped
+        memory: "{{ mealie_memory }}"
+        labels:
+          traefik.enable: "{{ (mealie_dns_accessible or mealie_available_externally) | string }}"
+          traefik.http.services.mealie.loadbalancer.server.port: "9000"
+          traefik.http.routers.mealie.rule: "Host(`{{ mealie_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.mealie.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.mealie.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.mealie.tls.certresolver: "letsencrypt"
+          traefik.http.routers.mealie.middlewares: "{{ omit if mealie_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Mealie
+  when: not mealie_enabled
+  block:
+    - name: Stop Mealie
+      community.docker.docker_container:
+        name: "{{ mealie_container_name }}"
+        state: absent

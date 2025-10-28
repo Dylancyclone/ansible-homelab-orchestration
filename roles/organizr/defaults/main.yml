@@ -1,0 +1,27 @@
+---
+organizr_enabled: false
+organizr_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+organizr_available_externally: false
+
+# directories
+organizr_data_directory: "{{ docker_home }}/organizr"
+
+# network
+organizr_hostname: organizr
+organizr_http_port: 10081
+organizr_https_port: 10444
+
+# uid/gid
+organizr_user_id: "1000"
+organizr_group_id: "1000"
+
+# containers
+organizr_container_name: organizr
+organizr_image_name: organizr/organizr
+organizr_image_version: latest
+
+organizr_container_names: # Used to check if app is running
+  - "{{ organizr_container_name }}"
+
+# specs
+organizr_memory: 1g

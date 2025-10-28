@@ -1,0 +1,53 @@
+---
+- name: Start Homebridge
+  when: homebridge_enabled
+  block:
+    - name: Check for Homebridge Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: homebridge
+
+    - name: Create Homebridge Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ homebridge_config_directory }}"
+
+    - name: Create Homebridge Docker Container
+      community.docker.docker_container:
+        name: "{{ homebridge_container_name }}"
+        image: "{{ homebridge_image_name }}:{{ homebridge_image_version }}"
+        pull: true
+        volumes:
+          - "{{ homebridge_config_directory }}:/homebridge"
+        network_mode: host
+        env:
+          TZ: "{{ computer_timezone }}"
+          PGID: "{{ homebridge_group_id }}"
+          PUID: "{{ homebridge_user_id }}"
+        healthcheck:
+          test: ["CMD-SHELL", "curl --fail http://localhost:8581 || exit 1"]
+          interval: 60s
+          retries: 5
+          start_period: 300s
+          timeout: 2s
+        restart_policy: unless-stopped
+        memory: "{{ homebridge_memory }}"
+        labels:
+          traefik.enable: "{{ (homebridge_dns_accessible or homebridge_available_externally) | string }}"
+          traefik.http.services.homebridge.loadbalancer.server.port: "8581"
+          traefik.http.routers.homebridge.rule: "Host(`{{ homebridge_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.homebridge.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.homebridge.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.homebridge.tls.certresolver: "letsencrypt"
+          traefik.http.routers.homebridge.middlewares: "{{ omit if homebridge_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Homebridge
+  when: not homebridge_enabled
+  block:
+    - name: Stop Homebridge
+      community.docker.docker_container:
+        name: "{{ homebridge_container_name }}"
+        state: absent

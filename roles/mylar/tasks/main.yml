@@ -1,0 +1,52 @@
+---
+- name: Start Mylar
+  when: mylar_enabled
+  block:
+    - name: Check for Mylar Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: mylar
+
+    - name: Create Mylar Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ mylar_data_directory }}/config"
+        - "{{ mylar_comics_directory }}"
+        - "{{ mylar_downloads_directory }}"
+
+    - name: Mylar Docker Container
+      community.docker.docker_container:
+        name: "{{ mylar_container_name }}"
+        image: "{{ mylar_image_name }}:{{ mylar_image_version }}"
+        pull: true
+        volumes:
+          - "{{ mylar_comics_directory }}:/comics:rw"
+          - "{{ mylar_downloads_directory }}:/downloads:rw"
+          - "{{ mylar_data_directory }}/config:/config:rw"
+        ports:
+          - "{{ mylar_http_port }}:8090"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ mylar_user_id }}"
+          PGID: "{{ mylar_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ mylar_memory }}"
+        labels:
+          traefik.enable: "{{ (mylar_dns_accessible or mylar_available_externally) | string }}"
+          traefik.http.services.mylar.loadbalancer.server.port: "8090"
+          traefik.http.routers.mylar.rule: "Host(`{{ mylar_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.mylar.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.mylar.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.mylar.tls.certresolver: "letsencrypt"
+          traefik.http.routers.mylar.middlewares: "{{ omit if mylar_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Mylar
+  when: not mylar_enabled
+  block:
+    - name: Stop Mylar
+      community.docker.docker_container:
+        name: "{{ mylar_container_name }}"
+        state: absent

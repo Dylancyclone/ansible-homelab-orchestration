@@ -1,0 +1,34 @@
+---
+duplicati_enabled: false
+duplicati_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+duplicati_available_externally: false
+
+# You should change the database encryption key to something unique and secure
+duplicati_encryption_key: "changeme"
+# You should change the web UI password to something unique and secure
+duplicati_webui_password: "changeme"
+
+# directories
+duplicati_data_directory: "{{ docker_home }}/duplicati/config"
+
+# permissions
+duplicati_data_permissions: "ro" # set this to rw to enable the ability to restore data
+
+# uid / gid
+duplicati_user_id: "1000"
+duplicati_group_id: "1000"
+
+# network
+duplicati_hostname: duplicati
+duplicati_port: 8200
+
+# containers
+duplicati_container_name: duplicati
+duplicati_image_name: linuxserver/duplicati
+duplicati_image_version: latest
+
+duplicati_container_names: # Used to check if app is running
+  - "{{ duplicati_container_name }}"
+
+# specs
+duplicati_memory: 1g

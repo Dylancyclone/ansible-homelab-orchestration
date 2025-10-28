@@ -1,0 +1,38 @@
+---
+emby_enabled: false
+emby_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+emby_available_externally: false
+
+# directories
+emby_config_directory: "{{ docker_home }}/emby/config"
+emby_movies_directory: "{{ movies_root }}"
+emby_tv_directory: "{{ tv_root }}"
+
+# If you're paranoid, set permissions to "ro" so Emby won't ever be able to
+# delete your files
+emby_movies_permissions: "rw"
+emby_tv_permissions: "rw"
+
+# uid / gid
+emby_user_id: "1000"
+emby_group_id: "1000"
+
+# network
+emby_hostname: emby
+emby_http_port: 8097
+emby_https_port: 8920
+
+# containers
+emby_container_name: emby
+emby_image_name: emby/embyserver
+emby_image_version: beta
+
+emby_container_names: # Used to check if app is running
+  - "{{ emby_container_name }}"
+
+# specs
+emby_memory: 1g
+
+# Device mappings for the docker container. E.g. To enable hardware transcoding:
+# emby_devices:
+#  - "/dev/dri:/dev/dri"

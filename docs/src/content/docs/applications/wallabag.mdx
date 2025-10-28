@@ -1,0 +1,34 @@
+---
+title: Wallabag
+tags: ["Productivity"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://wallabag.org/) |
+[Repository](https://github.com/wallabag/wallabag)
+
+<Tags tags={frontmatter.tags} />
+
+Wallabag is a self hostable application for saving web pages: Save and classify articles. Read them later. It extracts content so that you won't be distracted by pop-ups and cie.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+wallabag_enabled: true
+```
+
+The default login is `wallabag`/`wallabag`. Make sure to change this after your first login!
+
+By default, Wallabag can be accessed at `http://[your_server_ip]:7780` or `https://wallabag.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Wallabag at [`roles/wallabag/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/wallabag/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

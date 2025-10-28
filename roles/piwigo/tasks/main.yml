@@ -1,0 +1,85 @@
+---
+- name: Start Piwigo
+  when: piwigo_enabled
+  block:
+    - name: Check for Piwigo Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: piwigo
+
+    - name: Create Piwigo Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ piwigo_config_directory }}"
+        - "{{ piwigo_data_directory }}"
+        - "{{ piwigo_photos }}"
+
+    - name: Create Piwigo network
+      community.docker.docker_network:
+        name: "{{ piwigo_network_name }}"
+
+    - name: Create MySQL container for Piwigo
+      community.docker.docker_container:
+        name: "{{ piwigo_db_container_name }}"
+        image: "{{ piwigo_db_image_name }}:{{ piwigo_db_image_version }}"
+        pull: true
+        volumes:
+          - "{{ piwigo_data_directory }}/mysql:/var/lib/mysql:rw"
+        env:
+          MYSQL_DATABASE: "piwigo"
+          MYSQL_USER: "{{ piwigo_mysql_user }}"
+          MYSQL_PASSWORD: "{{ piwigo_mysql_password }}"
+          MYSQL_ROOT_PASSWORD: "{{ piwigo_mysql_root_password }}"
+        restart_policy: unless-stopped
+        memory: "{{ piwigo_mysql_memory }}"
+        networks:
+          - name: "{{ piwigo_network_name }}"
+        network_mode: "{{ piwigo_network_name }}"
+
+    - name: Piwigo Docker Container
+      community.docker.docker_container:
+        name: "{{ piwigo_container_name }}"
+        image: "{{ piwigo_image_name }}:{{ piwigo_image_version }}"
+        pull: true
+        volumes:
+          - "{{ piwigo_config_directory }}:/config:rw"
+          - "{{ piwigo_photos }}:/gallery:rw"
+        ports:
+          - "{{ piwigo_port }}:80"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ piwigo_user_id }}"
+          PGID: "{{ piwigo_group_id }}"
+          VERSION: "{{ piwigo_version }}"
+        restart_policy: unless-stopped
+        memory: "{{ piwigo_memory }}"
+        networks:
+          - name: "{{ piwigo_network_name }}"
+        network_mode: "{{ piwigo_network_name }}"
+        labels:
+          traefik.enable: "{{ (piwigo_dns_accessible or piwigo_available_externally) | string }}"
+          traefik.http.services.piwigo.loadbalancer.server.port: "80"
+          traefik.http.routers.piwigo.rule: "Host(`{{ piwigo_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.piwigo.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.piwigo.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.piwigo.tls.certresolver: "letsencrypt"
+          traefik.http.routers.piwigo.middlewares: "{{ omit if piwigo_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Piwigo
+  when: not piwigo_enabled
+  block:
+    - name: Stop Piwigo
+      community.docker.docker_container:
+        name: "{{ piwigo_container_name }}"
+        state: absent
+    - name: Stop Piwigo Db
+      community.docker.docker_container:
+        name: "{{ piwigo_db_container_name }}"
+        state: absent
+    - name: Remove Piwigo Network
+      community.docker.docker_network:
+        name: "{{ piwigo_network_name }}"
+        state: absent

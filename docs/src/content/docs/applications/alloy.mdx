@@ -1,0 +1,38 @@
+---
+title: Alloy
+tags: ["Monitoring"]
+---
+
+import { Aside } from "@astrojs/starlight/components"
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://grafana.com/oss/alloy) |
+[Repository](https://github.com/grafana/alloy)
+
+<Tags tags={frontmatter.tags} />
+
+<Aside>
+	This application is part of the [Monitoring Applications](../../application_combos/monitoring) combo.
+  On it's own, it won't do anything
+</Aside>
+
+OpenTelemetry Collector distribution with programmable pipelines 
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+alloy_enabled: true
+```
+
+By default, Alloy can be accessed at `http://[your_server_ip]:12345` or `https://alloy.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Alloy at [`roles/alloy/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/alloy/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

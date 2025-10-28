@@ -1,0 +1,36 @@
+---
+syncthing_enabled: false
+syncthing_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+syncthing_available_externally: false
+
+# directories
+syncthing_data_directory: "{{ data_home }}/syncthing"
+
+# these are the directories that you want to mount from the local homelab filesystem into
+# the syncthing container.
+# format is:
+#   - "/homelab/filesystem/directory_name:/var/syncthing/directory_name"
+syncthing_volumes:
+  - "{{ syncthing_data_directory }}:/var/syncthing/"
+
+# Who can access the GUI https://docs.syncthing.net/v2.0.0/users/guilisten
+# Setting this to a blank string will make Syncthing use the setting in the UI, which defaults to localhost only.
+# This means you have to enter the UI from the homelab machine itself to change it in the UI.
+syncthing_gui_address: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:8384"
+
+syncthing_user_id: "1000"
+syncthing_group_id: "1000"
+
+# network
+syncthing_hostname: syncthing
+
+# containers
+syncthing_container_name: syncthing
+syncthing_image_name: syncthing/syncthing
+syncthing_image_version: latest
+
+syncthing_container_names: # Used to check if app is running
+  - "{{ syncthing_container_name }}"
+
+# specs
+syncthing_memory: 1g

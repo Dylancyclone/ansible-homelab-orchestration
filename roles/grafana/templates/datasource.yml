@@ -1,0 +1,18 @@
+---
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    orgId: 1
+    url: http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ prometheus_port }}
+    uid: ansible_homelab_orchestration
+    isDefault: true
+    version: 4
+
+deleteDatasources:
+  - name: "InfluxDB"
+    orgId: 1
+  - name: "Alertmanager"
+    orgId: 1

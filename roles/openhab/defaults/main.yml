@@ -1,0 +1,23 @@
+---
+openhab_enabled: false
+openhab_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+openhab_available_externally: false
+
+# directories
+openhab_data_directory: "{{ docker_home }}/openhab"
+
+# network
+openhab_hostname: openhab
+openhab_http_port: 7777
+openhab_https_port: 7778
+
+# containers
+openhab_container_name: openhab
+openhab_image_name: openhab/openhab
+openhab_image_version: latest
+
+openhab_container_names: # Used to check if app is running
+  - "{{ openhab_container_name }}"
+
+# specs
+openhab_memory: 1g

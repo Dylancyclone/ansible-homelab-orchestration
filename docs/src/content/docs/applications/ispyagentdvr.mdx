@@ -1,0 +1,35 @@
+---
+title: iSpy Agent DVR
+tags: ["Home Automation"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://www.ispyconnect.com/docs/agent/about) |
+[Repository](https://github.com/MekayelAnik/ispyagentdvr-docker)
+
+<Tags tags={frontmatter.tags} />
+
+iSpy's Agent DVR is standalone free-to-use NVR software for IP Camera management.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+ispyagentdvr_enabled: true
+```
+
+By default, iSpy Agent DVR can be accessed at `http://[your_server_ip]:8098`.
+Unfortunately, accessing through reverse proxy (DNS) is blocked unless you [purchase a license](https://www.ispyconnect.com/buy). If you have a license, iSpy Agent DVR can be accessed at `https://ispyagentdvr.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+If you have [Home Assistant](./homeassistant) running, you can install the [Agent DVR integration](https://www.home-assistant.io/integrations/agent_dvr/), which you can connect directly through IP, and then access Home Assistant via DNS.
+
+## Configuration
+
+See the default configuration options for iSpy Agent DVR at [`roles/ispyagentdvr/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/ispyagentdvr/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

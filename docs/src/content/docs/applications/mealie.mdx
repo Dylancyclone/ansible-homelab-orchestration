@@ -1,0 +1,32 @@
+---
+title: Mealie
+tags: ["Recipes"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://mealie.io/) |
+[Repository](https://github.com/mealie-recipes/mealie)
+
+<Tags tags={frontmatter.tags} />
+
+Mealie is a self hosted recipe manager, meal planner and shopping list with a RestAPI backend and a reactive frontend built in Vue for a pleasant user experience for the whole family. Easily add recipes into your database by providing the URL and Mealie will automatically import the relevant data, or add a family recipe with the UI editor. Mealie also provides an API for interactions from 3rd party applications.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+mealie_enabled: true
+```
+
+By default, Mealie can be accessed at `http://[your_server_ip]:9925` or `https://mealie.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Mealie at [`roles/mealie/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/mealie/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

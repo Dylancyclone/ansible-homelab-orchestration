@@ -1,0 +1,48 @@
+---
+- name: Start Dokuwiki
+  when: dokuwiki_enabled
+  block:
+    - name: Check for Dokuwiki Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: dokuwiki
+
+    - name: Create DokuWiki Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ dokuwiki_data_directory }}/data"
+
+    - name: DokuWiki Docker Container
+      community.docker.docker_container:
+        name: "{{ dokuwiki_container_name }}"
+        image: "{{ dokuwiki_image_name }}:{{ dokuwiki_image_version }}"
+        pull: true
+        volumes:
+          - "{{ dokuwiki_data_directory }}:/config/dokuwiki/data:rw"
+        ports:
+          - "{{ dokuwiki_port }}:80"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ dokuwiki_user_id }}"
+          PGID: "{{ dokuwiki_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ dokuwiki_memory }}"
+        labels:
+          traefik.enable: "{{ (dokuwiki_dns_accessible or dokuwiki_available_externally) | string }}"
+          traefik.http.services.dokuwiki.loadbalancer.server.port: "80"
+          traefik.http.routers.dokuwiki.rule: "Host(`{{ dokuwiki_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.dokuwiki.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.dokuwiki.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.dokuwiki.tls.certresolver: "letsencrypt"
+          traefik.http.routers.dokuwiki.middlewares: "{{ omit if dokuwiki_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Dokuwiki
+  when: not dokuwiki_enabled
+  block:
+    - name: Stop Dokuwiki
+      community.docker.docker_container:
+        name: "{{ dokuwiki_container_name }}"
+        state: absent

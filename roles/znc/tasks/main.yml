@@ -1,0 +1,55 @@
+---
+- name: Start ZNC
+  when: znc_enabled
+  block:
+    - name: Check for ZNC Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: znc
+
+    - name: Create ZNC Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ znc_data_directory }}"
+        - "{{ znc_data_directory }}/configs"
+
+    - name: Template ZNC config
+      ansible.builtin.template:
+        src: znc.conf.j2
+        dest: "{{ znc_data_directory }}/configs/znc.conf"
+      register: znc_template_config
+
+    - name: Create ZNC Docker Container
+      community.docker.docker_container:
+        name: "{{ znc_container_name }}"
+        image: "{{ znc_image_name }}:{{ znc_image_version }}"
+        pull: true
+        volumes:
+          - "{{ znc_data_directory }}:/znc-data:rw"
+          - "/etc/timezone:/etc/timezone:ro"
+        ports:
+          - "{{ znc_port }}:6677"
+        env:
+          PUID: "{{ znc_user_id }}"
+          PGID: "{{ znc_group_id }}"
+        restart_policy: unless-stopped
+        restart: "{{ znc_template_config is changed }}"
+        memory: "{{ znc_memory }}"
+        labels:
+          traefik.enable: "{{ (znc_dns_accessible or znc_available_externally) | string }}"
+          traefik.http.services.znc.loadbalancer.server.port: "6677"
+          traefik.http.routers.znc.rule: "Host(`{{ znc_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.znc.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.znc.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.znc.tls.certresolver: "letsencrypt"
+          traefik.http.routers.znc.middlewares: "{{ omit if znc_available_externally else 'blockExternal@file' }}"
+- name: Stop ZNC
+  when: not znc_enabled
+  block:
+    - name: Stop ZNC
+      community.docker.docker_container:
+        name: "{{ znc_container_name }}"
+        state: absent

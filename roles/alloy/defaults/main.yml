@@ -1,0 +1,26 @@
+---
+alloy_enabled: false
+alloy_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+alloy_available_externally: false
+
+# directories
+alloy_data_directory: "{{ docker_home }}/alloy/data"
+alloy_config_directory: "{{ docker_home }}/alloy/config"
+
+# network
+alloy_hostname: alloy
+alloy_port: 12345
+
+# containers
+alloy_container_name: alloy
+alloy_image_name: grafana/alloy
+alloy_image_version: latest
+
+alloy_container_names: # Used to check if app is running
+  - "{{ alloy_container_name }}"
+
+# specs
+alloy_memory: 1g
+
+# config
+alloy_loglevel: info

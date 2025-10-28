@@ -1,0 +1,62 @@
+---
+- name: Start Bitwarden
+  when: bitwarden_enabled
+  block:
+    - name: Check for Bitwarden Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: bitwarden
+
+    - name: Create Bitwarden Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ bitwarden_data_directory }}"
+
+    - name: Bitwarden Docker Container
+      community.docker.docker_container:
+        name: "{{ bitwarden_container_name }}"
+        image: "{{ bitwarden_image_name }}:{{ bitwarden_image_version }}"
+        pull: true
+        ports:
+          - "{{ bitwarden_port }}:80"
+        volumes:
+          - "{{ bitwarden_data_directory }}:/data:rw"
+        env:
+          SIGNUPS_ALLOWED: "{{ bitwarden_allow_signups | string }}"
+          ADMIN_TOKEN: "{{ bitwarden_admin_token }}"
+          LOG_FILE: "/data/bitwarden.log"
+        restart_policy: unless-stopped
+        memory: "{{ bitwarden_memory }}"
+        labels:
+          traefik.enable: "{{ (bitwarden_dns_accessible or bitwarden_available_externally) | string }}"
+          traefik.http.services.bitwarden.loadbalancer.server.port: "80"
+          traefik.http.routers.bitwarden.rule: "Host(`{{ bitwarden_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.bitwarden.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.bitwarden.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.bitwarden.tls.certresolver: "letsencrypt"
+          traefik.http.routers.bitwarden.middlewares: "{{ omit if bitwarden_available_externally else 'blockExternal@file' }}"
+
+    - name: Bitwarden Backup Container
+      community.docker.docker_container:
+        name: "{{ bitwarden_backup_container_name }}"
+        image: "{{ bitwarden_backup_image_name }}:{{ bitwarden_backup_image_version }}"
+        pull: true
+        restart_policy: unless-stopped
+        volumes_from: "{{ bitwarden_container_name }}"
+        memory: "{{ bitwarden_backup_memory }}"
+
+- name: Stop Bitwarden
+  when: not bitwarden_enabled
+  block:
+    - name: Stop Bitwarden Backup
+      community.docker.docker_container:
+        name: "{{ bitwarden_backup_container_name }}"
+        state: absent
+
+    - name: Stop Bitwarden
+      community.docker.docker_container:
+        name: "{{ bitwarden_container_name }}"
+        state: absent

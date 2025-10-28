@@ -1,0 +1,44 @@
+---
+- name: Start RSSBridge
+  when: rssbridge_enabled
+  block:
+    - name: Check for RSSBridge Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: rssbridge
+
+    - name: Create RSSBridge Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ rssbridge_data_directory }}/data"
+
+    - name: RSSBridge Docker Container
+      community.docker.docker_container:
+        name: "{{ rssbridge_container_name }}"
+        image: "{{ rssbridge_image_name }}:{{ rssbridge_image_version }}"
+        pull: true
+        volumes:
+          - "{{ rssbridge_data_directory }}/data:/config:rw"
+        ports:
+          - "{{ rssbridge_port }}:80"
+        restart_policy: unless-stopped
+        memory: "{{ rssbridge_memory }}"
+        labels:
+          traefik.enable: "{{ (rssbridge_dns_accessible or rssbridge_available_externally) | string }}"
+          traefik.http.services.rssbridge.loadbalancer.server.port: "80"
+          traefik.http.routers.rssbridge.rule: "Host(`{{ rssbridge_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.rssbridge.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.rssbridge.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.rssbridge.tls.certresolver: "letsencrypt"
+          traefik.http.routers.rssbridge.middlewares: "{{ omit if rssbridge_available_externally else 'blockExternal@file' }}"
+
+- name: Stop RSSBridge
+  when: not rssbridge_enabled
+  block:
+    - name: Stop RSSBridge
+      community.docker.docker_container:
+        name: "{{ rssbridge_container_name }}"
+        state: absent

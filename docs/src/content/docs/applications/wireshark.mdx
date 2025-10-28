@@ -1,0 +1,32 @@
+---
+title: Wireshark
+tags: ["Networking"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://www.wireshark.org/) |
+[Repository](https://github.com/linuxserver/docker-wireshark)
+
+<Tags tags={frontmatter.tags} />
+
+Wireshark is the world’s foremost and widely-used network protocol analyzer. It lets you see what’s happening on your network at a microscopic level and is the de facto (and often de jure) standard across many commercial and non-profit enterprises, government agencies, and educational institutions.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+wireshark_enabled: true
+```
+
+By default, Wireshark can be accessed at `http://[your_server_ip]:3010` or `https://wireshark.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Wireshark at [`roles/wireshark/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/wireshark/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

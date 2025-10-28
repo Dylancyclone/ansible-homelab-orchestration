@@ -1,0 +1,31 @@
+---
+deluge_enabled: false
+deluge_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+deluge_available_externally: false
+
+# directories
+deluge_config_directory: "{{ docker_home }}/deluge/config"
+deluge_download_directory: "{{ downloads_root }}"
+deluge_watch_directory: "{{ torrents_root }}"
+
+# uid / gid
+deluge_user_id: "1000"
+deluge_group_id: "1000"
+
+# error logging
+deluge_log_level: "error"
+
+# network
+deluge_hostname: deluge
+deluge_port: 8112
+
+# containers
+deluge_container_name: deluge
+deluge_image_name: linuxserver/deluge
+deluge_image_version: latest
+
+deluge_container_names: # Used to check if app is running
+  - "{{ deluge_container_name }}"
+
+# specs
+deluge_memory: 1g

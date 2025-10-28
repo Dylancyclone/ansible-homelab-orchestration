@@ -1,0 +1,27 @@
+---
+ubooquity_enabled: false
+ubooquity_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+ubooquity_available_externally: false
+
+# uid / gid
+ubooquity_user_id: "1000"
+ubooquity_group_id: "1000"
+
+# Directories
+ubooquity_data_directory: "{{ docker_home }}/ubooquity"
+
+# Networking
+ubooquity_hostname: ubooquity
+ubooquity_webui_port: 2202
+ubooquity_admin_port: 2203
+
+# Container
+ubooquity_container_name: ubooquity
+ubooquity_image_name: linuxserver/ubooquity
+ubooquity_image_version: latest
+
+ubooquity_container_names: # Used to check if app is running
+  - "{{ ubooquity_container_name }}"
+
+# Specs
+ubooquity_memory: 1g

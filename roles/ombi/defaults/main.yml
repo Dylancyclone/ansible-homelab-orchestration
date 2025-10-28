@@ -1,0 +1,26 @@
+---
+ombi_enabled: false
+ombi_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+ombi_available_externally: false
+
+# directories
+ombi_config_directory: "{{ docker_home }}/ombi/config"
+
+# network
+ombi_hostname: ombi
+ombi_port: 3579
+
+# uids/gids
+ombi_user_id: "1000"
+ombi_group_id: "1000"
+
+# containers
+ombi_container_name: ombi
+ombi_image_name: linuxserver/ombi
+ombi_image_version: latest
+
+ombi_container_names: # Used to check if app is running
+  - "{{ ombi_container_name }}"
+
+# specs
+ombi_memory: 1g

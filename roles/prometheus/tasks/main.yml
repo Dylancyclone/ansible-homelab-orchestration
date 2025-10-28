@@ -1,0 +1,57 @@
+---
+- name: Start Prometheus
+  when: prometheus_enabled
+  block:
+    - name: Check for Prometheus Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: prometheus
+
+    - name: Create Prometheus Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ prometheus_data_directory }}"
+        - "{{ prometheus_config_directory }}"
+
+    - name: Template Prometheus config
+      ansible.builtin.template:
+        src: prometheus.yml.j2
+        dest: "{{ prometheus_config_directory }}/prometheus.yml"
+      register: prometheus_config
+
+    - name: Prometheus Docker Container
+      community.docker.docker_container:
+        name: "{{ prometheus_container_name }}"
+        image: "{{ prometheus_image_name }}:{{ prometheus_image_version }}"
+        pull: true
+        user: "{{ prometheus_user_id }}:{{ prometheus_group_id }}"
+        volumes:
+          - "{{ prometheus_config_directory }}/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+          - "{{ prometheus_data_directory }}:/prometheus:rw"
+          - "/etc/timezone:/etc/timezone:ro"
+        ports:
+          - "{{ prometheus_port }}:9090"
+        restart_policy: unless-stopped
+        restart: "{{ prometheus_config is changed }}"
+        command: "--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.retention.size={{ prometheus_retention_size }} \
+          --storage.tsdb.retention.time={{ prometheus_retention_time }}"
+        memory: "{{ prometheus_memory }}"
+        labels:
+          traefik.enable: "{{ (prometheus_dns_accessible or prometheus_available_externally) | string }}"
+          traefik.http.services.prometheus.loadbalancer.server.port: "9090"
+          traefik.http.routers.prometheus.rule: "Host(`{{ prometheus_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.prometheus.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.prometheus.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.prometheus.tls.certresolver: "letsencrypt"
+          traefik.http.routers.prometheus.middlewares: "{{ omit if prometheus_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Prometheus
+  when: not prometheus_enabled
+  block:
+    - name: Stop Prometheus
+      community.docker.docker_container:
+        name: "{{ prometheus_container_name }}"
+        state: absent

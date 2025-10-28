@@ -1,0 +1,28 @@
+---
+lidarr_enabled: false
+lidarr_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+lidarr_available_externally: false
+
+# directories
+lidarr_data_directory: "{{ docker_home }}/lidarr/config"
+lidarr_music_directory: "{{ music_root }}"
+lidarr_downloads_directory: "{{ downloads_root }}"
+
+# uid/gid
+lidarr_user_id: "1000"
+lidarr_group_id: "1000"
+
+# network
+lidarr_hostname: lidarr
+lidarr_port: 8686
+
+# containers
+lidarr_container_name: lidarr
+lidarr_image_name: linuxserver/lidarr
+lidarr_image_version: latest
+
+lidarr_container_names: # Used to check if app is running
+  - "{{ lidarr_container_name }}"
+
+# specs
+lidarr_memory: 1g

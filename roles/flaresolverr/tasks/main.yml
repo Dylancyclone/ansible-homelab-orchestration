@@ -1,0 +1,46 @@
+---
+- name: Start FlareSolverr
+  when: flaresolverr_enabled
+  block:
+    - name: Check for FlareSolverr Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: flaresolverr
+
+    - name: Create FlareSolverr Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ flaresolverr_config_directory }}"
+
+    - name: FlareSolverr Docker Container
+      community.docker.docker_container:
+        name: "{{ flaresolverr_container_name }}"
+        image: "{{ flaresolverr_image_name }}:{{ flaresolverr_image_version }}"
+        pull: true
+        volumes:
+          - "{{ flaresolverr_config_directory }}:/config:rw"
+        ports:
+          - "{{ flaresolverr_port }}:8191"
+        env:
+          TZ: "{{ computer_timezone }}"
+        restart_policy: unless-stopped
+        memory: "{{ flaresolverr_memory }}"
+        labels:
+          traefik.enable: "{{ (flaresolverr_dns_accessible or flaresolverr_available_externally) | string }}"
+          traefik.http.services.flaresolverr.loadbalancer.server.port: "8191"
+          traefik.http.routers.flaresolverr.rule: "Host(`{{ flaresolverr_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.flaresolverr.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.flaresolverr.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.flaresolverr.tls.certresolver: "letsencrypt"
+          traefik.http.routers.flaresolverr.middlewares: "{{ omit if flaresolverr_available_externally else 'blockExternal@file' }}"
+
+- name: Stop FlareSolverr
+  when: not flaresolverr_enabled
+  block:
+    - name: Stop FlareSolverr
+      community.docker.docker_container:
+        name: "{{ flaresolverr_container_name }}"
+        state: absent

@@ -1,0 +1,50 @@
+---
+- name: Start Dashy
+  when: dashy_enabled
+  block:
+    - name: Check for Dashy Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: dashy
+
+    - name: Create Dashy Directory
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ dashy_data_directory }}"
+
+    - name: Copy base config
+      ansible.builtin.copy:
+        src: conf.yml
+        dest: "{{ dashy_data_directory }}/conf.yml"
+        force: false
+
+    - name: Dashy Docker Container
+      community.docker.docker_container:
+        name: "{{ dashy_container_name }}"
+        image: "{{ dashy_image_name }}:{{ dashy_image_version }}"
+        pull: true
+        ports:
+          - "{{ dashy_port }}:8080"
+        restart_policy: unless-stopped
+        memory: "{{ dashy_memory }}"
+        volumes:
+          - "{{ dashy_data_directory }}/conf.yml:/app/public/conf.yml:rw"
+        labels:
+          traefik.enable: "{{ (dashy_dns_accessible or dashy_available_externally) | string }}"
+          traefik.http.services.dashy.loadbalancer.server.port: "8080"
+          traefik.http.routers.dashy.rule: "Host(`{{ dashy_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.dashy.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.dashy.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.dashy.tls.certresolver: "letsencrypt"
+          traefik.http.routers.dashy.middlewares: "{{ omit if dashy_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Dashy
+  when: not dashy_enabled
+  block:
+    - name: Stop Dashy
+      community.docker.docker_container:
+        name: "{{ dashy_container_name }}"
+        state: absent

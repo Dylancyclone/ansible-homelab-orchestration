@@ -1,0 +1,35 @@
+---
+title: Jackett
+tags: ["Download Manager"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Repository](https://github.com/Jackett/Jackett)
+
+<Tags tags={frontmatter.tags} />
+
+API Support for your favorite torrent trackers.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+jackett_enabled: true
+```
+
+By default, Jackett can be accessed at `http://[your_server_ip]:9117` or `https://jackett.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Jackett at [`roles/jackett/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/jackett/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+## Alternatives
+
+- [Prowlarr](./prowlarr)
+
+{/* 
+
+## Breaking Changes
+
+*/}

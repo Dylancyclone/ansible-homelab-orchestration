@@ -1,0 +1,44 @@
+---
+title: Woodpecker CI
+tags: ["CI", "Git"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://woodpecker-ci.org/) |
+[Repository](https://github.com/woodpecker-ci/woodpecker)
+
+<Tags tags={frontmatter.tags} />
+
+Woodpecker is a simple, yet powerful CI/CD engine with great extensibility.
+
+## Setting up
+
+Drone-CI is set up to connect to [Gitea](../gitea) automatically, so make sure you have Gitea set up and configured first.
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+woodpecker_ci_enabled: true
+
+# The users that'll be granted admin, comma separated. Should match a gitea user.
+woodpecker_ci_admin_user: admin
+
+# Shared secret - use openssl rand -hex 32 to generate your own
+woodpecker_ci_agent_secret: 9f3aeaa7bbabcf42b724f65d4acb38456899ca32511677a8c3837869621c3798
+
+# Gitea auth credentials. see https://woodpecker-ci.org/docs/administration/forges/gitea for more info
+woodpecker_ci_gitea_client: notset
+woodpecker_ci_gitea_secret: notset
+```
+
+By default, Woodpecker CI can be accessed at `http://[your_server_ip]:8003` or `https://woodpecker_ci.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Woodpecker CI at [`roles/woodpecker_ci/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/woodpecker_ci/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

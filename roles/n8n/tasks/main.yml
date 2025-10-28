@@ -1,0 +1,52 @@
+---
+- name: Start n8n
+  when: n8n_enabled
+  block:
+    - name: Check for n8n Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: n8n
+
+    - name: Create n8n Directory
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: 1000
+        group: 1000
+      with_items:
+        - "{{ n8n_data_directory }}"
+
+    - name: Create n8n Docker Container
+      community.docker.docker_container:
+        name: "{{ n8n_container_name }}"
+        image: "{{ n8n_image_name }}:{{ n8n_image_version }}"
+        pull: true
+        ports:
+          - "{{ n8n_port }}:5678"
+        volumes:
+          - "{{ n8n_data_directory }}:/home/node/.n8n:rw"
+          - "/etc/timezone:/etc/timezone:ro"
+        restart_policy: unless-stopped
+        memory: "{{ n8n_memory }}"
+        env:
+          N8N_BASIC_AUTH_ACTIVE: "true"
+          N8N_BASIC_AUTH_USER: "{{ n8n_basic_auth_user }}"
+          N8N_BASIC_AUTH_PASSWORD: "{{ n8n_basic_auth_password }}"
+          WEBHOOK_URL: "https://{{ n8n_hostname }}.{{ dns_domain }}"
+        labels:
+          traefik.enable: "{{ (n8n_dns_accessible or n8n_available_externally) | string }}"
+          traefik.http.services.n8n.loadbalancer.server.port: "5678"
+          traefik.http.routers.n8n.rule: "Host(`{{ n8n_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.n8n.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.n8n.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.n8n.tls.certresolver: "letsencrypt"
+          traefik.http.routers.n8n.middlewares: "{{ omit if n8n_available_externally else 'blockExternal@file' }}"
+
+- name: Stop n8n
+  when: not n8n_enabled
+  block:
+    - name: Stop n8n
+      community.docker.docker_container:
+        name: "{{ n8n_container_name }}"
+        state: absent

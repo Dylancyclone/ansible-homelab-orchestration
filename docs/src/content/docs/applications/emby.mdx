@@ -1,0 +1,45 @@
+---
+title: Emby
+tags: ["Media Server", "Movies", "TV"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://emby.media/) |
+[Repository](https://github.com/MediaBrowser/Emby)
+
+<Tags tags={frontmatter.tags} />
+
+Emby Server is a personal media server with apps on just about every device.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+emby_enabled: true
+```
+
+By default, Emby can be accessed at `http://[your_server_ip]:8097` or `https://emby.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+Emby can take advantage of hardware acceleration for transcoding:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+# Device mappings for the docker container. E.g. To enable hardware transcoding:
+emby_devices:
+  - "/dev/dri:/dev/dri"
+```
+
+See the default configuration options for Emby at [`roles/emby/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/emby/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+## Alternatives
+
+- [Jellyfin](./jellyfin)
+- [Plex](./plex)
+
+{/* 
+
+## Breaking Changes
+
+*/}

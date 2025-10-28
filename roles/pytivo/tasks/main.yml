@@ -1,0 +1,61 @@
+---
+- name: Start Pytivo
+  when: pytivo_enabled
+  block:
+    - name: Check for Pytivo Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: pytivo
+
+    - name: Create Pytivo Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0777"
+      with_items:
+        - "{{ pytivo_config_directory }}"
+        - "{{ pytivo_movies_directory }}"
+        - "{{ pytivo_tv_directory }}"
+        - "{{ pytivo_photos_directory }}"
+        - "{{ pytivo_music_directory }}"
+        - "{{ pytivo_podcasts_directory }}"
+
+    - name: Pytivo
+      community.docker.docker_container:
+        name: "{{ pytivo_container_name }}"
+        image: "{{ pytivo_image_name }}:{{ pytivo_image_version }}"
+        pull: true
+        volumes:
+          - "/etc/localtime:/etc/localtime:ro"
+          - "{{ pytivo_config_directory }}:/config:rw"
+          - "{{ pytivo_movies_directory }}:/movies:ro"
+          - "{{ pytivo_tv_directory }}:/tv:ro"
+          - "{{ pytivo_photos_directory }}:/photos:ro"
+          - "{{ pytivo_music_directory }}:/music:ro"
+          - "{{ pytivo_podcasts_directory }}:/podcasts:ro"
+        ports:
+          - "{{ pytivo_port }}:9032"
+          - "{{ pytivo_udp_port }}:2190/udp"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ pytivo_user_id }}"
+          PGID: "{{ pytivo_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ pytivo_memory }}"
+        labels:
+          traefik.enable: "{{ (pytivo_dns_accessible or pytivo_available_externally) | string }}"
+          traefik.http.services.pytivo.loadbalancer.server.port: "9032"
+          traefik.http.routers.pytivo.rule: "Host(`{{ pytivo_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.pytivo.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.pytivo.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.pytivo.tls.certresolver: "letsencrypt"
+          traefik.http.routers.pytivo.middlewares: "{{ omit if pytivo_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Pytivo
+  when: not pytivo_enabled
+  block:
+    - name: Stop Pytivo
+      community.docker.docker_container:
+        name: "{{ pytivo_container_name }}"
+        state: absent

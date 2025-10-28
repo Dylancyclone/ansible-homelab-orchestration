@@ -1,0 +1,64 @@
+---
+- name: Start Netdata
+  when: netdata_enabled
+  block:
+    - name: Check for Netdata Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: netdata
+
+    - name: Create Netdata Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ netdata_data_directory }}"
+        - "{{ netdata_config_directory }}"
+        - "{{ netdata_cache_directory }}"
+
+    - name: Netdata Docker Container
+      community.docker.docker_container:
+        name: "{{ netdata_container_name }}"
+        image: "{{ netdata_image_name }}:{{ netdata_image_version }}"
+        hostname: "{{ inventory_hostname }}.{{ dns_domain }}"
+        state: started
+        network_mode: host
+        pid_mode: host
+        pull: true
+        volumes:
+          - "{{ netdata_data_directory }}:/etc/netdata"
+          - "{{ netdata_config_directory }}:/var/lib/netdata"
+          - "{{ netdata_cache_directory }}:/var/cache/netdata"
+          - /etc/passwd:/host/etc/passwd:ro
+          - /etc/group:/host/etc/group:ro
+          - /etc/localtime:/etc/localtime:ro
+          - /proc:/host/proc:ro
+          - /sys:/host/sys:ro
+          - /etc/os-release:/host/etc/os-release:ro
+          - /var/log:/host/var/log:ro
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          - /run/dbus:/run/dbus:ro
+        capabilities:
+          - SYS_PTRACE
+          - SYS_ADMIN
+        security_opts:
+          - apparmor:unconfined
+        restart_policy: unless-stopped
+        memory: "{{ netdata_memory }}"
+        labels:
+          traefik.enable: "{{ (netdata_dns_accessible or netdata_available_externally) | string }}"
+          traefik.http.services.netdata.loadbalancer.server.port: "19999"
+          traefik.http.routers.netdata.rule: "Host(`{{ netdata_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.netdata.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.netdata.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.netdata.tls.certresolver: "letsencrypt"
+          traefik.http.routers.netdata.middlewares: "{{ omit if netdata_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Netdata
+  when: not netdata_enabled
+  block:
+    - name: Stop Netdata
+      community.docker.docker_container:
+        name: "{{ netdata_container_name }}"
+        state: absent

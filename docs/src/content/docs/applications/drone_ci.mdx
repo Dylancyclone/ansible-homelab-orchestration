@@ -1,0 +1,44 @@
+---
+title: Drone-CI
+tags: ["CI", "Git"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://www.drone.io/) |
+[Repository](https://github.com/nazmulb/drone.io)
+
+<Tags tags={frontmatter.tags} />
+
+Drone is a modern CI/CD platform built with a containers-first architecture. It enables you to conveniently set up projects to automatically build, test, and deploy as you make changes to your code. It's open source, highly configurable (every build step is executed by a container!) and has a lot of plugins available. Drone is built using Go and utilizes Docker. It can be run inside a container itself with very little configuration.
+
+## Setting up
+
+Drone-CI is set up to connect to [Gitea](../gitea) automatically, so make sure you have Gitea set up and configured first.
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+drone_ci_enabled: true
+
+# The users that'll be granted admin, comma separated. Should match a gitea user.
+drone_ci_admin_user: admin
+
+# shared secret - use openssl rand -hex 16 to generate your own
+drone_ci_agent_secret: d052ab29a86a02c6b6ff1e5851ee15e1
+
+# Gitea auth credentials. see https://drone-ci.org/docs/administration/forges/gitea for more info
+drone_ci_gitea_client_id: notset
+drone_ci_gitea_client_secret: notset
+```
+
+By default, Drone-CI can be accessed at `http://[your_server_ip]:8001` or `https://drone_ci.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Drone-CI at [`roles/drone_ci/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/drone_ci/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

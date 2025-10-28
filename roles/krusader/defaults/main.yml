@@ -1,0 +1,35 @@
+---
+krusader_enabled: false
+krusader_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+krusader_available_externally: "false"
+
+# directories
+krusader_config_directory: "{{ docker_home }}/krusader/config"
+krusader_browse_directory: "/"
+
+# uid / gid
+krusader_user_id: "1000"
+krusader_group_id: "1000"
+
+# network
+krusader_http_port: 6080
+krusader_vnc_port: 5900
+krusader_hostname: krusader
+
+# containers
+krusader_container_name: krusader
+krusader_image_name: binhex/arch-krusader
+krusader_image_version: latest
+
+krusader_container_names: # Used to check if app is running
+  - "{{ krusader_container_name }}"
+
+# specs
+krusader_memory: 1g
+
+# krusader
+krusader_umask: "000"
+krusader_webpage_title: Tower
+krusader_temp_folder: /config/krusader/tmp
+# MUST be greater than 6 characters, otherwise it will be ignored
+krusader_vnc_password: topsecret

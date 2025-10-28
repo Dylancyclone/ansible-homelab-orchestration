@@ -1,0 +1,31 @@
+---
+title: YoutubeDL-Material
+tags: ["Download Manager", "Music"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Repository](https://github.com/Tzahi12345/YoutubeDL-Material)
+
+<Tags tags={frontmatter.tags} />
+
+YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/).
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+youtubedlmaterial_enabled: true
+```
+
+By default, YoutubeDL-Material can be accessed at `http://[your_server_ip]:8998` or `https://youtubedlmaterial.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for YoutubeDL-Material at [`roles/youtubedlmaterial/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/youtubedlmaterial/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

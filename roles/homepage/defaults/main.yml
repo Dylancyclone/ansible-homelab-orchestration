@@ -1,0 +1,80 @@
+---
+homepage_enabled: false
+homepage_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+homepage_available_externally: false
+
+# directories
+homepage_data_directory: "{{ docker_home }}/homepage"
+
+# network
+homepage_hostname: homepage
+homepage_port: 11111
+
+# containers
+homepage_container_name: homepage
+homepage_image_name: ghcr.io/gethomepage/homepage
+homepage_image_tag: latest
+
+homepage_container_names: # Used to check if app is running
+  - "{{ homepage_container_name }}"
+
+# specs
+homepage_memory: 1g
+
+# settings
+homepage_title: Ansible Homelab Orchestration Homepage
+homepage_locale: en-US
+
+# Homepage config files - the variables below are formatted to Homepage YAML config files
+homepage_settings_yaml:
+  title: "{{ homepage_title }}"
+  language: "{{ homepage_locale }}"
+  showStats: true
+
+homepage_services_yaml:
+  - Networking:
+      - Router:
+          icon: asus-router
+          href: http://192.168.1.1/
+          description: Router
+
+homepage_widgets_yaml:
+  - search:
+      provider: google # google, duckduckgo, bing, baidu, brave or custom
+      focus: true # Optional, will set focus to the search bar on page load
+      target: _blank # One of _self, _blank, _parent or _top
+  - greeting:
+      text_size: xl
+      text: Ansible Homelab Orchestration
+  - resources:
+      cpu: true
+      memory: true
+      cputemp: true
+      uptime: true
+      units: metric # only used by cpu temp
+      refresh: 60000 # optional, in ms
+
+homepage_bookmarks_yaml:
+  - Developer:
+      - "Ansible Homelab Orchestration":
+          - abbr: HO
+            href: https://github.com/Dylancyclone/ansible-homelab-orchestration
+      - Documentation:
+          - abbr: DO
+            href: https://dylancyclone.github.io/ansible-homelab-orchestration/
+            icon: github
+      - "Hacker News":
+          - abbr: HN
+            href: https://news.ycombinator.com/
+  - Social:
+      - Reddit:
+          - abbr: RE
+            href: https://reddit.com/
+            icon: reddit
+  - Entertainment:
+      - YouTube:
+          - abbr: YT
+            href: https://youtube.com/
+            icon: youtube
+
+homepage_allowed_hosts: "*"

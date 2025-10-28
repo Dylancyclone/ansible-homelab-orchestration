@@ -1,0 +1,31 @@
+---
+title: Visual Studio Code Server
+tags: ["Development"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Repository](https://github.com/linuxserver/docker-code-server)
+
+<Tags tags={frontmatter.tags} />
+
+Visual Studio Code running on the server, accessible through the browser.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+code_server_enabled: true
+```
+
+By default, Visual Studio Code Server can be accessed at `http://[your_server_ip]:8443` or `https://code_server.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Visual Studio Code Server at [`roles/code_server/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/code_server/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

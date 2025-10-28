@@ -1,0 +1,48 @@
+---
+title: Watchtower
+tags: ["Container Management"]
+---
+
+import { Aside } from "@astrojs/starlight/components"
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://containrrr.dev/watchtower/) |
+[Repository](https://github.com/containrrr/watchtower)
+
+<Tags tags={frontmatter.tags} />
+
+<Aside type="caution">
+	While Watchtower will gracefully update your containers, it will do so automatically without any user intervention.
+  This could potentially lead to problems if an app update introduces breaking changes or requires manual configuration.
+
+  You can mitigate this by pinning at-risk applications to specific docker tags (`[app_name]_image_version` variable),
+  but be aware that doesn't guarantee immunity from issues.
+
+  You can also mitigate risk by keeping regular backups of your application data and configurations.
+  If an update causes issues, you can restore from a backup and handle the update manually.
+
+  That said, Watchtower is very convenient for not needing to spend time manually updating containers
+  (and you'll stay on top of security updates, bug fixes, and new features), just be aware you're basically YOLOing updates.
+</Aside>
+
+A process for automating Docker container base image updates.
+
+Watchtower will pull down your new image, gracefully shut down your existing container and restart it with the same options that were used when it was deployed initially.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+watchtower_enabled: true
+```
+Watchtower will automatically monitor and update all other Docker containers.
+
+## Configuration
+
+See the default configuration options for Watchtower at [`roles/watchtower/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/watchtower/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

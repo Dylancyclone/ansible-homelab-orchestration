@@ -1,0 +1,52 @@
+---
+- name: Start Radarr
+  when: radarr_enabled
+  block:
+    - name: Check for Radarr Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: radarr
+
+    - name: Create Radarr Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ radarr_data_directory }}"
+        - "{{ radarr_movies_directory }}"
+        - "{{ radarr_download_directory }}"
+
+    - name: Radarr Docker Container
+      community.docker.docker_container:
+        name: "{{ radarr_container_name }}"
+        image: "{{ radarr_image_name }}:{{ radarr_image_version }}"
+        pull: true
+        volumes:
+          - "{{ radarr_movies_directory }}:/movies:rw"
+          - "{{ radarr_download_directory }}:/downloads:rw"
+          - "{{ radarr_data_directory }}:/config:rw"
+        ports:
+          - "{{ radarr_port }}:7878"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ radarr_user_id }}"
+          PGID: "{{ radarr_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ radarr_memory }}"
+        labels:
+          traefik.enable: "{{ (radarr_dns_accessible or radarr_available_externally) | string }}"
+          traefik.http.services.radarr.loadbalancer.server.port: "7878"
+          traefik.http.routers.radarr.rule: "Host(`{{ radarr_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.radarr.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.radarr.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.radarr.tls.certresolver: "letsencrypt"
+          traefik.http.routers.radarr.middlewares: "{{ omit if radarr_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Radarr
+  when: not radarr_enabled
+  block:
+    - name: Stop Radarr
+      community.docker.docker_container:
+        name: "{{ radarr_container_name }}"
+        state: absent

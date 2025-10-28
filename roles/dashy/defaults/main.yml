@@ -1,0 +1,22 @@
+---
+dashy_enabled: false
+dashy_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+dashy_available_externally: false
+
+# directories
+dashy_data_directory: "{{ docker_home }}/dashy"
+
+# network
+dashy_hostname: dashy
+dashy_port: 8082
+
+# containers
+dashy_container_name: dashy
+dashy_image_name: lissy93/dashy
+dashy_image_version: latest
+
+dashy_container_names: # Used to check if app is running
+  - "{{ dashy_container_name }}"
+
+# specs
+dashy_memory: 2g

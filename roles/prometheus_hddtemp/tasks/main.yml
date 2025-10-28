@@ -1,0 +1,33 @@
+---
+- name: Start Prometheus HDDTemp
+  when: prometheus_hddtemp_enabled
+  block:
+    - name: Check for Prometheus HDDTemp Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: prometheus_hddtemp
+
+    - name: Prometheus HDDTemp Docker Container
+      community.docker.docker_container:
+        name: "{{ prometheus_hddtemp_container_name }}"
+        image: "{{ prometheus_hddtemp_image_name }}:{{ prometheus_hddtemp_image_version }}"
+        pull: true
+        privileged: true
+        ports:
+          - "{{ prometheus_hddtemp_port }}:7634"
+        env:
+          HDDTEMP_ARGS: "-q -d -F /dev/sd*"
+          TZ: "{{ computer_timezone }}"
+        volumes:
+          - "/dev:/dev:ro"
+        restart_policy: unless-stopped
+        memory: "{{ prometheus_hddtemp_memory }}"
+
+- name: Stop Prometheus HDDTemp
+  when: not prometheus_hddtemp_enabled
+  block:
+    - name: Stop Prometheus HDDTemp
+      community.docker.docker_container:
+        name: "{{ prometheus_hddtemp_container_name }}"
+        state: absent

@@ -1,0 +1,66 @@
+---
+- name: Start Alloy
+  when: alloy_enabled
+  block:
+    - name: Check for Alloy Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: alloy
+
+    - name: Create Alloy Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ alloy_data_directory }}"
+        - "{{ alloy_config_directory }}"
+
+    - name: Template Alloy config
+      ansible.builtin.template:
+        src: config.alloy
+        dest: "{{ alloy_config_directory }}/config.alloy"
+        force: false
+      register: alloy_config
+
+    - name: Alloy Docker Container
+      community.docker.docker_container:
+        name: "{{ alloy_container_name }}"
+        image: "{{ alloy_image_name }}:{{ alloy_image_version }}"
+        pull: true
+        volumes:
+          - "{{ alloy_config_directory }}/config.alloy:/etc/alloy/config.alloy:rw"
+          - "{{ alloy_data_directory }}:/var/lib/alloy/data:rw"
+          - "/var/run/docker.sock:/var/run/docker.sock:ro"
+          - "/:/rootfs:ro"
+          - "/sys:/sys:ro"
+          - "/run:/run:ro"
+          - "/var/log:/var/log:ro"
+          - "/run/udev/data:/run/udev/data:ro"
+        ports:
+          - "{{ alloy_port }}:12345"
+        command:
+          [
+            "run",
+            "--server.http.listen-addr=0.0.0.0:12345",
+            "--storage.path=/var/lib/alloy/data",
+            "/etc/alloy/config.alloy",
+          ]
+        restart_policy: unless-stopped
+        memory: "{{ alloy_memory }}"
+        labels:
+          traefik.enable: "{{ (alloy_dns_accessible or alloy_available_externally) | string }}"
+          traefik.http.services.alloy.loadbalancer.server.port: "12345"
+          traefik.http.routers.alloy.rule: "Host(`{{ alloy_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.alloy.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.alloy.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.alloy.tls.certresolver: "letsencrypt"
+          traefik.http.routers.alloy.middlewares: "{{ omit if alloy_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Alloy
+  when: not alloy_enabled
+  block:
+    - name: Stop Alloy
+      community.docker.docker_container:
+        name: "{{ alloy_container_name }}"
+        state: absent

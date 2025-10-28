@@ -1,0 +1,26 @@
+---
+homebridge_enabled: false
+homebridge_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+homebridge_available_externally: false
+
+# directories
+homebridge_config_directory: "{{ docker_home }}/homebridge/config"
+
+# uid / gid
+homebridge_user_id: "1000"
+homebridge_group_id: "1000"
+
+# network
+homebridge_hostname: homebridge
+homebridge_port: 8087
+
+# containers
+homebridge_container_name: homebridge
+homebridge_image_name: homebridge/homebridge
+homebridge_image_version: latest
+
+homebridge_container_names: # Used to check if app is running
+  - "{{ homebridge_container_name }}"
+
+# specs
+homebridge_memory: 1g

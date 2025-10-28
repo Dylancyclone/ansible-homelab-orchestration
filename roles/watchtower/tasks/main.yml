@@ -1,0 +1,30 @@
+---
+- name: Start Watchtower
+  when: watchtower_enabled
+  block:
+    - name: Check for Watchtower Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: watchtower
+
+    - name: Watchtower Docker Container
+      community.docker.docker_container:
+        name: "{{ watchtower_container_name }}"
+        image: "{{ watchtower_image_name }}:{{ watchtower_image_version }}"
+        pull: true
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock"
+        env:
+          TZ: "{{ computer_timezone }}"
+        command: "{{ watchtower_command }}"
+        restart_policy: unless-stopped
+        memory: "{{ watchtower_memory }}"
+
+- name: Stop Watchtower
+  when: not watchtower_enabled
+  block:
+    - name: Stop Watchtower
+      community.docker.docker_container:
+        name: "{{ watchtower_container_name }}"
+        state: absent

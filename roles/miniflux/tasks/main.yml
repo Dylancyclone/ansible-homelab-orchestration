@@ -1,0 +1,79 @@
+---
+- name: Start Miniflux
+  when: miniflux_enabled
+  block:
+    - name: Check for Miniflux Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: miniflux
+
+    - name: Create Miniflux Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ miniflux_data_directory }}/postgres"
+
+    - name: Create Miniflux network
+      community.docker.docker_network:
+        name: "{{ miniflux_network_name }}"
+
+    - name: Create Postgres for Miniflux
+      community.docker.docker_container:
+        name: "{{ miniflux_db_container_name }}"
+        image: "{{ miniflux_db_image_name }}:{{ miniflux_db_image_version }}"
+        pull: true
+        networks:
+          - name: "{{ miniflux_network_name }}"
+        network_mode: "{{ miniflux_network_name }}"
+        volumes:
+          - "{{ miniflux_data_directory }}/postgres:/var/lib/postgresql/data:rw"
+        env:
+          POSTGRES_USER: "miniflux"
+          POSTGRES_PASSWORD: "supersecure"
+        restart_policy: unless-stopped
+        memory: "{{ miniflux_postgres_memory }}"
+
+    - name: Create Miniflux Docker Container
+      community.docker.docker_container:
+        name: "{{ miniflux_container_name }}"
+        image: "{{ miniflux_image_name }}:{{ miniflux_image_version }}"
+        pull: true
+        networks:
+          - name: "{{ miniflux_network_name }}"
+        network_mode: "{{ miniflux_network_name }}"
+        ports:
+          - "{{ miniflux_port }}:8080"
+        env:
+          DATABASE_URL: "postgres://miniflux:supersecure@{{ miniflux_db_container_name }}/miniflux?sslmode=disable"
+          RUN_MIGRATIONS: "1"
+          CREATE_ADMIN: "1"
+          ADMIN_USERNAME: "{{ miniflux_admin_username }}"
+          ADMIN_PASSWORD: "{{ miniflux_admin_password }}"
+        restart_policy: unless-stopped
+        memory: "{{ miniflux_memory }}"
+        labels:
+          traefik.enable: "{{ (miniflux_dns_accessible or miniflux_available_externally) | string }}"
+          traefik.http.services.miniflux.loadbalancer.server.port: "8080"
+          traefik.http.routers.miniflux.rule: "Host(`{{ miniflux_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.miniflux.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.miniflux.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.miniflux.tls.certresolver: "letsencrypt"
+          traefik.http.routers.miniflux.middlewares: "{{ omit if miniflux_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Miniflux
+  when: not miniflux_enabled
+  block:
+    - name: Stop Miniflux
+      community.docker.docker_container:
+        name: "{{ miniflux_container_name }}"
+        state: absent
+    - name: Stop Miniflux Database
+      community.docker.docker_container:
+        name: "{{ miniflux_db_container_name }}"
+        state: absent
+    - name: Remove Miniflux Network
+      community.docker.docker_network:
+        name: "{{ miniflux_network_name }}"
+        state: absent

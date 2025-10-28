@@ -1,0 +1,84 @@
+---
+- name: Start Firefly
+  when: firefly_enabled
+  block:
+    - name: Check for Firefly Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: firefly
+
+    - name: Create Firefly III Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ firefly_data_directory }}/mariadb"
+        - "{{ firefly_data_directory }}/upload"
+        - "{{ firefly_data_directory }}/export"
+
+    - name: Create MySQL container for Firefly
+      community.docker.docker_container:
+        name: "{{ firefly_mysql_container_name }}"
+        image: "{{ firefly_mysql_image_name }}:{{ firefly_mysql_image_version }}"
+        pull: true
+        volumes:
+          - "{{ firefly_data_directory }}/mariadb:/var/lib/mysql:rw"
+        env:
+          MYSQL_DATABASE: "firefly"
+          MYSQL_USER: "firefly"
+          MYSQL_PASSWORD: "firefly"
+          MYSQL_ROOT_PASSWORD: "firefly"
+        restart_policy: unless-stopped
+        memory: "{{ firefly_mysql_memory }}"
+
+    - name: Wait for MySQL to init
+      ansible.builtin.pause:
+        seconds: 30
+
+    - name: Create Firefly III container
+      community.docker.docker_container:
+        name: "{{ firefly_container_name }}"
+        image: "{{ firefly_image_name }}:{{ firefly_image_version }}"
+        pull: true
+        volumes:
+          - "{{ firefly_data_directory }}/export:/var/www/firefly-iii/storage/export:rw"
+          - "{{ firefly_data_directory }}/upload:/var/www/firefly-iii/storage/upload:rw"
+        links:
+          - "{{ firefly_mysql_container_name }}:db"
+        ports:
+          - "{{ firefly_port }}:8080"
+        env:
+          APP_URL: "https://{{ firefly_hostname }}.{{ dns_domain }}"
+          TRUSTED_PROXIES: "**"
+          APP_ENV: "local"
+          APP_KEY: "S0m3R@nd0mString0f32Ch@rsEx@ct1y"
+          DB_CONNECTION: "mysql"
+          DB_HOST: "db"
+          DB_DATABASE: "firefly"
+          DB_USERNAME: "firefly"
+          DB_PASSWORD: "firefly"
+          TZ: "{{ computer_timezone }}"
+        restart_policy: unless-stopped
+        memory: "{{ firefly_memory }}"
+        labels:
+          traefik.enable: "{{ (firefly_dns_accessible or firefly_available_externally) | string }}"
+          traefik.http.services.firefly.loadbalancer.server.port: "8080"
+          traefik.http.routers.firefly.rule: "Host(`{{ firefly_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.firefly.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.firefly.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.firefly.tls.certresolver: "letsencrypt"
+          traefik.http.routers.firefly.middlewares: "{{ omit if firefly_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Firefly
+  when: not firefly_enabled
+  block:
+    - name: Stop Firefly
+      community.docker.docker_container:
+        name: "{{ firefly_container_name }}"
+        state: absent
+
+    - name: Stop Firefly MySQL
+      community.docker.docker_container:
+        name: "{{ firefly_mysql_container_name }}"
+        state: absent

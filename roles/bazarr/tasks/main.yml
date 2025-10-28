@@ -1,0 +1,52 @@
+---
+- name: Start Bazarr
+  when: bazarr_enabled
+  block:
+    - name: Check for Bazarr Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: bazarr
+
+    - name: Create Bazarr Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ bazarr_data_directory }}"
+        - "{{ bazarr_tv_directory }}"
+        - "{{ bazarr_movies_directory }}"
+
+    - name: Bazarr Docker Container
+      community.docker.docker_container:
+        name: "{{ bazarr_container_name }}"
+        image: "{{ bazarr_image_name }}:{{ bazarr_image_version }}"
+        pull: true
+        volumes:
+          - "{{ bazarr_tv_directory }}:/tv:rw"
+          - "{{ bazarr_movies_directory }}:/movies:rw"
+          - "{{ bazarr_data_directory }}:/config:rw"
+        ports:
+          - "{{ bazarr_port }}:6767"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ bazarr_user_id }}"
+          PGID: "{{ bazarr_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ bazarr_memory }}"
+        labels:
+          traefik.enable: "{{ (bazarr_dns_accessible or bazarr_available_externally) | string }}"
+          traefik.http.services.bazarr.loadbalancer.server.port: "6767"
+          traefik.http.routers.bazarr.rule: "Host(`{{ bazarr_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.bazarr.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.bazarr.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.bazarr.tls.certresolver: "letsencrypt"
+          traefik.http.routers.bazarr.middlewares: "{{ omit if bazarr_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Bazarr
+  when: not bazarr_enabled
+  block:
+    - name: Stop Bazarr
+      community.docker.docker_container:
+        name: "{{ bazarr_container_name }}"
+        state: absent

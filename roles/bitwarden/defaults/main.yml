@@ -1,0 +1,38 @@
+---
+bitwarden_enabled: false
+bitwarden_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+bitwarden_available_externally: false
+
+# directories
+bitwarden_data_directory: "{{ docker_home }}/bitwarden"
+
+# network
+bitwarden_hostname: bitwarden
+bitwarden_port: 19080
+
+# containers
+bitwarden_container_name: bitwarden
+bitwarden_image_name: vaultwarden/server
+bitwarden_image_version: latest
+
+bitwarden_backup_container_name: bitwarden-backup
+bitwarden_backup_image_name: bruceforce/vaultwarden-backup
+bitwarden_backup_image_version: latest
+
+bitwarden_container_names: # Used to check if app is running
+  - "{{ bitwarden_container_name }}"
+  - "{{ bitwarden_backup_container_name }}"
+
+# Keep this token secret, this is password to access admin area of your server!
+# This token can be anything, but it's recommended to use a long, randomly generated string of characters,
+# for example running openssl rand -base64 48
+bitwarden_admin_token: qwertyuiop1234567890poiuytrewq0987654321
+
+# To create a user set this to "true", and reprovision the container by re-running the ansible playbook.
+# Once you have created your user, set to "false" and run one more time.
+# Target just Bitwarden by running: ansible-playbook -i inventory homelab.yml --tags="bitwarden"
+bitwarden_allow_signups: false
+
+# specs
+bitwarden_memory: 1g
+bitwarden_backup_memory: 1g

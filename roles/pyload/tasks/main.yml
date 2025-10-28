@@ -1,0 +1,50 @@
+---
+- name: Start pyLoad
+  when: pyload_enabled
+  block:
+    - name: Check for PyLoad Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: pyload
+
+    - name: Create pyLoad Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ pyload_config_directory }}"
+        - "{{ pyload_download_directory }}"
+
+    - name: Create pyLoad Docker Container
+      community.docker.docker_container:
+        name: "{{ pyload_container_name }}"
+        image: "{{ pyload_image_name }}:{{ pyload_image_version }}"
+        pull: true
+        volumes:
+          - "{{ pyload_config_directory }}:/opt/pyload/pyload-config:rw"
+          - "{{ pyload_download_directory }}:/opt/pyload/Downloads:rw"
+        ports:
+          - "{{ pyload_port }}:8000"
+        env:
+          TZ: "{{ computer_timezone }}"
+          UID: "{{ pyload_user_id }}"
+          GID: "{{ pyload_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ pyload_memory }}"
+        labels:
+          traefik.enable: "{{ (pyload_dns_accessible or pyload_available_externally) | string }}"
+          traefik.http.services.pyload.loadbalancer.server.port: "8000"
+          traefik.http.routers.pyload.rule: "Host(`{{ pyload_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.pyload.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.pyload.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.pyload.tls.certresolver: "letsencrypt"
+          traefik.http.routers.pyload.middlewares: "{{ omit if pyload_available_externally else 'blockExternal@file' }}"
+
+- name: Stop pyLoad
+  when: not pyload_enabled
+  block:
+    - name: Stop pyLoad
+      community.docker.docker_container:
+        name: "{{ pyload_container_name }}"
+        state: absent

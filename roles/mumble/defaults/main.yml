@@ -1,0 +1,27 @@
+---
+mumble_enabled: false
+mumble_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+mumble_available_externally: false
+
+# Directories
+mumble_data_directory: "{{ docker_home }}/mumble"
+
+# Networking
+mumble_hostname: mumble
+mumble_tcp_port: 64738
+mumble_udp_port: 64738
+
+# Containers
+mumble_container_name: mumble-server
+mumble_image_name: mumblevoip/mumble-server
+mumble_image_version: latest
+
+mumble_container_names: # Used to check if app is running
+  - "{{ mumble_container_name }}"
+
+# Specs
+mumble_memory: 1g
+
+# Configuration
+# It is strongly advised this password is change, especially if this is publicly available.
+mumble_server_password: abcpassword123

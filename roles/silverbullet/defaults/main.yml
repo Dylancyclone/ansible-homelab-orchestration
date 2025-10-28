@@ -1,0 +1,26 @@
+---
+silverbullet_enabled: false
+silverbullet_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+silverbullet_available_externally: false
+
+# directories
+silverbullet_data_directory: "{{ docker_home }}/silverbullet"
+
+# network
+silverbullet_hostname: silverbullet
+silverbullet_port: 3002
+
+# containers
+silverbullet_container_name: silverbullet
+silverbullet_image_name: zefhemel/silverbullet
+silverbullet_image_version: latest
+
+silverbullet_container_names: # Used to check if app is running
+  - "{{ silverbullet_container_name }}"
+
+# specs
+silverbullet_memory: 1g
+
+# config
+silverbullet_username: admin
+silverbullet_password: topSecret

@@ -1,0 +1,69 @@
+---
+- name: Start Grafana
+  when: grafana_enabled
+  block:
+    - name: Check for Grafana Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: grafana
+
+    - name: Create Grafana Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ grafana_data_directory }}"
+        - "{{ grafana_config_directory }}"
+        - "{{ grafana_config_directory }}/dashboards"
+        - "{{ grafana_config_directory }}/provisioning/datasources"
+        - "{{ grafana_config_directory }}/provisioning/dashboards"
+
+    - name: Template Grafana data source
+      ansible.builtin.template:
+        src: datasource.yml
+        dest: "{{ grafana_config_directory }}/provisioning/datasources/ansible-homelab-orchestration.yml"
+
+    - name: Copy Grafana dashboards configuration
+      ansible.builtin.copy:
+        src: dashboard.yml
+        dest: "{{ grafana_config_directory }}/provisioning/dashboards/ansible-homelab-orchestration.yml"
+
+    - name: Copy Grafana dashboard
+      ansible.builtin.copy:
+        src: dashboard-overview.json
+        dest: "{{ grafana_config_directory }}/dashboards/ansible-homelab-orchestration-overview.json"
+
+    - name: Grafana Docker Container
+      community.docker.docker_container:
+        name: "{{ grafana_container_name }}"
+        image: "{{ grafana_image_name }}:{{ grafana_image_version }}"
+        pull: true
+        user: "{{ grafana_user_id }}:{{ grafana_group_id }}"
+        volumes:
+          - "{{ grafana_data_directory }}:/var/lib/grafana:rw"
+          - "{{ grafana_config_directory }}/provisioning:/etc/grafana/provisioning:ro"
+          - "{{ grafana_config_directory }}/dashboards:/etc/dashboards:ro"
+        ports:
+          - "{{ grafana_port }}:3000"
+        env:
+          GF_PLUGINS_ENABLE_ALPHA: "true"
+          GF_UNIFIED_ALERTING_ENABLED: "true"
+        restart_policy: unless-stopped
+        memory: "{{ grafana_memory }}"
+        labels:
+          traefik.enable: "{{ (grafana_dns_accessible or grafana_available_externally) | string }}"
+          traefik.http.services.grafana.loadbalancer.server.port: "3000"
+          traefik.http.routers.grafana.rule: "Host(`{{ grafana_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.grafana.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.grafana.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.grafana.tls.certresolver: "letsencrypt"
+          traefik.http.routers.grafana.middlewares: "{{ omit if grafana_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Grafana
+  when: not grafana_enabled
+  block:
+    - name: Stop Grafana
+      community.docker.docker_container:
+        name: "{{ grafana_container_name }}"
+        state: absent

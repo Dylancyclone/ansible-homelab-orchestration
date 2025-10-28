@@ -1,0 +1,32 @@
+---
+title: Calibre
+tags: ["Books"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://calibre-ebook.com/) |
+[Repository](https://github.com/linuxserver/docker-calibre)
+
+<Tags tags={frontmatter.tags} />
+
+Calibre is a powerful and easy to use e-book manager.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+calibre_enabled: true
+```
+
+By default, Calibre can be accessed at `http://[your_server_ip]:8093` or `https://calibre.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Calibre at [`roles/calibre/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/calibre/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

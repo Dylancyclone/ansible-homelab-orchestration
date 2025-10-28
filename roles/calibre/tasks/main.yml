@@ -1,0 +1,56 @@
+---
+- name: Start Calibre
+  when: calibre_enabled
+  block:
+    - name: Check for Calibre Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: calibre
+
+    - name: Create Calibre Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ calibre_data_directory }}/data"
+        - "{{ calibre_books_directory }}"
+        - "{{ calibre_comics_directory }}"
+
+    - name: Calibre Docker Container
+      community.docker.docker_container:
+        name: "{{ calibre_container_name }}"
+        image: "{{ calibre_image_name }}:{{ calibre_image_version }}"
+        pull: true
+        volumes:
+          - "{{ calibre_data_directory }}/data:/config:rw"
+          - "{{ calibre_books_directory }}:/books:rw"
+          - "{{ calibre_comics_directory }}:/comics:rw"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ calibre_user_id }}"
+          PGID: "{{ calibre_group_id }}"
+          PASSWORD: "{{ calibre_password }}"
+          CLI_ARGS: "{{ calibre_cli_args }}"
+        ports:
+          - "{{ calibre_port }}:8080"
+          - "{{ calibre_webserver_port }}:8081"
+        security_opts: "{{ calibre_security_opts }}"
+        restart_policy: unless-stopped
+        memory: "{{ calibre_memory }}"
+        labels:
+          traefik.enable: "{{ (calibre_dns_accessible or calibre_available_externally) | string }}"
+          traefik.http.services.calibre.loadbalancer.server.port: "8080"
+          traefik.http.routers.calibre.rule: "Host(`{{ calibre_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.calibre.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.calibre.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.calibre.tls.certresolver: "letsencrypt"
+          traefik.http.routers.calibre.middlewares: "{{ omit if calibre_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Calibre
+  when: not calibre_enabled
+  block:
+    - name: Stop Calibre
+      community.docker.docker_container:
+        name: "{{ calibre_container_name }}"
+        state: absent

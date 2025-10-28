@@ -1,0 +1,32 @@
+---
+tiddlywiki_enabled: false
+tiddlywiki_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+tiddlywiki_available_externally: false
+
+# Data directory for config file
+tiddlywiki_data_directory: "{{ docker_home }}/tiddlywiki"
+
+# Basic auth
+# tiddlywiki_username:
+# tiddlywiki_password:
+
+# Node low memory
+# tiddlywiki_node_memory:
+
+# Server debugging
+# tiddlywiki_debug_level: none # full
+
+# Networking
+tiddlywiki_port: 8092
+tiddlywiki_hostname: tiddlywiki
+
+# Container
+tiddlywiki_container_name: tiddlywiki
+tiddlywiki_image_name: wmudge/tiddlywiki
+tiddlywiki_image_version: latest
+
+tiddlywiki_container_names: # Used to check if app is running
+  - "{{ tiddlywiki_container_name }}"
+
+# Specs
+tiddlywiki_memory: 512MB

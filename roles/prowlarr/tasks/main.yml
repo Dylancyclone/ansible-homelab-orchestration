@@ -1,0 +1,48 @@
+---
+- name: Start Prowlarr
+  when: prowlarr_enabled
+  block:
+    - name: Check for Prowlarr Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: prowlarr
+
+    - name: Create Prowlarr Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ prowlarr_data_directory }}"
+
+    - name: Create Prowlarr Docker Container
+      community.docker.docker_container:
+        name: "{{ prowlarr_container_name }}"
+        image: "{{ prowlarr_image_name }}:{{ prowlarr_image_version }}"
+        pull: true
+        volumes:
+          - "{{ prowlarr_data_directory }}:/config:rw"
+        ports:
+          - "{{ prowlarr_port }}:9696"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ prowlarr_user_id }}"
+          PGID: "{{ prowlarr_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ prowlarr_memory }}"
+        labels:
+          traefik.enable: "{{ (prowlarr_dns_accessible or prowlarr_available_externally) | string }}"
+          traefik.http.services.prowlarr.loadbalancer.server.port: "9696"
+          traefik.http.routers.prowlarr.rule: "Host(`{{ prowlarr_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.prowlarr.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.prowlarr.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.prowlarr.tls.certresolver: "letsencrypt"
+          traefik.http.routers.prowlarr.middlewares: "{{ omit if prowlarr_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Prowlarr
+  when: not prowlarr_enabled
+  block:
+    - name: Stop Prowlarr
+      community.docker.docker_container:
+        name: "{{ prowlarr_container_name }}"
+        state: absent

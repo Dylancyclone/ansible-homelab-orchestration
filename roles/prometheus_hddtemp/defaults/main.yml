@@ -1,0 +1,15 @@
+---
+prometheus_hddtemp_enabled: false
+
+# network
+prometheus_hddtemp_port: 7634
+# containers
+prometheus_hddtemp_container_name: prometheus_hddtemp
+prometheus_hddtemp_image_name: modem7/hddtemp-docker
+prometheus_hddtemp_image_version: latest
+
+prometheus_hddtemp_container_names: # Used to check if app is running
+  - "{{ prometheus_hddtemp_container_name }}"
+
+# specs
+prometheus_hddtemp_memory: 128m

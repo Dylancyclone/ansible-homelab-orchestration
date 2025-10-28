@@ -1,0 +1,31 @@
+---
+title: Speedtest Tracker
+tags: ["Monitoring"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Repository](https://github.com/henrywhitaker3/Speedtest-Tracker)
+
+<Tags tags={frontmatter.tags} />
+
+Speedtest Tracker runs a speedtest check every hour and graphs the results. It uses the [Ookla's speedtest cli](https://www.speedtest.net/apps/cli) package to get the data and uses Chart.js to plot the results.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+speedtest_tracker_enabled: true
+```
+
+By default, Speedtest Tracker can be accessed at `http://[your_server_ip]:8765` or `https://speedtest_tracker.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Speedtest Tracker at [`roles/speedtest_tracker/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/speedtest_tracker/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

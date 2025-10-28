@@ -1,0 +1,27 @@
+---
+calibreweb_enabled: false
+calibreweb_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+calibreweb_available_externally: false
+
+# directories
+calibreweb_data_directory: "{{ docker_home }}/calibreweb"
+calibreweb_books_root: "{{ books_root }}"
+
+# uid / gid
+calibreweb_user_id: "1000"
+calibreweb_group_id: "1000"
+
+# network
+calibreweb_hostname: calibreweb
+calibreweb_port: 8084
+
+# containers
+calibreweb_container_name: calibreweb
+calibreweb_image_name: linuxserver/calibre-web
+calibreweb_image_version: latest
+
+calibreweb_container_names: # Used to check if app is running
+  - "{{ calibreweb_container_name }}"
+
+# specs
+calibreweb_memory: 1g

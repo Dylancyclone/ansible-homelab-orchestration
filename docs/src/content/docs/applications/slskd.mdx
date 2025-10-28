@@ -1,0 +1,31 @@
+---
+title: Slskd
+tags: ["Download Manager", "Music", "Books", "Audiobooks"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Repository](https://github.com/slskd/slskd)
+
+<Tags tags={frontmatter.tags} />
+
+A modern client-server application for the Soulseek file sharing network. 
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+slskd_enabled: true
+```
+
+By default, Slskd can be accessed at `http://[your_server_ip]:5030` or `https://slskd.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Slskd at [`roles/slskd/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/slskd/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

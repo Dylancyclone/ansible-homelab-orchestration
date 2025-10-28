@@ -1,0 +1,32 @@
+---
+title: Nextcloud
+tags: ["File Management"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://nextcloud.com/) |
+[Repository](https://github.com/nextcloud/server)
+
+<Tags tags={frontmatter.tags} />
+
+Nextcloud offers a modern, on premise content collaboration platform with real-time document editing, video chat & groupware on mobile, desktop and web.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+nextcloud_enabled: true
+```
+
+By default, Nextcloud can be accessed at `http://[your_server_ip]:8080` or `https://nextcloud.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Nextcloud at [`roles/nextcloud/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/nextcloud/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

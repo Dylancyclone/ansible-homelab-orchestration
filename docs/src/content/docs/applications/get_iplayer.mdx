@@ -1,0 +1,31 @@
+---
+title: get_iplayer
+tags: ["Download Manager"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Repository](https://github.com/get-iplayer/get_iplayer)
+
+<Tags tags={frontmatter.tags} />
+
+A utility for downloading TV and radio programmes from BBC iPlayer and BBC Sounds.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+get_iplayer_enabled: true
+```
+
+By default, get_iplayer can be accessed at `http://[your_server_ip]:8182` or `https://get_iplayer.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for get_iplayer at [`roles/get_iplayer/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/get_iplayer/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

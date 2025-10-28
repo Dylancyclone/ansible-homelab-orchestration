@@ -1,0 +1,33 @@
+---
+miniflux_enabled: false
+miniflux_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+miniflux_available_externally: false
+
+# directories
+miniflux_data_directory: "{{ docker_home }}/miniflux"
+
+# env
+miniflux_admin_username: admin
+miniflux_admin_password: supersecure
+
+# network
+miniflux_hostname: miniflux
+miniflux_network_name: miniflux
+miniflux_port: 8070
+
+# containers
+miniflux_container_name: miniflux
+miniflux_image_name: miniflux/miniflux
+miniflux_image_version: latest
+
+miniflux_db_container_name: miniflux-postgres
+miniflux_db_image_name: postgres
+miniflux_db_image_version: "11.1"
+
+miniflux_container_names: # Used to check if app is running
+  - "{{ miniflux_container_name }}"
+  - "{{ miniflux_db_container_name }}"
+
+# specs
+miniflux_memory: 1g
+miniflux_postgres_memory: 1g

@@ -35,6 +35,7 @@ comics_root: "{{ data_home }}/comics"
 podcasts_root: "{{ data_home }}/podcasts"
 photos_root: "{{ data_home }}/photos"
 documents_root: "{{ data_home }}/documents" # For example PDFs and where paperless-ngx operates
+roms_root: "{{ data_home }}/roms"
 downloads_root: "{{ data_home }}/downloads" # General downloads and incomplete files
 torrents_root: "{{ data_home }}/torrents"
 code_root: "{{ data_home }}/code" # Git repositories and other code

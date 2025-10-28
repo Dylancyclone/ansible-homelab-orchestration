@@ -1,0 +1,28 @@
+---
+gitea_enabled: false
+gitea_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+gitea_available_externally: false
+
+# directories
+gitea_data_directory: "{{ docker_home }}/gitea"
+
+# network
+gitea_hostname: gitea
+gitea_http_port: 3004
+gitea_ssh_port: 222
+
+# containers
+gitea_container_name: gitea
+gitea_image_name: gitea/gitea
+gitea_image_version: latest
+gitea_mysql_container_name: gitea-mysql
+gitea_mysql_image_name: mysql
+gitea_mysql_image_version: "5.7"
+
+gitea_container_names: # Used to check if app is running
+  - "{{ gitea_container_name }}"
+  - "{{ gitea_mysql_container_name }}"
+
+# specs
+gitea_memory: 1g
+gitea_mysql_memory: 1g

@@ -1,0 +1,52 @@
+---
+title: DDNS Updater
+tags: ["Dynamic DNS"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Repository](https://github.com/qdm12/ddns-updater)
+
+<Tags tags={frontmatter.tags} />
+
+Container to update DNS records periodically with WebUI for many DNS providers.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+ddns_updater_enabled: true
+
+# ddns_updater_config describes the content of the config.json used to configure the updater.
+# see https://github.com/qdm12/ddns-updater#configuration for more info
+ddns_updater_config:
+  settings:
+    - provider: namecheap
+      domain: example.com
+      host: "@"
+      password: e5322165c1d74692bfa6d807100c0310
+  # settings:
+  #   - provider: duckdns
+  #     host: example
+  #     token: 1234567-asdf-ghjk-qwer-a1b2c3asdfasdf
+  #     ip_version: "ipv4"
+  #     provider_ip: true
+```
+
+By default, DDNS Updater can be accessed at `http://[your_server_ip]:8202` or `https://ddns_updater.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+DDNS Updater can hook up to [Gotify](../gotify) if you have that enabled:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+ddns_updater_gotify_token: "token"
+gotify_url: "https://{{ gotify_hostname }}.{{ dns_domain }}"
+```
+See the default configuration options for DDNS Updater at [`roles/ddns_updater/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/ddns_updater/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

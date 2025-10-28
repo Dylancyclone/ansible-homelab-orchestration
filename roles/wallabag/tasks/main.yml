@@ -1,0 +1,49 @@
+---
+- name: Start Wallabag
+  when: wallabag_enabled
+  block:
+    - name: Check for Wallabag Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: wallabag
+
+    - name: Create Wallabag Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ wallabag_data_directory }}/data"
+        - "{{ wallabag_data_directory }}/data/db"
+        - "{{ wallabag_data_directory }}/images"
+
+    - name: Wallabag Docker Container
+      community.docker.docker_container:
+        name: "{{ wallabag_container_name }}"
+        image: "{{ wallabag_image_name }}:{{ wallabag_image_version }}"
+        pull: true
+        volumes:
+          - "{{ wallabag_data_directory }}/data:/var/www/wallabag/data:rw"
+          - "{{ wallabag_data_directory }}/images:/var/www/wallabag/web/assets/images:rw"
+        ports:
+          - "{{ wallabag_port }}:80"
+        env:
+          SYMFONY__ENV__DOMAIN_NAME: "https://{{ wallabag_hostname }}.{{ dns_domain }}"
+        restart_policy: unless-stopped
+        memory: "{{ wallabag_memory }}"
+        labels:
+          traefik.enable: "{{ (wallabag_dns_accessible or wallabag_available_externally) | string }}"
+          traefik.http.services.wallabag.loadbalancer.server.port: "80"
+          traefik.http.routers.wallabag.rule: "Host(`{{ wallabag_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.wallabag.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.wallabag.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.wallabag.tls.certresolver: "letsencrypt"
+          traefik.http.routers.wallabag.middlewares: "{{ omit if wallabag_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Wallabag
+  when: not wallabag_enabled
+  block:
+    - name: Stop Wallabag
+      community.docker.docker_container:
+        name: "{{ wallabag_container_name }}"
+        state: absent

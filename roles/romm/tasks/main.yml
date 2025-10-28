@@ -1,0 +1,103 @@
+---
+- name: Start Romm
+  when: romm_enabled
+  block:
+    - name: Check for Romm Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: romm
+
+    - name: Create Romm Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ romm_data_directory }}/resources"
+        - "{{ romm_data_directory }}/assets"
+        - "{{ romm_data_directory }}/config"
+        - "{{ romm_db_data_directory }}"
+        - "{{ romm_roms_directory }}"
+
+    - name: MariaDB Docker Container for Romm
+      community.docker.docker_container:
+        name: "{{ romm_db_container_name }}"
+        image: "{{ romm_db_image_name }}:{{ romm_db_image_version }}"
+        pull: true
+        volumes:
+          - "{{ romm_db_data_directory }}/db:/var/lib/mysql"
+        env:
+          MYSQL_ROOT_PASSWORD: "{{ romm_database_root_password }}"
+          MYSQL_DATABASE: "romm"
+          MYSQL_USER: "{{ romm_database_username }}"
+          MYSQL_PASSWORD: "{{ romm_database_password }}"
+        restart_policy: unless-stopped
+        memory: "{{ romm_db_memory }}"
+
+    - name: Create Romm Redis
+      community.docker.docker_container:
+        name: "{{ romm_redis_container_name }}"
+        image: "{{ romm_redis_image_name }}:{{ romm_redis_image_version }}"
+        pull: true
+        restart_policy: unless-stopped
+        memory: "{{ romm_redis_memory }}"
+
+    - name: Romm Docker Container
+      community.docker.docker_container:
+        name: "{{ romm_container_name }}"
+        image: "{{ romm_image_name }}:{{ romm_image_version }}"
+        pull: true
+        volumes:
+          - "{{ romm_roms_directory }}:/romm/library/roms:rw"
+          - "{{ romm_data_directory }}/resources:/romm/resources:rw"
+          - "{{ romm_data_directory }}/assets:/romm/assets:rw"
+          - "{{ romm_data_directory }}/config:/romm/config:rw"
+        ports:
+          - "{{ romm_port }}:8080"
+        env:
+          ROMM_DB_DRIVER: "mariadb"
+          DB_HOST: "db"
+          DB_PORT: "3306"
+          DB_USER: "{{ romm_database_username }}"
+          DB_PASSWD: "{{ romm_database_password }}"
+          DB_NAME: "romm"
+          ROMM_AUTH_ENABLED: "true"
+          ROMM_AUTH_SECRET_KEY: "{{ romm_auth_secret_key }}"
+          ENABLE_EXPERIMENTAL_REDIS: "true"
+          REDIS_HOST: "redis"
+          REDIS_PORT: "6379"
+          IGDB_CLIENT_ID: "{{ romm_igdb_client_id }}"
+          IGDB_CLIENT_SECRET: "{{ romm_igdb_client_secret }}"
+          MOBYGAMES_API_KEY: "{{ romm_mobygames_client_id }}"
+          STEAMGRIDDB_API_KEY: "{{ romm_steamgriddb_client_id }}"
+          ROMM_AUTH_USERNAME: "{{ romm_auth_username }}"
+          ROMM_AUTH_PASSWORD: "{{ romm_auth_password }}"
+        restart_policy: unless-stopped
+        memory: "{{ romm_memory }}"
+        links:
+          - "{{ romm_db_container_name }}:db"
+          - "{{ romm_redis_container_name }}:redis"
+        labels:
+          traefik.enable: "{{ (romm_dns_accessible or romm_available_externally) | string }}"
+          traefik.http.services.romm.loadbalancer.server.port: "8080"
+          traefik.http.routers.romm.rule: "Host(`{{ romm_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.romm.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.romm.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.romm.tls.certresolver: "letsencrypt"
+          traefik.http.routers.romm.middlewares: "{{ omit if romm_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Romm
+  when: not romm_enabled
+  block:
+    - name: Stop Romm
+      community.docker.docker_container:
+        name: "{{ romm_container_name }}"
+        state: absent
+    - name: Stop Romm Redis
+      community.docker.docker_container:
+        name: "{{ romm_redis_container_name }}"
+        state: absent
+    - name: Stop Romm DB
+      community.docker.docker_container:
+        name: "{{ romm_db_container_name }}"
+        state: absent

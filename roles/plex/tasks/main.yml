@@ -1,0 +1,63 @@
+---
+- name: Start Plex
+  when: plex_enabled
+  block:
+    - name: Check for Plex Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: plex
+
+    - name: Create Plex Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ plex_config_directory }}"
+        - "{{ plex_logs }}"
+        - "{{ plex_movies_directory }}"
+        - "{{ plex_tv_directory }}"
+        - "{{ plex_photos_directory }}"
+        - "{{ plex_podcasts_directory }}"
+        - "{{ plex_music_directory }}"
+        - "{{ plex_audiobooks_directory }}"
+
+    - name: Create Plex Docker Container
+      community.docker.docker_container:
+        name: "{{ plex_container_name }}"
+        image: "{{ plex_image_name }}:{{ plex_image_version }}"
+        pull: true
+        volumes:
+          - "{{ plex_config_directory }}:/config:rw"
+          - "{{ plex_logs }}:/opt/plex/Library/Application Support/Plex Media Server/Logs:rw"
+          - "{{ plex_movies_directory }}:/movies:{{ plex_movies_permissions }}"
+          - "{{ plex_tv_directory }}:/tv:{{ plex_tv_permissions }}"
+          - "{{ plex_photos_directory }}:/photos:{{ plex_photos_permissions }}"
+          - "{{ plex_podcasts_directory }}:/podcasts:{{ plex_podcasts_permissions }}"
+          - "{{ plex_music_directory }}:/music:{{ plex_music_permissions }}"
+          - "{{ plex_audiobooks_directory }}:/audiobooks:{{ plex_audiobooks_permissions }}"
+        network_mode: host
+        devices: "{{ plex_devices | default(omit) }}"
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ plex_user_id }}"
+          PGID: "{{ plex_group_id }}"
+          VERSION: "{{ plex_version }}"
+        restart_policy: unless-stopped
+        memory: "{{ plex_memory }}"
+        labels:
+          traefik.enable: "{{ (plex_dns_accessible or plex_available_externally) | string }}"
+          traefik.http.services.plex.loadbalancer.server.port: "32400"
+          traefik.http.routers.plex.rule: "Host(`{{ plex_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.plex.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.plex.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.plex.tls.certresolver: "letsencrypt"
+          traefik.http.routers.plex.middlewares: "{{ omit if plex_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Plex
+  when: not plex_enabled
+  block:
+    - name: Stop Plex
+      community.docker.docker_container:
+        name: "{{ plex_container_name }}"
+        state: absent

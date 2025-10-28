@@ -1,0 +1,38 @@
+---
+prometheus_enabled: false
+prometheus_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+prometheus_available_externally: false
+
+# directories
+prometheus_data_directory: "{{ docker_home }}/prometheus/data"
+prometheus_config_directory: "{{ docker_home }}/prometheus/config"
+
+# network
+prometheus_hostname: prometheus
+prometheus_port: 9090
+
+# uid/gid
+prometheus_user_id: 1000
+prometheus_group_id: 1000
+
+# containers
+prometheus_container_name: prometheus
+prometheus_image_name: prom/prometheus
+prometheus_image_version: latest
+
+prometheus_container_names: # Used to check if app is running
+  - "{{ prometheus_container_name }}"
+
+# specs
+prometheus_memory: 1g
+
+# config
+prometheus_retention_time: 365d
+prometheus_retention_size: 30GB
+prometheus_collection_interval: 15s
+# uncomment to scrape more hosts
+# prometheus_additional_hosts:
+#  - 192.168.1.1:9100
+
+# uncomment to scrape metrics from HomeAssistant. You'll need to create a long lived access token.
+# prometheus_homeassistant_long_lived_access_token: abcd

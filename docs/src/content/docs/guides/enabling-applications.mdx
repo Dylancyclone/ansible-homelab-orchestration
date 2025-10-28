@@ -10,8 +10,15 @@ import { Aside } from "@astrojs/starlight/components"
 Ansible Homelab Orchestration relies on Ansible's [precedence rules](https://docs.ansible.com/ansible/latest/reference_appendices/general_precedence.html) to enable and disable applications.
 
 To enable and configure applications, just declare the varibles in your `inventories/[your_inventory]/group_vars/homelab.yml` file, and that will override the defaults set by the role.
-All variables are prepended with the application name, for example, to enable Portainer, you would set `portainer_enabled: true`.
-Each application has a number of common variables, for example for Portainer, you can be sure that the following variables exist:
+Most applications can be enabled with a single variable: `[application_name]_enabled: true`.
+For example, to enable Portainer, all you need to set is:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+portainer_enabled: true
+```
+
+All variables are prepended with the application name.
+Each application that has a web ui will have a number of common variables, for example for Portainer, you can be sure that the following variables exist:
 
 ```yaml
 portainer_enabled: false # Enable or disable the application

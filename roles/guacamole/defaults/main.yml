@@ -1,0 +1,22 @@
+---
+guacamole_enabled: false
+guacamole_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+guacamole_available_externally: false
+
+# directories
+guacamole_data_directory: "{{ docker_home }}/guacamole"
+
+# network
+guacamole_hostname: guacamole
+guacamole_port: 8090
+
+# containers
+guacamole_container_name: guacamole
+guacamole_image_name: jwetzell/guacamole
+guacamole_image_version: latest
+
+guacamole_container_names: # Used to check if app is running
+  - "{{ guacamole_container_name }}"
+
+# specs
+guacamole_memory: 1g

@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config"
 import starlight from "@astrojs/starlight"
-import mermaid from 'astro-mermaid';
+import mermaid from "astro-mermaid"
 
 // https://astro.build/config
 export default defineConfig({
@@ -9,10 +9,10 @@ export default defineConfig({
 	base: "/ansible-homelab-orchestration",
 	trailingSlash: "never",
 	integrations: [
-    mermaid({
-      theme: 'default',
-      autoTheme: true
-    }),
+		mermaid({
+			theme: "default",
+			autoTheme: true,
+		}),
 		starlight({
 			title: "Ansible Homelab Orchestration",
 			social: [
@@ -29,8 +29,13 @@ export default defineConfig({
 					autogenerate: { directory: "guides" },
 				},
 				{
-					label: 'Browse Applications',
-					link: '/tags',
+					label: "Browse Applications",
+					link: "/tags",
+				},
+				{
+					label: "Application Combos",
+					autogenerate: { directory: "application_combos" },
+					collapsed: true,
 				},
 				{
 					label: "Applications List",

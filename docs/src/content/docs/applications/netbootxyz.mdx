@@ -1,0 +1,32 @@
+---
+title: netboot.xyz
+tags: ["Neworking"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://netboot.xyz/) |
+[Repository](https://github.com/netbootxyz/netboot.xyz)
+
+<Tags tags={frontmatter.tags} />
+
+Your favorite operating systems in one place. A network-based bootable operating system installer based on iPXE.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+netbootxyz_enabled: true
+```
+
+By default, netboot.xyz can be accessed at `http://[your_server_ip]:3003` or `https://netbootxyz.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for netboot.xyz at [`roles/netbootxyz/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/netbootxyz/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

@@ -1,0 +1,52 @@
+---
+- name: Start Wireshark
+  when: wireshark_enabled
+  block:
+    - name: Check for Wireshark Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: wireshark
+
+    - name: Create Wireshark Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ wireshark_data_directory }}"
+        - "{{ wireshark_data_directory }}/config"
+
+    - name: Create Wireshark Docker Container
+      community.docker.docker_container:
+        name: "{{ wireshark_container_name }}"
+        image: "{{ wireshark_image_name }}:{{ wireshark_image_version }}"
+        pull: true
+        volumes:
+          - "{{ wireshark_data_directory }}/config:/config:rw"
+        network_mode: host
+        env:
+          TZ: "{{ computer_timezone }}"
+          PUID: "{{ wireshark_user_id }}"
+          PGID: "{{ wireshark_group_id }}"
+          CUSTOM_PORT: "{{ wireshark_port | string }}"
+          CUSTOM_HTTPS_PORT: "{{ wireshark_https_port | string }}"
+        capabilities:
+          - NET_ADMIN
+        restart_policy: unless-stopped
+        memory: "{{ wireshark_memory }}"
+        labels:
+          traefik.enable: "{{ (wireshark_dns_accessible or wireshark_available_externally) | string }}"
+          traefik.http.services.wireshark.loadbalancer.server.port: "{{ wireshark_port }}"
+          traefik.http.routers.wireshark.rule: "Host(`{{ wireshark_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.wireshark.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.wireshark.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.wireshark.tls.certresolver: "letsencrypt"
+          traefik.http.routers.wireshark.middlewares: "{{ omit if wireshark_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Wireshark
+  when: not wireshark_enabled
+  block:
+    - name: Stop Wireshark
+      community.docker.docker_container:
+        name: "{{ wireshark_container_name }}"
+        state: absent

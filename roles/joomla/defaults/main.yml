@@ -1,0 +1,31 @@
+---
+joomla_enabled: false
+joomla_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+joomla_available_externally: false
+
+joomla_database_password: top_secret
+
+# directories
+joomla_data_directory: "{{ docker_home }}/joomla"
+
+# network
+joomla_hostname: joomla
+joomla_port: 8181
+joomla_network_name: joomla
+
+# containers
+joomla_container_name: joomla
+joomla_image_name: joomla
+joomla_image_version: latest
+
+joomla_db_container_name: joomla-db
+joomla_db_image_name: mysql
+joomla_db_image_version: "5.7"
+
+joomla_container_names: # Used to check if app is running
+  - "{{ joomla_container_name }}"
+  - "{{ joomla_db_container_name }}"
+
+# specs
+joomla_memory: 1g
+joomla_db_memory: 1g

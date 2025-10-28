@@ -1,0 +1,28 @@
+---
+sonarr_enabled: false
+sonarr_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+sonarr_available_externally: false
+
+# directories
+sonarr_data_directory: "{{ docker_home }}/sonarr/config"
+sonarr_tv_directory: "{{ tv_root }}"
+sonarr_download_directory: "{{ downloads_root }}"
+
+# uid / gid
+sonarr_user_id: "1000"
+sonarr_group_id: "1000"
+
+# network
+sonarr_hostname: sonarr
+sonarr_port: 8989
+
+# containers
+sonarr_container_name: sonarr
+sonarr_image_name: linuxserver/sonarr
+sonarr_image_version: latest
+
+sonarr_container_names: # Used to check if app is running
+  - "{{ sonarr_container_name }}"
+
+# specs
+sonarr_memory: 1g

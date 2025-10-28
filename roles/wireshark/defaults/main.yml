@@ -1,0 +1,27 @@
+---
+wireshark_enabled: false
+wireshark_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+wireshark_available_externally: false
+
+# directories
+wireshark_data_directory: "{{ docker_home }}/wireshark"
+
+# uid / gid
+wireshark_user_id: "1000"
+wireshark_group_id: "1000"
+
+# network
+wireshark_hostname: wireshark
+wireshark_port: 3010
+wireshark_https_port: 3011
+
+# containers
+wireshark_container_name: wireshark
+wireshark_image_name: linuxserver/wireshark
+wireshark_image_version: latest
+
+wireshark_container_names: # Used to check if app is running
+  - "{{ wireshark_container_name }}"
+
+# specs
+wireshark_memory: 512m

@@ -1,0 +1,31 @@
+---
+title: DokuWiki
+tags: ["Wiki"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://www.dokuwiki.org/) |
+[Repository](https://github.com/linuxserver/docker-dokuwiki)
+
+<Tags tags={frontmatter.tags} />
+
+Dokuwiki⁠ is a simple to use and highly versatile Open Source wiki software that doesn't require a database. It is loved by users for its clean and readable syntax. The ease of maintenance, backup and integration makes it an administrator's favorite. Built in access controls and authentication connectors make DokuWiki especially useful in the enterprise context and the large number of plugins contributed by its vibrant community allow for a broad range of use cases beyond a traditional wiki.
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+dokuwiki_enabled: true
+```
+
+By default, DokuWiki can be accessed at `http://[your_server_ip]:8085` or `https://dokuwiki.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for DokuWiki at [`roles/dokuwiki/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/dokuwiki/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

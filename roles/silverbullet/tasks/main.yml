@@ -1,0 +1,46 @@
+---
+- name: Start Silverbullet
+  when: silverbullet_enabled
+  block:
+    - name: Check for Silverbullet Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: silverbullet
+
+    - name: Create Silverbullet Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ silverbullet_data_directory }}"
+
+    - name: Silverbullet Docker Container
+      community.docker.docker_container:
+        name: "{{ silverbullet_container_name }}"
+        image: "{{ silverbullet_image_name }}:{{ silverbullet_image_version }}"
+        pull: true
+        ports:
+          - "{{ silverbullet_port }}:3000"
+        volumes:
+          - "{{ silverbullet_data_directory }}:/space"
+        restart_policy: unless-stopped
+        memory: "{{ silverbullet_memory }}"
+        env:
+          SB_USER: "{{ silverbullet_username }}:{{ silverbullet_password }}"
+        labels:
+          traefik.enable: "{{ (silverbullet_dns_accessible or silverbullet_available_externally) | string }}"
+          traefik.http.services.silverbullet.loadbalancer.server.port: "3000"
+          traefik.http.routers.silverbullet.rule: "Host(`{{ silverbullet_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.silverbullet.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.silverbullet.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.silverbullet.tls.certresolver: "letsencrypt"
+          traefik.http.routers.silverbullet.middlewares: "{{ omit if silverbullet_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Silverbullet
+  when: not silverbullet_enabled
+  block:
+    - name: Stop silverbullet
+      community.docker.docker_container:
+        name: "{{ silverbullet_container_name }}"
+        state: absent

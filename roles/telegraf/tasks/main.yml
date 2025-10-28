@@ -1,0 +1,67 @@
+---
+- name: Start Telegraf
+  when: telegraf_enabled
+  block:
+    - name: Check for Telegraf Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: telegraf
+
+    - name: Create Telegraf Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ telegraf_config_directory }}"
+
+    - name: Template telegraf.conf
+      ansible.builtin.template:
+        src: telegraf.conf.j2
+        dest: "{{ telegraf_config_directory }}/telegraf.conf"
+        force: false
+      register: telegraf_config
+
+    - name: Get Docker daemon uid
+      ansible.builtin.command: stat -c '%g' /var/run/docker.sock
+      register: telegraf_docker_uid
+      changed_when: false
+
+    - name: Telegraf Docker Container
+      community.docker.docker_container:
+        name: "{{ telegraf_container_name }}"
+        image: "{{ telegraf_image_name }}:{{ telegraf_image_version }}"
+        pull: true
+        user: "{{ telegraf_user_id }}:{{ telegraf_docker_uid.stdout }}"
+        privileged: true
+        volumes:
+          - "{{ telegraf_config_directory }}:/etc/telegraf/:ro"
+          - "/var/run/docker.sock:/var/run/docker.sock:ro"
+          - "/:/hostfs:ro"
+          - "/etc:/hostfs/etc:ro"
+          - "/proc:/hostfs/proc:ro"
+          - "/sys:/hostfs/sys:ro"
+          - "/var:/hostfs/var:ro"
+          - "/run:/hostfs/run:ro"
+        ipc_mode: host
+        ports:
+          - "{{ telegraf_influxdb_port }}:8086"
+          - "{{ telegraf_port }}:9273"
+        env:
+          HOST_ETC: "/hostfs/etc"
+          HOST_PROC: "/hostfs/proc"
+          HOST_SYS: "/hostfs/sys"
+          HOST_VAR: "/hostfs/var"
+          HOST_RUN: "/hostfs/run"
+          HOST_MOUNT_PREFIX: "/hostfs"
+        restart_policy: unless-stopped
+        restart: "{{ telegraf_config is changed }}"
+        memory: "{{ telegraf_memory }}"
+
+- name: Stop Telegraf
+  when: not telegraf_enabled
+  block:
+    - name: Stop Telegraf
+      community.docker.docker_container:
+        name: "{{ telegraf_container_name }}"
+        state: absent

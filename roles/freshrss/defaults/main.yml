@@ -1,0 +1,23 @@
+---
+freshrss_enabled: false
+freshrss_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+freshrss_available_externally: false
+
+# directories
+freshrss_data_directory: "{{ docker_home }}/freshrss"
+freshrss_extensions_directory: "{{ docker_home }}/freshrss"
+
+# network
+freshrss_hostname: freshrss
+freshrss_port: 8089
+
+# containers
+freshrss_container_name: freshrss
+freshrss_image_name: freshrss/freshrss
+freshrss_image_version: latest
+
+freshrss_container_names: # Used to check if app is running
+  - "{{ freshrss_container_name }}"
+
+# specs
+freshrss_memory: 1g

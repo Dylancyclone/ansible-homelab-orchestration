@@ -1,0 +1,24 @@
+---
+minidlna_enabled: false
+minidlna_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+minidlna_available_externally: false
+
+# directories
+minidlna_movies_directory: "{{ movies_root }}"
+minidlna_tv_directory: "{{ tv_root }}"
+
+# network
+minidlna_friendly_name: "{{ inventory_hostname }}"
+minidlna_hostname: minidlna
+minidlna_port: 8201
+
+# containers
+minidlna_container_name: minidlna
+minidlna_image_name: vladgh/minidlna
+minidlna_image_version: latest
+
+minidlna_container_names: # Used to check if app is running
+  - "{{ minidlna_container_name }}"
+
+# specs
+minidlna_memory: 1g

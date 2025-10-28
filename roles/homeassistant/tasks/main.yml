@@ -1,0 +1,45 @@
+---
+- name: Start Home Assistant
+  when: homeassistant_enabled
+  block:
+    - name: Check for Home Assistant Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: homeassistant
+
+    - name: Create Home Assistant Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ homeassistant_data_directory }}/config"
+
+    - name: Home Assistant Docker Container
+      community.docker.docker_container:
+        name: "{{ homeassistant_container_name }}"
+        image: "{{ homeassistant_image_name }}:{{ homeassistant_image_version }}"
+        pull: true
+        volumes:
+          - "{{ homeassistant_data_directory }}/config:/config:rw"
+        network_mode: host
+        restart_policy: unless-stopped
+        env:
+          TZ: "{{ computer_timezone }}"
+        labels:
+          traefik.enable: "{{ (homeassistant_dns_accessible or homeassistant_available_externally) | string }}"
+          traefik.http.services.homeassistant.loadbalancer.server.port: "8123"
+          traefik.http.routers.homeassistant.rule: "Host(`{{ homeassistant_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.homeassistant.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.homeassistant.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.homeassistant.tls.certresolver: "letsencrypt"
+          traefik.http.routers.homeassistant.middlewares: "{{ omit if homeassistant_available_externally else 'blockExternal@file' }}"
+        memory: "{{ homeassistant_memory }}"
+
+- name: Stop homeassistant
+  when: not homeassistant_enabled
+  block:
+    - name: Stop homeassistant
+      community.docker.docker_container:
+        name: "{{ homeassistant_container_name }}"
+        state: absent

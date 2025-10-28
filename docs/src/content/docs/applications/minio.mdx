@@ -1,0 +1,36 @@
+---
+title: Minio
+tags: ["AWS"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://www.min.io/) |
+[Repository](https://github.com/minio/minio)
+
+<Tags tags={frontmatter.tags} />
+
+MinIO is a high-performance, S3 compatible object store, open sourced under GNU AGPLv3 license. 
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+minio_enabled: true
+
+# You'll want to change the admin password
+minio_admin_user: admin
+minio_admin_password: supersecure
+```
+
+By default, Minio can be accessed at `http://[your_server_ip]:9001` or `https://minio.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Minio at [`roles/minio/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/minio/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

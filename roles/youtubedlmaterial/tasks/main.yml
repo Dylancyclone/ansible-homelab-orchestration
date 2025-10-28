@@ -1,0 +1,56 @@
+---
+- name: Start Youtubedlmaterial
+  when: youtubedlmaterial_enabled
+  block:
+    - name: Check for Youtubedlmaterial Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: youtubedlmaterial
+
+    - name: Create Youtubedlmaterial Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ youtubedlmaterial_data_directory }}/appdata"
+        - "{{ youtubedlmaterial_data_directory }}/audio"
+        - "{{ youtubedlmaterial_data_directory }}/video"
+        - "{{ youtubedlmaterial_data_directory }}/subscriptions"
+        - "{{ youtubedlmaterial_dl_audio_directory }}"
+        - "{{ youtubedlmaterial_dl_video_directory }}"
+        - "{{ youtubedlmaterial_dl_subscriptions_directory }}"
+
+    - name: Create Youtubedlmaterial Docker Container
+      community.docker.docker_container:
+        name: "{{ youtubedlmaterial_container_name }}"
+        image: "{{ youtubedlmaterial_image_name }}:{{ youtubedlmaterial_image_version }}"
+        pull: true
+        volumes:
+          - "{{ youtubedlmaterial_data_directory }}/appdata:/app/appdata:rw"
+          - "{{ youtubedlmaterial_dl_audio_directory }}:/app/audio:rw"
+          - "{{ youtubedlmaterial_dl_video_directory }}:/app/video:rw"
+          - "{{ youtubedlmaterial_dl_subscriptions_directory }}:/app/subscriptions:rw"
+        ports:
+          - "{{ youtubedlmaterial_http_port }}:17442"
+        env:
+          ALLOW_CONFIG_MUTATIONS: "true"
+          TZ: "{{ computer_timezone }}"
+        restart_policy: unless-stopped
+        memory: "{{ youtubedlmaterial_memory }}"
+        labels:
+          traefik.enable: "{{ (youtubedlmaterial_dns_accessible or youtubedlmaterial_available_externally) | string }}"
+          traefik.http.services.youtubedlmaterial.loadbalancer.server.port: "17442"
+          traefik.http.routers.youtubedlmaterial.rule: "Host(`{{ youtubedlmaterial_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.youtubedlmaterial.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.youtubedlmaterial.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.youtubedlmaterial.tls.certresolver: "letsencrypt"
+          traefik.http.routers.youtubedlmaterial.middlewares: "{{ omit if youtubedlmaterial_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Youtubedlmaterial
+  when: not youtubedlmaterial_enabled
+  block:
+    - name: Stop Youtubedlmaterial
+      community.docker.docker_container:
+        name: "{{ youtubedlmaterial_container_name }}"
+        state: absent

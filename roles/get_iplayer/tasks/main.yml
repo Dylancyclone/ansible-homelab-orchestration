@@ -1,0 +1,46 @@
+---
+- name: Start get_iplayer
+  when: get_iplayer_enabled
+  block:
+    - name: Check for get_iplayer Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: get_iplayer
+
+    - name: Create get_iplayer Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ get_iplayer_config_directory }}"
+        - "{{ get_iplayer_download_directory }}"
+
+    - name: Create get_iplayer Docker Container
+      community.docker.docker_container:
+        name: "{{ get_iplayer_container_name }}"
+        image: "{{ get_iplayer_image_name }}:{{ get_iplayer_image_version }}"
+        pull: true
+        volumes:
+          - "{{ get_iplayer_config_directory }}:/root/.get_iplayer:rw"
+          - "{{ get_iplayer_download_directory }}:/root/output:rw"
+        ports:
+          - "{{ get_iplayer_port }}:8181"
+        restart_policy: unless-stopped
+        memory: "{{ get_iplayer_memory }}"
+        labels:
+          traefik.enable: "{{ (get_iplayer_dns_accessible or get_iplayer_available_externally) | string }}"
+          traefik.http.services.get_iplayer.loadbalancer.server.port: "8181"
+          traefik.http.routers.get_iplayer.rule: "Host(`{{ get_iplayer_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.get_iplayer.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.get_iplayer.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.get_iplayer.tls.certresolver: "letsencrypt"
+          traefik.http.routers.get_iplayer.middlewares: "{{ omit if get_iplayer_available_externally else 'blockExternal@file' }}"
+
+- name: Stop get_iplayer
+  when: not get_iplayer_enabled
+  block:
+    - name: Stop get_iplayer
+      community.docker.docker_container:
+        name: "{{ get_iplayer_container_name }}"
+        state: absent

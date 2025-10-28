@@ -1,0 +1,78 @@
+---
+title: Monitoring & Observability
+description: A combination of applications for monitoring and observability in your homelab.
+---
+
+Grafana is an extremely powerful visualization tool that can be used to create dashboards and graphs from a variety of data sources to monitor your homelab.
+
+When combined with Loki for log aggregation and Prometheus for metrics collection, you can create a comprehensive monitoring solution.
+Both Loki and Prometheus use separate agents to collect data: Alloy for logs and Telegraf for metrics, as well as extra optional exporters for Prometheus to collect specific data points.
+
+All of these applications create a network of observability, but can be confusing to wrap your head around.
+This guide will help you understand how these applications work together, and how to get them set up as painlessly as possible.
+
+## Applications
+
+None of these are strictly required, but some are dependent on one another.
+For example, None if the specific Prometheus exporters are required if you aren't interested in those metrics, but Prometheus itself is required to use them.
+
+- [Grafana](../applications/grafana): Visualization tool for creating dashboards and graphs.
+- [Loki](../applications/loki): Log aggregation system that collects and stores logs from various sources.
+- [Alloy](../applications/alloy): Log collector that sends logs to Loki.
+- [Prometheus](../applications/prometheus): Metrics server that collects and stores metrics data.
+- [Telegraf](../applications/telegraf): Metrics collector that sends metrics to Prometheus.
+- [Prometheus_hddtemp](../applications/prometheus_hddtemp): Exporter for collecting hard drive temperature metrics.
+- [Prometheus_smartctl](../applications/prometheus_smartctl): Exporter for collecting SMART data from hard drives.
+- [Prometheus_speedtest](../applications/prometheus_speedtest): Exporter for collecting internet speed test metrics.
+
+## Application Visualization
+
+With so many different applications working together, it can be hard to visualize how they all connect.
+
+```mermaid
+graph TD
+  Grafana["Grafana&#xA;(Visualization)"]
+  Loki["Loki&#xA;(Log Aggregator)"]
+  Alloy["Alloy&#xA;(Log Collector)"]
+  Prometheus["Prometheus&#xA;(Metrics Server)"]
+  Prometheus_HDDTemp[HDDTemp]
+  Prometheus_Smartctl[Smartctl]
+  Prometheus_Speedtest[Speedtest]
+  Telegraf["Telegraf&#xA;(Metrics Collector)"]
+
+  Alloy --> Loki
+  Loki --> Grafana
+  Prometheus --> Grafana
+  Prometheus_HDDTemp --> Prometheus
+  Prometheus_Smartctl --> Prometheus
+  Prometheus_Speedtest --> Prometheus
+  Telegraf --> Prometheus
+
+  click Grafana "../applications/grafana"
+  click Loki "../applications/loki"
+  click Alloy "../applications/alloy"
+  click Telegraf "../applications/telegraf"
+  click Prometheus "../applications/prometheus"
+  click Prometheus_HDDTemp "../applications/prometheus_hddtemp"
+  click Prometheus_Smartctl "../applications/prometheus_smartctl"
+  click Prometheus_Speedtest "../applications/prometheus_speedtest"
+```
+
+## Application Setup
+
+To enable the entire monitoring stack, add the following to your `inventories/[your_inventory]/group_vars/homelab.yml` file:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+grafana_enabled: true
+
+loki_enabled: true
+alloy_enabled: true
+
+prometheus_enabled: true
+telegraf_enabled: true
+prometheus_hddtemp_enabled: true
+prometheus_smartctl_enabled: true
+prometheus_speedtest_enabled: true
+```
+
+The next time you run the playbook, all of the applications will be installed.

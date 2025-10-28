@@ -1,0 +1,38 @@
+---
+title: Prometheus HDDTemp
+tags: ["Monitoring"]
+---
+
+import { Aside } from "@astrojs/starlight/components"
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://github.com/vitlav/hddtemp) |
+[Repository](https://hub.docker.com/r/modem7/hddtemp-docker)
+
+<Tags tags={frontmatter.tags} />
+
+<Aside>
+	This application is part of the [Monitoring Applications](../../application_combos/monitoring) combo.
+  On it's own, it won't do anything
+</Aside>
+
+hddtemp will show you the hard drive temperature if the hard drive can. Integrated with Prometheus to use the metrics.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+prometheus_hddtemp_enabled: true
+```
+
+By default, Prometheus HDDTemp can be accessed at `http://[your_server_ip]:7634` or `https://prometheus_hddtemp.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Prometheus HDDTemp at [`roles/prometheus_hddtemp/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/prometheus_hddtemp/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

@@ -1,0 +1,31 @@
+---
+- name: Start Prometheus Speedtest
+  when: prometheus_speedtest_enabled
+  block:
+    - name: Check for Prometheus Speedtest Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: prometheus_speedtest
+
+    - name: Prometheus Speedtest Docker Container
+      community.docker.docker_container:
+        name: "{{ prometheus_speedtest_container_name }}"
+        image: "{{ prometheus_speedtest_image_name }}:{{ prometheus_speedtest_image_version }}"
+        pull: true
+        privileged: true
+        ports:
+          - "{{ prometheus_speedtest_port }}:9798"
+        restart_policy: unless-stopped
+        healthcheck:
+          test: "wget --no-verbose --tries=1 --spider http://0.0.0.0:9798/"
+          timeout: 10s
+        memory: "{{ prometheus_speedtest_memory }}"
+
+- name: Stop Prometheus Speedtest
+  when: not prometheus_speedtest_enabled
+  block:
+    - name: Stop Prometheus Speedtest
+      community.docker.docker_container:
+        name: "{{ prometheus_speedtest_container_name }}"
+        state: absent

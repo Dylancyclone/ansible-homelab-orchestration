@@ -1,0 +1,19 @@
+---
+prometheus_speedtest_enabled: false
+
+# network
+prometheus_speedtest_port: 9798
+
+# containers
+prometheus_speedtest_container_name: prometheus_speedtest
+prometheus_speedtest_image_name: miguelndecarvalho/speedtest-exporter
+prometheus_speedtest_image_version: latest
+
+prometheus_speedtest_container_names: # Used to check if app is running
+  - "{{ prometheus_speedtest_container_name }}"
+
+# specs
+prometheus_speedtest_memory: 256m
+
+
+prometheus_speedtest_collection_interval: 5m

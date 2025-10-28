@@ -1,0 +1,27 @@
+---
+slskd_enabled: false
+slskd_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+slskd_available_externally: false
+
+# directories
+slskd_data_directory: "{{ docker_home }}/slskd/"
+slskd_music_directory: "{{ music_root }}"
+slskd_ebooks_directory: "{{ books_root }}"
+slskd_audiobooks_directory: "{{ audiobooks_root }}"
+
+# network
+slskd_hostname: slskd
+slskd_http_port: 5030
+slskd_https_port: 5031
+slskd_incoming_connections_port: 50300
+
+# containers
+slskd_container_name: slskd
+slskd_image_name: slskd/slskd
+slskd_image_version: latest
+
+slskd_container_names: # Used to check if app is running
+  - "{{ slskd_container_name }}"
+
+# specs
+slskd_memory: 1g

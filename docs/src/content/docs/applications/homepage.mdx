@@ -1,0 +1,38 @@
+---
+title: Homepage
+tags: ["Dashboard"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://gethomepage.dev/) |
+[Repository](https://github.com/gethomepage/homepage)
+
+<Tags tags={frontmatter.tags} />
+
+A highly customizable homepage (or startpage / application dashboard) with Docker and service API integrations.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+homepage_enabled: true
+```
+
+By default, Homepage can be accessed at `http://[your_server_ip]:11111` or `https://homepage.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Homepage at [`roles/homepage/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/homepage/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+## Alternatives
+
+- [Dashy](./dashy)
+- [Heimdall](./heimdall)
+- [Organizr](./organizr)
+
+{/* 
+
+## Breaking Changes
+
+*/}

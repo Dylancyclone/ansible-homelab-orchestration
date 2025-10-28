@@ -1,0 +1,61 @@
+---
+- name: Start DDNS Updater
+  when: ddns_updater_enabled
+  block:
+    - name: Check for DDNS Updater Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: ddns_updater
+
+    - name: Create DDNS Updater Directories
+      ansible.builtin.file:
+        path: "{{ ddns_updater_data_directory }}"
+        state: directory
+
+    - name: Check config is defined
+      ansible.builtin.fail:
+        msg: "Please configure DDNS Updater by setting ddns_updater_config in your inventory homelab.yml."
+      when: ddns_updater_config is not defined
+
+    - name: Generate config.json
+      ansible.builtin.copy:
+        content: "{{ ddns_updater_config | to_nice_json }}"
+        dest: "{{ ddns_updater_data_directory }}/config.json"
+      register: ddns_updater_config
+
+    - name: DDNS Updater Container
+      community.docker.docker_container:
+        name: "{{ ddns_updater_container_name }}"
+        image: "{{ ddns_updater_image_name }}:{{ ddns_updater_image_version }}"
+        pull: true
+        ports:
+          - "{{ ddns_updater_port }}:8000"
+        volumes:
+          - "{{ ddns_updater_data_directory }}:/updater/data:rw"
+        env:
+          TZ: "{{ computer_timezone }}"
+          GOTIFY_TOKEN: "{{ ddns_updater_gotify_token | default('') }}"
+          GOTIFY_URL: "{{ gotify_url | default('') }}"
+          PERIOD: "{{ ddns_updater_period }}"
+          UPDATE_COOLDOWN_PERIOD: "{{ ddns_updater_cooldown_period }}"
+          HTTP_TIMEOUT: "{{ ddns_updater_http_timeout }}"
+        restart_policy: unless-stopped
+        restart: "{{ ddns_updater_config is changed }}"
+        memory: "{{ ddns_updater_memory }}"
+        labels:
+          traefik.enable: "{{ (ddns_updater_dns_accessible or ddns_updater_available_externally) | string }}"
+          traefik.http.services.ddns_updater.loadbalancer.server.port: "8000"
+          traefik.http.routers.ddns_updater.rule: "Host(`{{ ddns_updater_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.ddns_updater.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.ddns_updater.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.ddns_updater.tls.certresolver: "letsencrypt"
+          traefik.http.routers.ddns_updater.middlewares: "{{ omit if ddns_updater_available_externally else 'blockExternal@file' }}"
+
+- name: Stop DDNS Updater
+  when: not ddns_updater_enabled
+  block:
+    - name: Stop DDNS Updater
+      community.docker.docker_container:
+        name: "{{ ddns_updater_container_name }}"
+        state: absent

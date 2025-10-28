@@ -1,0 +1,28 @@
+---
+gitlab_enabled: false
+gitlab_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+gitlab_available_externally: false
+
+# directories
+gitlab_data_directory: "{{ docker_home }}/gitlab"
+
+# network
+gitlab_hostname: gitlab
+gitlab_http_port: 4080
+gitlab_https_port: 4443
+gitlab_ssh_port: 422
+
+# uid / gid
+gitlab_user_id: "1000"
+gitlab_group_id: "1000"
+
+# containers
+gitlab_container_name: gitlab
+gitlab_image_name: gitlab/gitlab-ce
+gitlab_image_version: latest
+
+gitlab_container_names: # Used to check if app is running
+  - "{{ gitlab_container_name }}"
+
+# specs
+gitlab_memory: 4g

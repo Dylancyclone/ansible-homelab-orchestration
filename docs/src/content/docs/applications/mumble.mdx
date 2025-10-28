@@ -1,0 +1,35 @@
+---
+title: Mumble
+tags: ["Voice Chat"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://www.mumble.info/) |
+[Repository](https://github.com/mumble-voip/mumble)
+
+<Tags tags={frontmatter.tags} />
+
+Mumble is an open-source, low-latency, high quality voice chat software.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+mumble_enabled: true
+
+# You'll want to change the default password
+mumble_server_password: abcpassword123
+```
+
+By default, Mumble can be accessed at `http://[your_server_ip]:64738` or `https://mumble.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Mumble at [`roles/mumble/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/mumble/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

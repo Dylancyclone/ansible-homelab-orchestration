@@ -1,0 +1,34 @@
+---
+nextcloud_enabled: false
+nextcloud_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+nextcloud_available_externally: false
+
+# directories
+nextcloud_data_directory: "{{ docker_home }}/nextcloud"
+
+# network
+nextcloud_network_name: nextcloud
+nextcloud_hostname: nextcloud
+nextcloud_port: 8080
+
+# containers
+nextcloud_container_name: nextcloud
+nextcloud_image_name: nextcloud
+nextcloud_image_version: stable
+
+nextcloud_db_container_name: nextcloud-db
+nextcloud_db_image_name: mysql
+nextcloud_db_image_version: 5.7
+
+nextcloud_container_names: # Used to check if app is running
+  - "{{ nextcloud_container_name }}"
+  - "{{ nextcloud_db_container_name }}"
+
+# username / passwords
+nextcloud_sql_user: nextcloud-user
+nextcloud_sql_password: nextcloud-pass
+nextcloud_sql_root_password: nextcloud-secret
+
+# specs
+nextcloud_memory: 1g
+nextcloud_db_memory: 1g

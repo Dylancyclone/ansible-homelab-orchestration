@@ -1,0 +1,23 @@
+---
+thelounge_enabled: false
+thelounge_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+thelounge_available_externally: false
+
+# Directories
+thelounge_data_directory: "{{ docker_home }}/thelounge"
+
+# Networking
+thelounge_hostname: thelounge
+thelounge_web_port: 9002
+thelounge_identd_port: 113
+
+# Container
+thelounge_container_name: thelounge
+thelounge_image_name: thelounge/thelounge
+thelounge_image_version: latest
+
+thelounge_container_names: # Used to check if app is running
+  - "{{ thelounge_container_name }}"
+
+# Specs
+thelounge_memory: 1g

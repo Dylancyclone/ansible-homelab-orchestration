@@ -1,0 +1,50 @@
+---
+- name: Start MiniDLNA
+  when: minidlna_enabled
+  block:
+    - name: Check for MiniDLNA Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: minidlna
+
+    - name: Create MiniDLNA Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ minidlna_movies_directory }}"
+        - "{{ minidlna_tv_directory }}"
+
+    - name: MiniDLNA Docker Container
+      community.docker.docker_container:
+        name: "{{ minidlna_container_name }}"
+        image: "{{ minidlna_image_name }}:{{ minidlna_image_version }}"
+        pull: true
+        network_mode: host
+        volumes:
+          - "{{ minidlna_movies_directory }}:/movies:rw"
+          - "{{ minidlna_tv_directory }}:/tv:rw"
+        env:
+          MINIDLNA_MEDIA_DIR_MOVIES: "/movies"
+          MINIDLNA_MEDIA_DIR_TV: "/tv"
+          MINIDLNA_FRIENDLY_NAME: "{{ minidlna_friendly_name }}"
+          MINIDLNA_PORT: "{{ minidlna_port | string }}"
+        restart_policy: unless-stopped
+        memory: "{{ minidlna_memory }}"
+        labels:
+          traefik.enable: "{{ (minidlna_dns_accessible or minidlna_available_externally) | string }}"
+          traefik.http.services.minidlna.loadbalancer.server.port: "{{ minidlna_port }}"
+          traefik.http.routers.minidlna.rule: "Host(`{{ minidlna_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.minidlna.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.minidlna.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.minidlna.tls.certresolver: "letsencrypt"
+          traefik.http.routers.minidlna.middlewares: "{{ omit if minidlna_available_externally else 'blockExternal@file' }}"
+
+- name: Stop MiniDLNA
+  when: not minidlna_enabled
+  block:
+    - name: Stop MiniDLNA
+      community.docker.docker_container:
+        name: "{{ minidlna_container_name }}"
+        state: absent

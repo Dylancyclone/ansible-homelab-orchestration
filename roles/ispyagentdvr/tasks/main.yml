@@ -1,0 +1,55 @@
+---
+- name: Start iSpyAgentDVR
+  when: ispyagentdvr_enabled
+  block:
+    - name: Check for iSpyAgentDVR Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: ispyagentdvr
+
+    - name: Create iSpyAgentDVR Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ ispyagentdvr_config_directory }}"
+        - "{{ ispyagentdvr_commands_directory }}"
+        - "{{ ispyagentdvr_recordings_directory }}"
+
+    - name: Create iSpyAgentDVR Docker Container
+      community.docker.docker_container:
+        name: "{{ ispyagentdvr_container_name }}"
+        image: "{{ ispyagentdvr_image_name }}:{{ ispyagentdvr_image_version }}"
+        pull: true
+        volumes:
+          - "{{ ispyagentdvr_config_directory }}:/AgentDVR/Media/XML:rw"
+          - "{{ ispyagentdvr_commands_directory }}:/AgentDVR/Commands:rw"
+          - "{{ ispyagentdvr_recordings_directory }}:/AgentDVR/Media/WebServerRoot/Media:rw"
+        ports:
+          - "{{ ispyagentdvr_webui_port }}:{{ ispyagentdvr_webui_port }}"
+          - "{{ ispyagentdvr_turn_port }}:3478/udp"
+          - "{{ ispyagentdvr_agentdvr_host_port }}:50000-50100/udp"
+        env:
+          TZ: "{{ computer_timezone }}"
+          AGENTDVR_WEBUI_PORT: "{{ ispyagentdvr_webui_port | string }}"
+          PUID: "{{ ispyagentdvr_user_id }}"
+          PGID: "{{ ispyagentdvr_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ ispyagentdvr_memory }}"
+        labels:
+          traefik.enable: "{{ (ispyagentdvr_dns_accessible or ispyagentdvr_available_externally) | string }}"
+          traefik.http.services.ispyagentdvr.loadbalancer.server.port: "{{ ispyagentdvr_webui_port }}"
+          traefik.http.routers.ispyagentdvr.rule: "Host(`ispyagentdvr.{{ dns_domain }}`)"
+          traefik.http.routers.ispyagentdvr.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.ispyagentdvr.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.ispyagentdvr.tls.certresolver: "letsencrypt"
+          traefik.http.routers.ispyagentdvr.middlewares: "{{ omit if ispyagentdvr_available_externally else 'blockExternal@file' }}"
+
+- name: Stop iSpyAgentDVR
+  when: not ispyagentdvr_enabled
+  block:
+    - name: Stop iSpyAgentDVR
+      community.docker.docker_container:
+        name: "{{ ispyagentdvr_container_name }}"
+        state: absent

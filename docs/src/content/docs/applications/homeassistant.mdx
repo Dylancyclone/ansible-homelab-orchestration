@@ -1,0 +1,53 @@
+---
+title: Home Assistant
+tags: ["Home Automation"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://www.home-assistant.io/) |
+[Repository](https://github.com/home-assistant/core)
+
+<Tags tags={frontmatter.tags} />
+
+Open source home automation that puts local control and privacy first. Powered by a worldwide community of tinkerers and DIY enthusiasts.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+homeassistant_enabled: true
+```
+
+You will need to complete first-time setup through the server's IP and Home Assistant's port first: `http://[your_server_ip]:8123`.
+Once set up, you can configure the Home Assistant [HTTP Plugin](https://www.home-assistant.io/integrations/http/) to enable access via reverse proxies (DNS): https://www.home-assistant.io/integrations/http/#reverse-proxies
+
+By default, Home Assistant can be accessed at `http://[your_server_ip]:8123` or `https://homeassistant.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+Home Assistant can publish metrics to [Prometheus](./prometheus) for monitoring.
+To enable this integration, set `prometheus_homeassistant_long_lived_access_token` to a Home Assistant [long lived access token](https://developers.home-assistant.io/docs/auth_api/#long-lived-access-token).
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+# You'll need to create a long lived access token: https://developers.home-assistant.io/docs/auth_api/#long-lived-access-token
+prometheus_homeassistant_long_lived_access_token: abcd
+```
+
+Be sure to check out the extensive list of [Home Assistant Integrations](https://www.home-assistant.io/integrations/) to connect your other devices and services!
+Here is a nice link that will show all integrations sorted by number of installs: [https://analytics.home-assistant.io/integrations/](https://analytics.home-assistant.io/integrations/).
+Though remember that a lot of power comes from less popular integrations that may be more specific to your use case, such as gleaning power information from an integration with your local power company.
+
+See the default configuration options for Home Assistant at [`roles/homeassistant/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/homeassistant/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+
+
+## Complementary Applications
+
+- [Music Assistant](./music_assistant)
+
+{/* 
+
+## Breaking Changes
+
+*/}

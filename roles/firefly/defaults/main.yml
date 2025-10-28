@@ -1,0 +1,28 @@
+---
+firefly_enabled: false
+firefly_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+firefly_available_externally: false
+
+# directories
+firefly_data_directory: "{{ docker_home }}/firefly"
+
+# network
+firefly_hostname: firefly
+firefly_port: 8066
+
+# containers
+firefly_container_name: firefly
+firefly_image_name: fireflyiii/core
+firefly_image_version: latest
+
+firefly_mysql_container_name: firefly-mysql
+firefly_mysql_image_name: mariadb
+firefly_mysql_image_version: 10.9
+
+firefly_container_names: # Used to check if app is running
+  - "{{ firefly_container_name }}"
+  - "{{ firefly_mysql_container_name }}"
+
+# specs
+firefly_memory: 1g
+firefly_mysql_memory: 1g
