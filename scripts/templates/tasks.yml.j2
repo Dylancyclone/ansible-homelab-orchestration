@@ -11,7 +11,7 @@
 {% if has_directories %}
     - name: Create {{ full_name }} Directories
       ansible.builtin.file:
-        path: "{{ item }}"
+        path: "{{ "{{" }} item {{ "}}" }}"
         state: directory
       with_items:
         - "{{ "{{" }} {{ short_name }}_data_directory {{ "}}" }}"
