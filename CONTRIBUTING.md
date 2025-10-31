@@ -1,0 +1,3 @@
+Contributions are always welcome! Please refer to the [Contributing Guide](https://dylancyclone.github.io/ansible-homelab-orchestration/guides/contributing/) for details on how to contribute to this project.
+
+Alternate link: [https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/docs/src/content/docs/guides/contributing.mdx](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/docs/src/content/docs/guides/contributing.mdx)

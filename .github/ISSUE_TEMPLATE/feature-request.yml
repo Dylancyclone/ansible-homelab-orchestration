@@ -1,0 +1,23 @@
+name: Feature Request
+about: Request a new feature for Ansible Homelab Orchestration
+title: ""
+labels: enhancement
+assignees: ""
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this Feature Request!
+  - type: textarea
+    id: problem
+    attributes:
+      label: Is your feature request related to a problem? Please describe.
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the solution you'd like
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Details to understand how this task should be completed or carried out. What are the next steps? Add any other context or screenshots about the feature request here.

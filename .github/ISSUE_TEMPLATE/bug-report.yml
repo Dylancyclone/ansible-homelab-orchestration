@@ -1,0 +1,58 @@
+name: Bug Report
+about: Help us to improve Ansible Homelab Orchestration
+title: ""
+labels: bug
+assignees: ""
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+        If you're reporting an issue with execution of the playbook, please run the playbook with `-vvv`, and ideally isolate the problematic part with `--tags <ansible tag>` where possible.
+  - type: input
+    id: version
+    attributes:
+      label: Ansible Homelab Orchestration revision
+      description: What version of the project you're using, `git rev-parse --short HEAD`
+    validations:
+      required: true
+  - type: input
+    id: ansible_version
+    attributes:
+      label: Ansible Version
+      description: What version of ansible you're using, `ansible --version`
+    validations:
+      required: true
+  - type: input
+    id: homelab_os_version
+    attributes:
+      label: Homelab OS Version
+      description: What OS and what version is your homelab running? `cat /etc/lsb-release`
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to reproduce
+  - type: textarea
+    id: relevant_configuration
+    attributes:
+      label: Relevant configuration
+      description: Such as variables in `homelab.yml`. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: textarea
+    id: relevant_logs
+    attributes:
+      label: Relevant logs
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
