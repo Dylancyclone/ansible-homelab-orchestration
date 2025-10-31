@@ -179,6 +179,10 @@
       tags: homepage
       when: homepage_enabled or (homepage_container_names | intersect(running_containers) | length > 0)
 
+    - role: immich
+      tags: immich
+      when: immich_enabled or (immich_container_names | intersect(running_containers) | length > 0)
+
     - role: ispyagentdvr
       tags: ispyagentdvr
       when: ispyagentdvr_enabled or (ispyagentdvr_container_names | intersect(running_containers) | length > 0)

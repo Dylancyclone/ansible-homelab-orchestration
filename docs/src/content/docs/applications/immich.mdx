@@ -1,0 +1,40 @@
+---
+title: Immich
+tags: ["Photos", "Media Server"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://immich.app/) |
+[Repository](https://github.com/immich-app/immich)
+
+<Tags tags={frontmatter.tags} />
+
+High performance self-hosted photo and video management solution.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+immich_enabled: true
+```
+
+By default, Immich can be accessed at `http://[your_server_ip]:2283` or `https://immich.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+Immich supports hardware acceleration for machine learning tasks such as image recognition:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+# For hardware acceleration, add one of -[armnn, cuda, rocm, openvino, rknn] to the image tag.
+# Example value: "-cuda"
+immich_hardware_acceleration: ""
+```
+
+See the default configuration options for Immich at [`roles/immich/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/immich/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}
