@@ -1,8 +1,6 @@
 name: Feature Request
-about: Request a new feature for Ansible Homelab Orchestration
-title: ""
+description: Request a new feature for Ansible Homelab Orchestration
 labels: enhancement
-assignees: ""
 body:
   - type: markdown
     attributes:

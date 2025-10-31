@@ -1,8 +1,6 @@
 name: Bug Report
-about: Help us to improve Ansible Homelab Orchestration
-title: ""
+description: Help us to improve Ansible Homelab Orchestration
 labels: bug
-assignees: ""
 body:
   - type: markdown
     attributes:
