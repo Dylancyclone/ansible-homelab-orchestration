@@ -123,6 +123,10 @@
       tags: flaresolverr
       when: flaresolverr_enabled or (flaresolverr_container_names | intersect(running_containers) | length > 0)
 
+    - role: foundryvtt
+      tags: foundryvtt
+      when: foundryvtt_enabled or (foundryvtt_container_names | intersect(running_containers) | length > 0)
+
     - role: freshrss
       tags: freshrss
       when: freshrss_enabled or (freshrss_container_names | intersect(running_containers) | length > 0)

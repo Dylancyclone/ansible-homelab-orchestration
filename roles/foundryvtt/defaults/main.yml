@@ -1,0 +1,33 @@
+---
+foundryvtt_enabled: false
+foundryvtt_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+foundryvtt_available_externally: false
+
+# directories
+foundryvtt_data_directory: "{{ docker_home }}/foundryvtt"
+
+# network
+foundryvtt_hostname: foundryvtt
+foundryvtt_port: 3005
+
+# uid/gid
+foundryvtt_user_id: "1000"
+foundryvtt_group_id: "1000"
+
+# containers
+foundryvtt_container_name: "foundryvtt"
+foundryvtt_image_name: "felddy/foundryvtt"
+foundryvtt_image_version: latest
+
+foundryvtt_container_names: # Used to check if app is running
+  - "{{ foundryvtt_container_name }}"
+
+# specs
+foundryvtt_memory: 1g
+
+# authentication
+foundryvtt_username: ""
+foundryvtt_password: ""
+foundryvtt_admin_key: ""
+
+foundryvtt_telemetry: "false"

@@ -1,0 +1,39 @@
+---
+title: Foundry VTT
+tags: ["Games"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://foundryvtt.com/) |
+[Repository](https://github.com/felddy/foundryvtt-docker)
+
+<Tags tags={frontmatter.tags} />
+
+Foundry VTT is a Virtual Tabletop application for role-playing games such as Dungeons & Dragons (D&D). It provides a stage for visualizing the game environment and tools allowing the game master and players to organize and track statistics and notes.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+foundryvtt_enabled: true
+
+# You will need to log into your FoundryVTT for first-time setup
+foundryvtt_username: ""
+foundryvtt_password: ""
+
+# You will want to change the default admin login
+foundryvtt_admin_key: ""
+```
+
+By default, Foundry VTT can be accessed at `http://[your_server_ip]:3005` or `https://foundryvtt.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Foundry VTT at [`roles/foundryvtt/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/foundryvtt/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

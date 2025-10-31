@@ -1,0 +1,54 @@
+---
+- name: Start Foundry VTT
+  when: foundryvtt_enabled
+  block:
+    - name: Check for Foundry VTT Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: foundryvtt
+
+    - name: Create Foundry VTT Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ foundryvtt_data_directory }}"
+
+    - name: Foundry VTT Docker Container
+      community.docker.docker_container:
+        name: "{{ foundryvtt_container_name }}"
+        image: "{{ foundryvtt_image_name }}:{{ foundryvtt_image_version }}"
+        pull: true
+        ports:
+          - "{{ foundryvtt_port }}:30000"
+        volumes:
+          - "{{ foundryvtt_data_directory }}:/data:rw"
+          # - "{{ foundryvtt_data_directory }}/license.json:/data/Config/license.json:rw"
+          # - "{{ foundryvtt_data_directory }}/resourcesdata:/home/foundry/resources:rw"
+        user: "{{ foundryvtt_user_id }}:{{ foundryvtt_group_id }}"
+        env:
+          FOUNDRY_USERNAME: "{{ foundryvtt_username }}"
+          FOUNDRY_PASSWORD: "{{ foundryvtt_password }}"
+          FOUNDRY_ADMIN_KEY: "{{ foundryvtt_admin_key }}"
+          FOUNDRY_TELEMETRY: "{{ foundryvtt_telemetry }}"
+          FOUNDRY_HOSTNAME: "{{ foundryvtt_hostname }}.{{ dns_domain }}"
+          FOUNDRY_PROXY_SSL: "true"
+        restart_policy: unless-stopped
+        memory: "{{ foundryvtt_memory }}"
+        labels:
+          traefik.enable: "{{ (foundryvtt_dns_accessible or foundryvtt_available_externally) | string }}"
+          traefik.http.services.foundryvtt.loadbalancer.server.port: "30000"
+          traefik.http.routers.foundryvtt.rule: "Host(`{{ foundryvtt_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.foundryvtt.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.foundryvtt.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.foundryvtt.tls.certresolver: "letsencrypt"
+          traefik.http.routers.foundryvtt.middlewares: "{{ omit if foundryvtt_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Foundry VTT
+  when: not foundryvtt_enabled
+  block:
+    - name: Stop Foundry VTT
+      community.docker.docker_container:
+        name: "{{ foundryvtt_container_name }}"
+        state: absent
