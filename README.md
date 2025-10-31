@@ -12,7 +12,7 @@ It can also leverage [Traefik](https://dylancyclone.github.io/ansible-homelab-or
 
 ## Available Applications
 
-Ansible Homelab Orchestration currently supports [![Number of Available Applications](https://img.shields.io/github/directory-file-count/Dylancyclone/ansible-homelab-orchestration/roles?label=)](https://dylancyclone.github.io/ansible-homelab-orchestration/applications) applications! Most of which can be enabled with a single configuration line:
+Ansible Homelab Orchestration currently supports [![Number of Available Applications](https://img.shields.io/github/directory-file-count/Dylancyclone/ansible-homelab-orchestration/roles?label=)](https://dylancyclone.github.io/ansible-homelab-orchestration/tags/) applications! Most of which can be enabled with a single configuration line:
 
 ```yaml
 <application_name>_enabled: true
@@ -39,7 +39,7 @@ Some of the highlighted applications include:
 
 ...As well as a number of choices for [dashboards](https://dylancyclone.github.io/ansible-homelab-orchestration/tags/Dashboard), [backups](https://dylancyclone.github.io/ansible-homelab-orchestration/tags/Backup), [self-hosted media](http://localhost:4321/ansible-homelab-orchestration/tags/Media%20Server), [Knowledge bases](http://localhost:4321/ansible-homelab-orchestration/tags/Knowledge%20Management), [RSS](http://localhost:4321/ansible-homelab-orchestration/tags/RSS), [budget tracking](http://localhost:4321/ansible-homelab-orchestration/tags/Finance), and more! A massive collection of applications to own your data and empower your homelab.
 
-For a full list of all [![Number of Available Applications](https://img.shields.io/github/directory-file-count/Dylancyclone/ansible-homelab-orchestration/roles?label=)](https://dylancyclone.github.io/ansible-homelab-orchestration/applications) supported applications, please visit the [Applications](https://dylancyclone.github.io/ansible-homelab-orchestration/applications) page in the documentation!
+For a full list of all [![Number of Available Applications](https://img.shields.io/github/directory-file-count/Dylancyclone/ansible-homelab-orchestration/roles?label=)](https://dylancyclone.github.io/ansible-homelab-orchestration/tags/) supported applications, please visit the [Applications](https://dylancyclone.github.io/ansible-homelab-orchestration/tags/) page in the documentation!
 
 ## Getting Started
 
