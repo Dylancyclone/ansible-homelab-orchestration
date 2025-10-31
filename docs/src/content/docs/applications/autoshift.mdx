@@ -1,0 +1,38 @@
+---
+title: AutoSHiFt
+tags: ["Games"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Repository](https://github.com/zarmstrong/autoshift/tree/master)
+
+<Tags tags={frontmatter.tags} />
+
+Automatic SHiFT code redemption script.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+autoshift_enabled: true
+
+# You will need to provide your SHiFT account credentials
+autoshift_username: ""
+autoshift_password: ""
+
+# Optionally change the games and platform to redeem codes for
+autoshift_games: "bl4 ttw bl3 blps bl2 bl1"
+autoshift_platform: "steam"
+```
+
+
+## Configuration
+
+See the default configuration options for AutoSHiFt at [`roles/autoshift/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/autoshift/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

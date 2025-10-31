@@ -1,0 +1,39 @@
+---
+- name: Start AutoShift
+  when: autoshift_enabled
+  block:
+    - name: Check for AutoShift Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: autoshift
+
+    - name: Create AutoShift Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ autoshift_data_directory }}/data"
+
+    - name: AutoShift Docker Container
+      community.docker.docker_container:
+        name: "{{ autoshift_container_name }}"
+        image: "{{ autoshift_image_name }}:{{ autoshift_image_version }}"
+        pull: true
+        volumes:
+          - "{{ autoshift_data_directory }}/data:/autoshift/data:rw"
+        env:
+          SHIFT_USER: "{{ autoshift_username }}"
+          SHIFT_PASS: "{{ autoshift_password }}"
+          SHIFT_GAMES: "{{ autoshift_games }}"
+          SHIFT_PLATFORMS: "{{ autoshift_platform }}"
+        restart_policy: unless-stopped
+        memory: "{{ autoshift_memory }}"
+
+- name: Stop AutoShift
+  when: not autoshift_enabled
+  block:
+    - name: Stop AutoShift
+      community.docker.docker_container:
+        name: "{{ autoshift_container_name }}"
+        state: absent

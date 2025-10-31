@@ -1,0 +1,22 @@
+---
+autoshift_enabled: false
+
+# directories
+autoshift_data_directory: "{{ docker_home }}/autoshift"
+
+# containers
+autoshift_container_name: autoshift
+autoshift_image_name: zacharmstrong/autoshift
+autoshift_image_version: latest
+
+autoshift_container_names: # Used to check if app is running
+  - "{{ autoshift_container_name }}"
+
+# specs
+autoshift_memory: 1g
+
+# config
+autoshift_username: ""
+autoshift_password: ""
+autoshift_games: "bl4 ttw bl3 blps bl2 bl1"
+autoshift_platform: "steam"

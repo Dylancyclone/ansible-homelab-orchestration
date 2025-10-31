@@ -42,6 +42,10 @@
       tags: audiobookshelf
       when: audiobookshelf_enabled or (audiobookshelf_container_names | intersect(running_containers) | length > 0)
 
+    - role: autoshift
+      tags: autoshift
+      when: autoshift_enabled or (autoshift_container_names | intersect(running_containers) | length > 0)
+
     - role: bazarr
       tags: bazarr
       when: bazarr_enabled or (bazarr_container_names | intersect(running_containers) | length > 0)
