@@ -1,0 +1,22 @@
+---
+memos_enabled: false
+memos_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+memos_available_externally: "false"
+
+# directories
+memos_data_directory: "{{ docker_home }}/memos"
+
+# network
+memos_hostname: memos
+memos_port: 5230
+
+# containers
+memos_container_name: memos
+memos_image_name: neosmemo/memos
+memos_image_version: latest
+
+memos_container_names: # Used to check if app is running
+  - "{{ memos_container_name }}"
+
+# specs
+memos_memory: 1g

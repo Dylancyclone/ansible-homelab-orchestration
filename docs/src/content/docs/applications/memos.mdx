@@ -1,0 +1,32 @@
+---
+title: Memos
+tags: ["Knowledge Management"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://usememos.com/) |
+[Repository](https://github.com/usememos/memos)
+
+<Tags tags={frontmatter.tags} />
+
+Memos is a privacy-first, self-hosted knowledge base that works seamlessly for personal notes, team wikis, and knowledge management. Built with Go and React, it offers lightning-fast performance without compromising on features or usability.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+memos_enabled: true
+```
+
+By default, Memos can be accessed at `http://[your_server_ip]:5230` or `https://memos.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Memos at [`roles/memos/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/memos/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

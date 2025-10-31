@@ -1,0 +1,44 @@
+---
+- name: Start Memos
+  when: memos_enabled
+  block:
+    - name: Check for Memos Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: memos
+
+    - name: Create Memos Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ memos_data_directory }}/config"
+
+    - name: Memos Docker Container
+      community.docker.docker_container:
+        name: "{{ memos_container_name }}"
+        image: "{{ memos_image_name }}:{{ memos_image_version }}"
+        pull: true
+        volumes:
+          - "{{ memos_data_directory }}/config:/var/opt/memos:rw"
+        ports:
+          - "{{ memos_port }}:5230"
+        restart_policy: unless-stopped
+        memory: "{{ memos_memory }}"
+        labels:
+          traefik.enable: "{{ (memos_dns_accessible or memos_available_externally) | string }}"
+          traefik.http.services.memos.loadbalancer.server.port: "5230"
+          traefik.http.routers.memos.rule: "Host(`{{ memos_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.memos.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.memos.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.memos.tls.certresolver: "letsencrypt"
+          traefik.http.routers.memos.middlewares: "{{ omit if memos_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Memos
+  when: not memos_enabled
+  block:
+    - name: Stop Memos
+      community.docker.docker_container:
+        name: "{{ memos_container_name }}"
+        state: absent
