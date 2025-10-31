@@ -203,6 +203,10 @@
       tags: joomla
       when: joomla_enabled or (joomla_container_names | intersect(running_containers) | length > 0)
 
+    - role: kometa
+      tags: kometa
+      when: kometa_enabled or (kometa_container_names | intersect(running_containers) | length > 0)
+
     - role: komga
       tags: komga
       when: komga_enabled or (komga_container_names | intersect(running_containers) | length > 0)

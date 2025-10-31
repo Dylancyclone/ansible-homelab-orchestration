@@ -1,0 +1,38 @@
+---
+title: Kometa
+tags: ["Movies", "TV"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://kometa.wiki/) |
+[Repository](https://github.com/Kometa-Team/Kometa)
+
+<Tags tags={frontmatter.tags} />
+
+Kometa is a powerful tool designed to give you complete control over your media libraries. With Kometa, you can take your customization to the next level, with granular control over metadata, collections, overlays, and much more.
+
+Transform your media library with Kometa and discover its full potential! Connect to third-party services like TMDb, Trakt, and IMDb, among others, to create one-of-a-kind collections, overlays and more. Your media library will stand out and be tailored to your specific needs.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+kometa_enabled: true
+```
+
+## Configuration
+
+After first run, Kometa will create a default configuration in the config directory.
+You will need to configure this manually before Kometa will function properly.
+At a minumum, you will need to set a TMDb API key (free), and [Plex](../plex) URL and Token.
+
+Follow these instructions to configure Kometa: [https://kometa.wiki/en/latest/kometa/install/walkthroughs/docker/#setting-up-the-initial-config-file](https://kometa.wiki/en/latest/kometa/install/walkthroughs/docker/#setting-up-the-initial-config-file).
+
+See the default configuration options for Kometa at [`roles/kometa/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/kometa/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

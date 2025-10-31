@@ -1,0 +1,37 @@
+---
+- name: Start Kometa
+  when: kometa_enabled
+  block:
+    - name: Check for Kometa Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: kometa
+
+    - name: Create Kometa Directories
+      ansible.builtin.file:
+        path: ""
+        state: directory
+      with_items:
+        - "{{ kometa_config_directory }}"
+
+    - name: Kometa Docker Container
+      community.docker.docker_container:
+        name: "{{ kometa_container_name }}"
+        image: "{{ kometa_image_name }}:{{ kometa_image_version }}"
+        pull: true
+        volumes:
+          - "{{ kometa_config_directory }}:/config:rw"
+        env:
+          - KOMETA_RUN: "{{ kometa_run_immediately | string }}"
+          - KOMETA_TIMES: "{{ kometa_run_times }}"
+        restart_policy: unless-stopped
+        memory: "{{ kometa_memory }}"
+
+- name: Stop Kometa
+  when: not kometa_enabled
+  block:
+    - name: Stop Kometa
+      community.docker.docker_container:
+        name: "{{ kometa_container_name }}"
+        state: absent

@@ -1,0 +1,20 @@
+---
+kometa_enabled: false
+
+# directories
+kometa_config_directory: "{{ docker_home }}/kometa/config"
+
+# containers
+kometa_container_name: kometa
+kometa_image_name: kometateam/kometa
+kometa_image_version: latest
+
+kometa_container_names: # Used to check if app is running
+  - "{{ kometa_container_name }}"
+
+# specs
+kometa_memory: 1g
+
+# config
+kometa_run_immediately: false # If true, Kometa will run immediately after startup instead of waiting until the scheduled times
+kometa_run_times: "05:00|17:00" # Times Kometa will run, in 24 hour format separated by |
