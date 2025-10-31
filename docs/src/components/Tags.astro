@@ -20,7 +20,7 @@ const { tags } = Astro.props
 		<div class="tags">
 			Tags:{" "}
 			{tags.map((tag) => (
-				<a href={`/ansible-homelab-orchestration/tags/${tag}`}>
+				<a href={`/ansible-homelab-orchestration/tags/${tag}/`}>
 					<Badge text={tag} />
 				</a>
 			))}

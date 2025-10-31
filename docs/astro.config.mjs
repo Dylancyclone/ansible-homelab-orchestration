@@ -7,7 +7,7 @@ import mermaid from "astro-mermaid"
 export default defineConfig({
 	site: "https://dylancyclone.github.io",
 	base: "/ansible-homelab-orchestration",
-	trailingSlash: "never",
+	trailingSlash: "always",
 	integrations: [
 		mermaid({
 			theme: "default",

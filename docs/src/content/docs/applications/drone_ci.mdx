@@ -14,7 +14,7 @@ Drone is a modern CI/CD platform built with a containers-first architecture. It 
 
 ## Setting up
 
-Drone-CI is set up to connect to [Gitea](../gitea) automatically, so make sure you have Gitea set up and configured first.
+Drone-CI is set up to connect to [Gitea](../gitea/) automatically, so make sure you have Gitea set up and configured first.
 
 ```yaml title="inventories/homelab/group_vars/homelab.yml"
 drone_ci_enabled: true
@@ -30,7 +30,7 @@ drone_ci_gitea_client_id: notset
 drone_ci_gitea_client_secret: notset
 ```
 
-By default, Drone-CI can be accessed at `http://[your_server_ip]:8001` or `https://drone_ci.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+By default, Drone-CI can be accessed at `http://[your_server_ip]:8001` or `https://drone_ci.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured.
 
 ## Configuration
 
