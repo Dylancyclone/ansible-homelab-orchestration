@@ -431,6 +431,10 @@
       tags: wireshark
       when: wireshark_enabled or (wireshark_container_names | intersect(running_containers) | length > 0)
 
+    - role: yamtrack
+      tags: yamtrack
+      when: yamtrack_enabled or (yamtrack_container_names | intersect(running_containers) | length > 0)
+
     - role: youtubedlmaterial
       tags: youtubedlmaterial
       when: youtubedlmaterial_enabled or (youtubedlmaterial_container_names | intersect(running_containers) | length > 0)

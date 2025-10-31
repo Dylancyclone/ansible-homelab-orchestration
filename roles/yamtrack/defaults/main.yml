@@ -1,0 +1,43 @@
+---
+yamtrack_enabled: false
+yamtrack_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+yamtrack_available_externally: false
+
+# directories
+yamtrack_data_directory: "{{ docker_home }}/yamtrack"
+
+# configuration
+yamtrack_tmdb_api: "" # A default is provided
+yamtrack_tmdb_nsfw: "False"
+yamtrack_mal_api: "" # A default is provided
+yamtrack_mal_nsfw: "False"
+yamtrack_mu_nsfw: "False"
+yamtrack_igdb_id: "" # A default is provided
+yamtrack_igdb_secret: "" # A default is provided
+yamtrack_igdb_nsfw: "False"
+yamtrack_simkl_id: "" # Only needed for importing media from Simkl, a default is provided
+yamtrack_simkl_secret: "" # Only needed for importing media from Simkl, a default is provided
+yamtrack_web_concurrency: "1" # Number of webserver processes
+
+# network
+yamtrack_hostname: yamtrack
+yamtrack_port: 9008
+
+# containers
+yamtrack_network_name: yamtrack-network
+
+yamtrack_container_name: yamtrack
+yamtrack_image_name: ghcr.io/fuzzygrim/yamtrack
+yamtrack_image_version: latest
+
+yamtrack_redis_container_name: yamtrack-redis
+yamtrack_redis_image_name: redis
+yamtrack_redis_image_version: 7-alpine
+
+yamtrack_container_names: # Used to check if app is running
+  - "{{ yamtrack_container_name }}"
+  - "{{ yamtrack_redis_container_name }}"
+
+# specs
+yamtrack_memory: 1g
+yamtrack_redis_memory: 1g
