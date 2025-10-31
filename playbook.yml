@@ -75,6 +75,10 @@
       tags: dashy
       when: dashy_enabled or (dashy_container_names | intersect(running_containers) | length > 0)
 
+    - role: dawarich
+      tags: dawarich
+      when: dawarich_enabled or (dawarich_container_names | intersect(running_containers) | length > 0)
+
     - role: ddns_route53
       tags: ddns_route53
       when: ddns_route53_enabled or (ddns_route53_container_names | intersect(running_containers) | length > 0)

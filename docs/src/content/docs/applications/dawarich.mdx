@@ -1,0 +1,46 @@
+---
+title: Dawarich
+tags: ["Tracking"]
+---
+
+import { Aside } from "@astrojs/starlight/components"
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://dawarich.app/) |
+[Repository](https://github.com/Freika/dawarich)
+
+<Tags tags={frontmatter.tags} />
+
+<Aside type="caution">
+	This application is under extremely active development, and breaking changes may occur frequently.
+  You should pin to a specific version (e.g. `dawarich_image_version: "0.34"`) and monitor the [release notes](https://github.com/Freika/dawarich/releases) manually for updates.
+
+  The application is stable, but should not be updated blindly, especially with something like [Watchtower](../watchtower)
+</Aside>
+
+Self-hostable alternative to Google Timeline (Google Location History) 
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+dawarich_enabled: true
+
+# For the reasons above, you should pin to a specific version, starting with whatever the latest is at the time of installation.
+dawarich_image_version: latest
+```
+
+By default, Dawarich can be accessed at `http://[your_server_ip]:9393` or `https://dawarich.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+Dawarich can integrate with [Home Assistant](./homeassistant) to ingest location data from the Home Assistant mobile app.
+See instructions for setting this up here: https://dawarich.app/docs/tutorials/track-your-location/#home-assistant
+
+See the default configuration options for Dawarich at [`roles/dawarich/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/dawarich/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

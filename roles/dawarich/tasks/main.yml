@@ -1,0 +1,179 @@
+---
+- name: Start Dawarich
+  when: dawarich_enabled
+  block:
+    - name: Check for Dawarich Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: dawarich
+
+    - name: Create Dawarich Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ dawarich_config_directory }}"
+        - "{{ dawarich_postgres_directory }}"
+        - "{{ dawarich_shared_directory }}"
+        - "{{ dawarich_public_directory }}"
+        - "{{ dawarich_watched_directory }}"
+        - "{{ dawarich_storage_directory }}"
+
+    - name: Create Dawarich network
+      community.docker.docker_network:
+        name: "{{ dawarich_container_network_name }}"
+
+    - name: Create Dawarich redis broker
+      community.docker.docker_container:
+        name: "{{ dawarich_redis_container_name }}"
+        image: "{{ dawarich_redis_image_name }}:{{ dawarich_redis_image_version }}"
+        pull: true
+        volumes:
+          - "{{ dawarich_shared_directory }}:/data"
+        healthcheck:
+          test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+          interval: 10s
+          retries: 5
+          start_period: 30s
+          timeout: 10s
+        restart_policy: unless-stopped
+        memory: "{{ dawarich_redis_memory }}"
+        networks:
+          - name: "{{ dawarich_container_network_name }}"
+
+    - name: Create Dawarich postgres Docker Container
+      community.docker.docker_container:
+        name: "{{ dawarich_postgres_container_name }}"
+        image: "{{ dawarich_postgres_image_name }}:{{ dawarich_postgres_image_version }}"
+        pull: true
+        volumes:
+          - "{{ dawarich_postgres_directory }}:/var/lib/postgresql/data"
+          - "{{ dawarich_shared_directory }}:/var/shared"
+        env:
+          POSTGRES_USER: "{{ dawarich_postgres_user }}"
+          POSTGRES_PASSWORD: "{{ dawarich_postgres_password }}"
+        healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U postgres -d dawarich_development"]
+          interval: 10s
+          retries: 5
+          start_period: 30s
+          timeout: 10s
+        restart_policy: unless-stopped
+        memory: "{{ dawarich_postgres_memory }}"
+        networks:
+          - name: "{{ dawarich_container_network_name }}"
+
+    - name: Create Dawarich UI Docker Container
+      community.docker.docker_container:
+        name: "{{ dawarich_container_name }}"
+        image: "{{ dawarich_image_name }}:{{ dawarich_image_version }}"
+        pull: true
+        volumes:
+          - "{{ dawarich_public_directory }}:/var/app/public"
+          - "{{ dawarich_watched_directory }}:/var/app/tmp/imports/watched"
+          - "{{ dawarich_storage_directory }}:/var/app/storage"
+        ports:
+          - "{{ dawarich_port }}:3000"
+          - "{{ dawarich_prometheus_port }}:9394"
+        entrypoint: web-entrypoint.sh
+        command: ["bin/rails", "server", "-p", "3000", "-b", "::"]
+        env:
+          RAILS_ENV: "development"
+          REDIS_URL: "redis://{{ dawarich_redis_container_name }}:6379"
+          DATABASE_HOST: "{{ dawarich_postgres_container_name }}"
+          DATABASE_USERNAME: "{{ dawarich_postgres_user }}"
+          DATABASE_PASSWORD: "{{ dawarich_postgres_password }}"
+          DATABASE_NAME: "dawarich_development"
+          MIN_MINUTES_SPENT_IN_CITY: "60"
+          APPLICATION_HOSTS: "{{ dawarich_hostname }}.{{ dns_domain }}"
+          TIME_ZONE: "{{ computer_timezone }}"
+          APPLICATION_PROTOCOL: "http"
+          PROMETHEUS_EXPORTER_ENABLED: "{{ dawarich_prometheus_exporter_enabled }}"
+          PROMETHEUS_EXPORTER_HOST: "0.0.0.0"
+          PROMETHEUS_EXPORTER_PORT: "9394"
+          SELF_HOSTED: "true"
+
+        healthcheck:
+          test:
+            [
+              "CMD-SHELL",
+              "wget -qO - http://127.0.0.1:3000/api/v1/health | grep -q '\"status\"\\s*:\\s*\"ok\"'",
+            ]
+          interval: 10s
+          retries: 30
+          start_period: 30s
+          timeout: 10s
+        restart_policy: unless-stopped
+        memory: "{{ dawarich_memory }}"
+        networks:
+          - name: "{{ dawarich_container_network_name }}"
+        labels:
+          traefik.enable: "{{ (dawarich_dns_accessible or dawarich_available_externally) | string }}"
+          traefik.http.services.dawarich.loadbalancer.server.port: "3000"
+          traefik.http.routers.dawarich.rule: "Host(`{{ dawarich_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.dawarich.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.dawarich.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.dawarich.tls.certresolver: "letsencrypt"
+          traefik.http.routers.dawarich.middlewares: "{{ omit if dawarich_available_externally else 'blockExternal@file' }}"
+
+    - name: Create Dawarich Sidekiq Docker Container
+      community.docker.docker_container:
+        name: "{{ dawarich_sidekiq_container_name }}"
+        image: "{{ dawarich_image_name }}:{{ dawarich_image_version }}"
+        pull: true
+        volumes:
+          - "{{ dawarich_public_directory }}:/var/app/public"
+          - "{{ dawarich_watched_directory }}:/var/app/tmp/imports/watched"
+          - "{{ dawarich_storage_directory }}:/var/app/storage"
+        entrypoint: sidekiq-entrypoint.sh
+        command: ["sidekiq"]
+        env:
+          RAILS_ENV: "development"
+          REDIS_URL: "redis://{{ dawarich_redis_container_name }}:6379"
+          DATABASE_HOST: "{{ dawarich_postgres_container_name }}"
+          DATABASE_USERNAME: "{{ dawarich_postgres_user }}"
+          DATABASE_PASSWORD: "{{ dawarich_postgres_password }}"
+          DATABASE_NAME: "dawarich_development"
+          APPLICATION_HOSTS: "{{ dawarich_hostname }}.{{ dns_domain }}"
+          BACKGROUND_PROCESSING_CONCURRENCY: "10"
+          APPLICATION_PROTOCOL: "http"
+          PROMETHEUS_EXPORTER_ENABLED: "{{ dawarich_prometheus_exporter_enabled }}"
+          PROMETHEUS_EXPORTER_HOST: "dawarich_app"
+          PROMETHEUS_EXPORTER_PORT: "9394"
+          SELF_HOSTED: "true"
+          STORE_GEODATA: "true"
+        healthcheck:
+          test: ["CMD-SHELL", "pgrep -f sidekiq"]
+          interval: 10s
+          retries: 30
+          start_period: 30s
+          timeout: 10s
+        restart_policy: unless-stopped
+        memory: "{{ dawarich_sidekiq_memory }}"
+        networks:
+          - name: "{{ dawarich_container_network_name }}"
+
+- name: Stop Dawarich
+  when: not dawarich_enabled
+  block:
+    - name: Stop Dawarich Sidekiq Docker Container
+      community.docker.docker_container:
+        name: "{{ dawarich_sidekiq_container_name }}"
+        state: absent
+    - name: Stop Dawarich app Docker Container
+      community.docker.docker_container:
+        name: "{{ dawarich_container_name }}"
+        state: absent
+    - name: Stop Dawarich postgres Docker Container
+      community.docker.docker_container:
+        name: "{{ dawarich_postgres_container_name }}"
+        state: absent
+    - name: Stop Dawarich redis broker
+      community.docker.docker_container:
+        name: "{{ dawarich_redis_container_name }}"
+        state: absent
+    - name: Remove Dawarich network
+      community.docker.docker_network:
+        name: "{{ dawarich_container_network_name }}"
+        state: absent

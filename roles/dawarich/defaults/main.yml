@@ -1,0 +1,56 @@
+---
+dawarich_enabled: false
+dawarich_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+dawarich_available_externally: false
+
+# directories
+dawarich_config_directory: "{{ docker_home }}/dawarich"
+dawarich_postgres_directory: "{{ dawarich_config_directory }}/db"
+dawarich_shared_directory: "{{ dawarich_config_directory }}/shared"
+dawarich_public_directory: "{{ dawarich_config_directory }}/public"
+dawarich_watched_directory: "{{ dawarich_config_directory }}/watched"
+dawarich_storage_directory: "{{ dawarich_config_directory }}/storage"
+
+# network
+dawarich_hostname: dawarich
+dawarich_port: 9393
+dawarich_prometheus_port: 9394
+dawarich_prometheus_exporter_enabled: "false"
+
+# postgres
+dawarich_postgres_user: postgres
+dawarich_postgres_password: password
+
+# container
+dawarich_container_network_name: dawarich_network
+
+dawarich_container_name: dawarich_app
+dawarich_image_name: freikin/dawarich
+dawarich_image_version: latest
+
+dawarich_redis_container_name: dawarich_redis
+dawarich_redis_image_name: redis
+dawarich_redis_image_version: "7.4-alpine"
+
+dawarich_postgres_container_name: dawarich_postgres
+dawarich_postgres_image_name: postgis/postgis
+dawarich_postgres_image_version: "17-3.5-alpine"
+
+dawarich_sidekiq_container_name: dawarich_sidekiq
+
+dawarich_container_names: # Used to check if app is running
+  - "{{ dawarich_container_name }}"
+  - "{{ dawarich_sidekiq_container_name }}"
+  - "{{ dawarich_postgres_container_name }}"
+  - "{{ dawarich_redis_container_name }}"
+
+
+# settings
+dawarich_app_version: "latest"
+dawarich_languages: "eng"
+
+# specs
+dawarich_memory: 1g
+dawarich_sidekiq_memory: 1g
+dawarich_postgres_memory: 1g
+dawarich_redis_memory: 1g
