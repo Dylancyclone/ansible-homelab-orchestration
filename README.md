@@ -1,7 +1,8 @@
 # Ansible Homelab Orchestration
 
 [![Number of Available Applications](https://img.shields.io/github/directory-file-count/Dylancyclone/ansible-homelab-orchestration/roles?label=Available%20Applications)](https://dylancyclone.github.io/ansible-homelab-orchestration/applications)
-[![CI](https://github.com/Dylancyclone/ansible-homelab-orchestration/workflows/ansible-lint/badge.svg)](https://github.com/Dylancyclone/ansible-homelab-orchestration/actions?query=workflow%3Aansible-lint)
+[![ansible-lint](https://github.com/Dylancyclone/ansible-homelab-orchestration/workflows/ansible-lint/badge.svg)](https://github.com/Dylancyclone/ansible-homelab-orchestration/actions?query=workflow%3Aansible-lint)
+[![Tests](https://github.com/Dylancyclone/ansible-homelab-orchestration/workflows/run-tests/badge.svg)](https://github.com/Dylancyclone/ansible-homelab-orchestration/actions?query=workflow%3Arun-tests)
 
 [Documentation](https://dylancyclone.github.io/ansible-homelab-orchestration/)
 
