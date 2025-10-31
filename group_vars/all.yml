@@ -39,4 +39,3 @@ roms_root: "{{ data_home }}/roms"
 downloads_root: "{{ data_home }}/downloads" # General downloads and incomplete files
 torrents_root: "{{ data_home }}/torrents"
 code_root: "{{ data_home }}/code" # Git repositories and other code
-

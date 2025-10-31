@@ -163,10 +163,6 @@
       tags: guacamole
       when: guacamole_enabled or (guacamole_container_names | intersect(running_containers) | length > 0)
 
-    - role: healthchecksio
-      tags: healthchecksio
-      when: healthchecksio_enabled or (healthchecksio_container_names | intersect(running_containers) | length > 0)
-
     - role: heimdall
       tags: heimdall
       when: heimdall_enabled or (heimdall_container_names | intersect(running_containers) | length > 0)
