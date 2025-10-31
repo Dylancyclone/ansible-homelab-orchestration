@@ -375,6 +375,10 @@
       tags: speedtest_tracker
       when: speedtest_tracker_enabled or (speedtest_tracker_container_names | intersect(running_containers) | length > 0)
 
+    - role: stirlingpdf
+      tags: stirlingpdf
+      when: stirlingpdf_enabled or (stirlingpdf_container_names | intersect(running_containers) | length > 0)
+
     - role: syncthing
       tags: syncthing
       when: syncthing_enabled or (syncthing_container_names | intersect(running_containers) | length > 0)

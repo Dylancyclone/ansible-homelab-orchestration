@@ -1,0 +1,34 @@
+---
+title: Stirling PDF
+tags: ["File Management"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://www.stirling.com/) |
+[Repository](https://github.com/Stirling-Tools/Stirling-PDF)
+
+<Tags tags={frontmatter.tags} />
+
+Stirling-PDF is a robust, locally hosted web-based PDF manipulation tool using Docker. It enables you to carry out various operations on PDF files, including splitting, merging, converting, reorganizing, adding images, rotating, compressing, and more. This locally hosted web application has evolved to encompass a comprehensive set of features, addressing all your PDF requirements.
+
+All files and PDFs exist either exclusively on the client side, reside in server memory only during task execution, or temporarily reside in a file solely for the execution of the task. Any file downloaded by the user will have been deleted from the server by that point.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+stirlingpdf_enabled: true
+```
+
+By default, Stirling PDF can be accessed at `http://[your_server_ip]:8203` or `https://stirlingpdf.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Stirling PDF at [`roles/stirlingpdf/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/stirlingpdf/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

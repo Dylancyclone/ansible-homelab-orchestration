@@ -1,0 +1,22 @@
+---
+stirlingpdf_enabled: false
+stirlingpdf_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+stirlingpdf_available_externally: false
+
+# directories
+stirlingpdf_data_directory: "{{ docker_home }}/stirlingpdf/config"
+
+# network
+stirlingpdf_hostname: stirlingpdf
+stirlingpdf_port: 8203
+
+# containers
+stirlingpdf_container_name: stirlingpdf
+stirlingpdf_image_name: frooodle/s-pdf
+stirlingpdf_image_version: latest
+
+stirlingpdf_container_names: # Used to check if app is running
+  - "{{ stirlingpdf_container_name }}"
+
+# specs
+stirlingpdf_memory: 1g

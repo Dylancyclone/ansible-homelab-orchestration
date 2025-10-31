@@ -1,0 +1,46 @@
+---
+- name: Start Stirling PDF
+  when: stirlingpdf_enabled
+  block:
+    - name: Check for Stirling PDF Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: stirlingpdf
+
+    - name: Create Stirling PDF Directory
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ stirlingpdf_data_directory }}"
+
+    - name: Stirling PDF Docker Container
+      community.docker.docker_container:
+        name: "{{ stirlingpdf_container_name }}"
+        image: "{{ stirlingpdf_image_name }}:{{ stirlingpdf_image_version }}"
+        pull: true
+        ports:
+          - "{{ stirlingpdf_port }}:8080"
+        volumes:
+          - "{{ stirlingpdf_data_directory }}:/configs:rw"
+        env:
+          DOCKER_ENABLE_SECURITY: "false"
+        restart_policy: unless-stopped
+        memory: "{{ stirlingpdf_memory }}"
+        labels:
+          traefik.enable: "{{ (stirlingpdf_dns_accessible or stirlingpdf_available_externally) | string }}"
+          traefik.http.services.stirlingpdf.loadbalancer.server.port: "8080"
+          traefik.http.routers.stirlingpdf.rule: "Host(`{{ stirlingpdf_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.stirlingpdf.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.stirlingpdf.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.stirlingpdf.tls.certresolver: "letsencrypt"
+          traefik.http.routers.stirlingpdf.middlewares: "{{ omit if stirlingpdf_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Stirling PDF
+  when: not stirlingpdf_enabled
+  block:
+    - name: Stop Stirling PDF
+      community.docker.docker_container:
+        name: "{{ stirlingpdf_container_name }}"
+        state: absent
