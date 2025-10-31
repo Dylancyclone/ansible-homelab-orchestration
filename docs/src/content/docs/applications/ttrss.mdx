@@ -1,0 +1,35 @@
+---
+title: Tiny Tiny RSS
+tags: ["RSS"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://github.com/tt-rss/tt-rss/wiki) |
+[Repository](https://github.com/tt-rss/tt-rss)
+
+<Tags tags={frontmatter.tags} />
+
+Tiny Tiny RSS (tt-rss) is a free, flexible, open-source, web-based news feed (RSS/Atom/other) reader and aggregator.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+ttrss_enabled: true
+
+# You may want to change the default admin credentials
+ttrss_admin_password: ""
+```
+
+By default, Tiny Tiny RSS can be accessed at `http://[your_server_ip]:9007` or `https://ttrss.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Tiny Tiny RSS at [`roles/ttrss/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/ttrss/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

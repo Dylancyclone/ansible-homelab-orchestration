@@ -411,6 +411,10 @@
       tags: transmission
       when: transmission_enabled or (transmission_container_names | intersect(running_containers) | length > 0)
 
+    - role: ttrss
+      tags: ttrss
+      when: ttrss_enabled or (ttrss_container_names | intersect(running_containers) | length > 0)
+
     - role: ubooquity
       tags: ubooquity
       when: ubooquity_enabled or (ubooquity_container_names | intersect(running_containers) | length > 0)

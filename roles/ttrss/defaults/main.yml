@@ -1,0 +1,51 @@
+---
+ttrss_enabled: false
+ttrss_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+ttrss_available_externally: false
+
+# directories
+ttrss_data_directory: "{{ docker_home }}/ttrss/db"
+ttrss_app_data_directory: "{{ docker_home }}/ttrss/app"
+
+# Set admin user password to this value. If not set, random password
+# will be generated on startup, look for it in the 'app' container logs.
+# This setting is applied on every startup.
+ttrss_admin_password: ""
+
+# db
+ttrss_postgres_db: "postgres"
+ttrss_postgres_user: "postgres"
+ttrss_postgres_password: "postgres"
+
+# network
+ttrss_hostname: ttrss
+ttrss_port: 9007
+
+# containers
+ttrss_network_name: ttrss-network
+
+ttrss_container_name: ttrss
+ttrss_image_name: supahgreg/tt-rss
+ttrss_image_version: latest
+
+ttrss_db_container_name: ttrss-db
+ttrss_db_image_name: postgres
+ttrss_db_image_version: 18-alpine
+
+ttrss_updater_container_name: ttrss-updater
+ttrss_updater_image_name: supahgreg/tt-rss
+ttrss_updater_image_version: latest
+
+ttrss_nginx_container_name: ttrss-nginx
+ttrss_nginx_image_name: supahgreg/tt-rss-web-nginx
+ttrss_nginx_image_version: latest
+
+ttrss_container_names: # Used to check if app is running
+  - "{{ ttrss_container_name }}"
+  - "{{ ttrss_db_container_name }}"
+  - "{{ ttrss_updater_container_name }}"
+  - "{{ ttrss_nginx_container_name }}"
+
+# specs
+ttrss_memory: 1g
+ttrss_db_memory: 1g
