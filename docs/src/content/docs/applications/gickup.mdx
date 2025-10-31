@@ -1,0 +1,41 @@
+---
+title: Gickup
+tags: ["Git", "Backups"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://gickup.dev/) |
+[Repository](https://github.com/cooperspencer/gickup)
+
+<Tags tags={frontmatter.tags} />
+
+Gickup is a tool that allows you to clone/mirror repositories from one hoster to another. This is useful if you want to have a backup of your repositories on another hoster or to a local server.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+gickup_enabled: true
+```
+
+## Configuration
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+# https://github.com/cooperspencer/gickup/blob/main/conf.example.yml
+
+gickup_settings:
+  source:
+    github:
+      - token: "YourGitHubToken"
+        wiki: true # includes wiki too
+        starred: true # includes the user's starred repositories too
+```
+
+See the default configuration options for Gickup at [`roles/gickup/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/gickup/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

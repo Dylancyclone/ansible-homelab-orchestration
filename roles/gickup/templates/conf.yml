@@ -1,0 +1,29 @@
+{{ gickup_settings | to_nice_yaml(indent=2) }}
+
+destination:
+  local:
+    # Export this path from Docker with a volume to make it accessible and more permanent.
+    - path: /downloads
+      structured: true # checks repos out like hostersite/user|organization/repo
+
+cron: 0 2 * * * # optional - when cron is not provided, the program runs once and exits.
+# Otherwise, it runs according to the cron schedule.
+# See timezone commentary in docker-compose.yml for making sure this container runs
+# in the timezone you want.
+# For more information on crontab or testing: https://crontab.guru/
+
+log: # optional
+  timeformat: 2006-01-02 15:04:05 # you can use a custom time format, use https://yourbasic.org/golang/format-parse-string-time-date-example/ to check how date formats work in go
+  file-logging: # optional
+    dir: log # directory to log into
+    file: gickup.log # file to log into
+    maxage: 7 # keep logs for 7 days
+
+metrics:
+  prometheus: # optional
+    endpoint: /metrics
+    listen_addr: ":6178" # default listens on port 6178 on all IPs.
+  heartbeat: # optional - upon successful backup, makes a GET http request to one or more URLs. This is useful for use with monitoring services such as healthchecks.io or deadmanssnitch.com
+    urls:
+      - http(s)://url-to-make-request-to
+      - http(s)://another-url-to-make-request-to

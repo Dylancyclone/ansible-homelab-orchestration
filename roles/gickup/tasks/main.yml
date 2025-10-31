@@ -1,0 +1,45 @@
+---
+- name: Start Gickup
+  when: gickup_enabled
+  block:
+    - name: Check for Gickup Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: gickup
+
+    - name: Create Gickup Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ gickup_data_directory }}"
+        - "{{ gickup_download_directory }}"
+
+    - name: Template Gickup conf.yml
+      ansible.builtin.template:
+        src: conf.yml
+        dest: "{{ gickup_data_directory }}/conf.yml"
+      register: gickup_template_config
+
+    - name: Gickup
+      community.docker.docker_container:
+        name: "{{ gickup_container_name }}"
+        image: "{{ gickup_image_name }}:{{ gickup_image_version }}"
+        pull: true
+        volumes:
+          - "{{ gickup_download_directory }}:/downloads:rw"
+          - "{{ gickup_data_directory }}/conf.yml:/gickup/conf.yml:ro"
+        env:
+          TZ: "{{ computer_timezone }}"
+        restart_policy: unless-stopped
+        recreate: "{{ gickup_template_config is changed }}"
+        memory: "{{ gickup_memory }}"
+
+- name: Stop Gickup
+  when: not gickup_enabled
+  block:
+    - name: Stop Gickup
+      community.docker.docker_container:
+        name: "{{ gickup_container_name }}"
+        state: absent

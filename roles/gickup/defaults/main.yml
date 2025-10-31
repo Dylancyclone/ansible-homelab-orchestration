@@ -1,0 +1,26 @@
+---
+gickup_enabled: false
+
+# directories
+gickup_download_directory: "{{ downloads_root }}"
+gickup_data_directory: "{{ docker_home }}/gickup"
+
+# containers
+gickup_container_name: gickup
+gickup_image_name: buddyspencer/gickup
+gickup_image_version: latest
+
+gickup_container_names: # Used to check if app is running
+  - "{{ gickup_container_name }}"
+
+# specs
+gickup_memory: 1g
+
+# Gickup Settings
+# https://github.com/cooperspencer/gickup/blob/main/conf.example.yml
+gickup_settings:
+  source:
+    github:
+      - token: "YourGitHubToken"
+        wiki: true # includes wiki too
+        starred: true # includes the user's starred repositories too
