@@ -1,0 +1,54 @@
+---
+title: Paperless-ngx
+tags: ["File Management"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://paperless-ngx.com/) |
+[Repository](https://github.com/paperless-ngx/paperless-ngx)
+
+<Tags tags={frontmatter.tags} />
+
+Paperless-ngx is a document management system that transforms your physical documents into a searchable online archive so you can keep, well, less paper.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+paperless_ngx_enabled: true
+
+# You should change the default admin credentials
+# These will not change an existing [super]user's password, nor will it recreate a user that already exists.
+paperless_ngx_admin_user: ""
+paperless_ngx_admin_password: ""
+paperless_ngx_admin_mail: ""
+
+# !!IMPORTANT!!
+# when **enabling** traefik set the secret key to a long random string; you don't have to remember it.
+# If not set, default value(which is well known) will be used
+# user for example https://numbergenerator.org/randomnumbergenerator/ascii
+# or
+# https://numbergenerator.org/hex-code-generator#!numbers=1&length=128&addfilters=
+paperless_ngx_secret_key: "very_long-string!-09skjlOJIOKSN-ofrandonm-charcters!_?"
+```
+
+By default, Paperless-ngx can be accessed at `http://[your_server_ip]:16922` or `https://paperless_ngx.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+If you didn't set up an admin user on first boot, you can still create a superuser from the command line:
+
+```bash
+docker exec -it paperless_ngx_uiserver python manage.py createsuperuser
+```
+
+This will prompt you to set a username, an optional e-mail address and finally a password (at least 8 characters).
+
+See the default configuration options for Paperless-ngx at [`roles/paperless_ngx/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/paperless_ngx/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

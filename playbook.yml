@@ -291,6 +291,10 @@
       tags: overseerr
       when: overseerr_enabled or (overseerr_container_names | intersect(running_containers) | length > 0)
 
+    - role: paperless_ngx
+      tags: paperless_ngx
+      when: paperless_ngx_enabled or (paperless_ngx_container_names | intersect(running_containers) | length > 0)
+
     - role: piwigo
       tags: piwigo
       when: piwigo_enabled or (piwigo_container_names | intersect(running_containers) | length > 0)
