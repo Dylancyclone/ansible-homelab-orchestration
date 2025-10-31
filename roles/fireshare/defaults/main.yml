@@ -1,0 +1,34 @@
+---
+fireshare_enabled: false
+fireshare_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+fireshare_available_externally: "false"
+
+# directories
+fireshare_videos_directory: "{{ documents_root }}"
+fireshare_data_directory: "{{ docker_home }}/fireshare/data"
+fireshare_processed_directory: "{{ docker_home }}/fireshare/processed"
+
+# network
+fireshare_hostname: fireshare
+fireshare_port: 8102
+
+# uid/gid
+fireshare_user_id: "1000"
+fireshare_group_id: "1000"
+
+# containers
+fireshare_container_name: fireshare
+fireshare_image_name: shaneisrael/fireshare
+fireshare_image_version: latest
+
+fireshare_container_names: # Used to check if app is running
+  - "{{ fireshare_container_name }}"
+
+# specs
+fireshare_memory: 1g
+
+# login
+fireshare_username: "admin"
+fireshare_password: "admin"
+
+fireshare_key: "some_random_string"

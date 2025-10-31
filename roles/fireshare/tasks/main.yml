@@ -1,0 +1,55 @@
+---
+- name: Start Fireshare
+  when: fireshare_enabled
+  block:
+    - name: Check for Fireshare Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: fireshare
+
+    - name: Create Fireshare Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ fireshare_data_directory }}"
+        - "{{ fireshare_processed_directory }}"
+        - "{{ fireshare_videos_directory }}"
+
+    - name: Fireshare Docker Container
+      community.docker.docker_container:
+        name: "{{ fireshare_container_name }}"
+        image: "{{ fireshare_image_name }}:{{ fireshare_image_version }}"
+        pull: true
+        volumes:
+          - "{{ fireshare_videos_directory }}:/videos:rw"
+          - "{{ fireshare_data_directory }}:/data:rw"
+          - "{{ fireshare_processed_directory }}:/processed:rw"
+        ports:
+          - "{{ fireshare_port }}:80"
+        env:
+          ADMIN_USERNAME: "{{ fireshare_username }}"
+          ADMIN_PASSWORD: "{{ fireshare_password }}"
+          SECRET_KEY: "{{ fireshare_key }}"
+          MINUTES_BETWEEN_VIDEO_SCANS: "5"
+          fireshare_UID: "{{ fireshare_user_id }}"
+          fireshare_GID: "{{ fireshare_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ fireshare_memory }}"
+        labels:
+          traefik.enable: "{{ (fireshare_dns_accessible or fireshare_available_externally) | string }}"
+          traefik.http.routers.fireshare.rule: "Host(`{{ fireshare_hostname }}.{{ dns_domain }}`)"
+          traefik.http.services.fireshare.loadbalancer.server.port: "80"
+          traefik.http.routers.fireshare.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.fireshare.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.fireshare.tls.certresolver: "letsencrypt"
+          traefik.http.routers.fireshare.middlewares: "{{ omit if fireshare_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Fireshare
+  when: not fireshare_enabled
+  block:
+    - name: Stop Fireshare
+      community.docker.docker_container:
+        name: "{{ fireshare_container_name }}"
+        state: absent

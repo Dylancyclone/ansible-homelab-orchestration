@@ -115,6 +115,10 @@
       tags: firefly
       when: firefly_enabled or (firefly_container_names | intersect(running_containers) | length > 0)
 
+    - role: fireshare
+      tags: fireshare
+      when: fireshare_enabled or (fireshare_container_names | intersect(running_containers) | length > 0)
+
     - role: flaresolverr
       tags: flaresolverr
       when: flaresolverr_enabled or (flaresolverr_container_names | intersect(running_containers) | length > 0)
