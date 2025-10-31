@@ -1,0 +1,22 @@
+---
+fastenhealth_enabled: false
+fastenhealth_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+fastenhealth_available_externally: false
+
+# directories
+fastenhealth_data_directory: "{{ docker_home }}/fastenhealth"
+
+# network
+fastenhealth_hostname: fastenhealth
+fastenhealth_port: 8101
+
+# containers
+fastenhealth_container_name: fastenhealth
+fastenhealth_image_name: ghcr.io/fastenhealth/fasten-onprem
+fastenhealth_image_version: main
+
+fastenhealth_container_names: # Used to check if app is running
+  - "{{ fastenhealth_container_name }}"
+
+# specs
+fastenhealth_memory: 1g

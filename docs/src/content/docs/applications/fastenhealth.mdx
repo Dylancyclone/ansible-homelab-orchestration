@@ -1,0 +1,32 @@
+---
+title: Fasten Health
+tags: ["Medical"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://www.fastenhealth.com/) |
+[Repository](https://github.com/fastenhealth/fasten-onprem)
+
+<Tags tags={frontmatter.tags} />
+
+Fasten is an open-source, self-hosted, personal/family electronic medical record aggregator, designed to integrate with 100,000's of insurances/hospitals/clinics.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+fastenhealth_enabled: true
+```
+
+By default, Fasten Health can be accessed at `http://[your_server_ip]:8101` or `https://fastenhealth.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Fasten Health at [`roles/fastenhealth/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/fastenhealth/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}
