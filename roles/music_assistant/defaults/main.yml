@@ -1,0 +1,24 @@
+---
+music_assistant_enabled: false
+music_assistant_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+music_assistant_available_externally: false
+
+# directories
+music_assistant_data_directory: "{{ docker_home }}/music_assistant"
+music_assistant_music_directory: "{{ music_root }}"
+music_assistant_audiobooks_directory: "{{ audiobooks_root }}"
+music_assistant_podcasts_directory: "{{ podcasts_root }}"
+
+# network
+music_assistant_hostname: musicassistant
+
+# containers
+music_assistant_container_name: music-assistant-server
+music_assistant_image_name: "ghcr.io/music-assistant/server"
+music_assistant_image_version: latest
+
+music_assistant_container_names: # Used to check if app is running
+  - "{{ music_assistant_container_name }}"
+
+# specs
+music_assistant_memory: 1g

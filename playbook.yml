@@ -239,6 +239,10 @@
       tags: mumble
       when: mumble_enabled or (mumble_container_names | intersect(running_containers) | length > 0)
 
+    - role: music_assistant
+      tags: music_assistant
+      when: music_assistant_enabled or (music_assistant_container_names | intersect(running_containers) | length > 0)
+
     - role: mylar
       tags: mylar
       when: mylar_enabled or (mylar_container_names | intersect(running_containers) | length > 0)

@@ -1,0 +1,34 @@
+---
+title: Music Assistant
+tags: ["Music", "Media Server", "Home Automation"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://www.music-assistant.io/) |
+[Repository](https://github.com/music-assistant/server)
+
+<Tags tags={frontmatter.tags} />
+
+Music Assistant is a free, opensource Media library manager that connects to your streaming services and a wide range of connected speakers.
+
+Music Assistant can be operated as a complete standalone product but it is actually tailored to use side by side with [Home Assistant](./homeassistant).
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+music_assistant_enabled: true
+```
+
+By default, Music Assistant can be accessed at `http://[your_server_ip]:8095` or `https://music_assistant.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Music Assistant at [`roles/music_assistant/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/music_assistant/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

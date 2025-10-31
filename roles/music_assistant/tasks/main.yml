@@ -1,0 +1,53 @@
+---
+- name: Start Music Assistant
+  when: music_assistant_enabled
+  block:
+    - name: Check for Music Assistant Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: music_assistant
+
+    - name: Create Music Assistant Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ music_assistant_data_directory }}/data"
+        - "{{ music_assistant_music_directory }}"
+        - "{{ music_assistant_audiobooks_directory }}"
+        - "{{ music_assistant_podcasts_directory }}"
+
+    - name: Create Music Assistant Docker Container
+      community.docker.docker_container:
+        name: "{{ music_assistant_container_name }}"
+        image: "{{ music_assistant_image_name }}:{{ music_assistant_image_version }}"
+        network_mode: host
+        restart_policy: unless-stopped
+        volumes:
+          - "{{ music_assistant_data_directory }}/data:/data:rw"
+          - "{{ music_assistant_music_directory }}/:/music:rw"
+          - "{{ music_assistant_audiobooks_directory }}:/audiobooks:rw"
+          - "{{ music_assistant_podcasts_directory }}:/podcasts:rw"
+        capabilities:
+          - SYS_ADMIN
+          - DAC_READ_SEARCH
+        security_opts:
+          - apparmor:unconfined
+        memory: "{{ music_assistant_memory }}"
+        labels:
+          traefik.enable: "{{ (music_assistant_dns_accessible or music_assistant_available_externally) | string }}"
+          traefik.http.services.music_assistant.loadbalancer.server.port: "8095"
+          traefik.http.routers.music_assistant.rule: "Host(`{{ music_assistant_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.music_assistant.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.music_assistant.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.music_assistant.tls.certresolver: "letsencrypt"
+          traefik.http.routers.music_assistant.middlewares: "{{ omit if music_assistant_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Music Assistant
+  when: not music_assistant_enabled
+  block:
+    - name: Stop Music Assistant Docker Container
+      community.docker.docker_container:
+        name: "{{ music_assistant_container_name }}"
+        state: absent
