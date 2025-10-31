@@ -1,0 +1,55 @@
+---
+- name: Start Audiobookshelf
+  when: audiobookshelf_enabled
+  block:
+    - name: Check for Audiobookshelf Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: audiobookshelf
+
+    - name: Create Audiobookshelf Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ audiobookshelf_data_directory }}/config"
+        - "{{ audiobookshelf_data_directory }}/metadata"
+        - "{{ audiobookshelf_audiobooks_directory }}"
+        - "{{ audiobookshelf_books_directory }}"
+        - "{{ audiobookshelf_podcasts_directory }}"
+
+    - name: Audiobookshelf Docker Container
+      community.docker.docker_container:
+        name: "{{ audiobookshelf_container_name }}"
+        image: "{{ audiobookshelf_image_name }}:{{ audiobookshelf_image_version }}"
+        pull: true
+        volumes:
+          - "{{ audiobookshelf_data_directory }}/config:/config:rw"
+          - "{{ audiobookshelf_data_directory }}/metadata:/metadata:rw"
+          - "{{ audiobookshelf_audiobooks_directory }}:/audiobooks:rw"
+          - "{{ audiobookshelf_books_directory }}:/books:rw"
+          - "{{ audiobookshelf_podcasts_directory }}:/podcasts:rw"
+        ports:
+          - "{{ audiobookshelf_port }}:80"
+        env:
+          AUDIOBOOKSHELF_UID: "{{ audiobookshelf_user_id }}"
+          AUDIOBOOKSHELF_GID: "{{ audiobookshelf_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ audiobookshelf_memory }}"
+        labels:
+          traefik.enable: "{{ (audiobookshelf_dns_accessible or audiobookshelf_available_externally) | string }}"
+          traefik.http.services.audiobookshelf.loadbalancer.server.port: "80"
+          traefik.http.routers.audiobookshelf.rule: "Host(`{{ audiobookshelf_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.audiobookshelf.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.audiobookshelf.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.audiobookshelf.tls.certresolver: "letsencrypt"
+          traefik.http.routers.audiobookshelf.middlewares: "{{ omit if audiobookshelf_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Audiobookshelf
+  when: not audiobookshelf_enabled
+  block:
+    - name: Stop Audiobookshelf
+      community.docker.docker_container:
+        name: "{{ audiobookshelf_container_name }}"
+        state: absent

@@ -1,0 +1,29 @@
+---
+audiobookshelf_enabled: false
+audiobookshelf_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+audiobookshelf_available_externally: "false"
+
+# directories
+audiobookshelf_audiobooks_directory: "{{ audiobooks_root }}"
+audiobookshelf_books_directory: "{{ books_root }}"
+audiobookshelf_podcasts_directory: "{{ podcasts_root }}"
+audiobookshelf_data_directory: "{{ docker_home }}/audiobookshelf"
+
+# uid/gid
+audiobookshelf_user_id: "99"
+audiobookshelf_group_id: "100"
+
+# network
+audiobookshelf_hostname: audiobookshelf
+audiobookshelf_port: 8099
+
+# containers
+audiobookshelf_container_name: audiobookshelf
+audiobookshelf_image_name: ghcr.io/advplyr/audiobookshelf
+audiobookshelf_image_version: latest
+
+audiobookshelf_container_names: # Used to check if app is running
+  - "{{ audiobookshelf_container_name }}"
+
+# specs
+audiobookshelf_memory: 1g

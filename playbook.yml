@@ -38,6 +38,10 @@
       tags: apcupsd
       when: apcupsd_enabled or (apcupsd_container_names | intersect(running_containers) | length > 0)
 
+    - role: audiobookshelf
+      tags: audiobookshelf
+      when: audiobookshelf_enabled or (audiobookshelf_container_names | intersect(running_containers) | length > 0)
+
     - role: bazarr
       tags: bazarr
       when: bazarr_enabled or (bazarr_container_names | intersect(running_containers) | length > 0)
