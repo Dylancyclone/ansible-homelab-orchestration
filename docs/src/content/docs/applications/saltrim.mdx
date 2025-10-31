@@ -1,0 +1,46 @@
+---
+title: Salt Rim (Bar Assistant)
+tags: ["Recipes"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://barassistant.app/) |
+[Repository](https://github.com/karlomikus/vue-salt-rim)
+
+<Tags tags={frontmatter.tags} />
+
+Salt Rim is a web client used for connecting to your Bar Assistant server. It's made with Vue 3 and it builds to a static webpage that can be easily hosted anywhere.
+
+Bar Assistant is all-in-one solution for managing your home bar. Compared to other recipe management software that usually tries to be more for general use, Bar Assistant is made specifically for managing cocktail recipes. This means that there are a lot of cocktail-oriented features, like ingredient substitutes, first-class ingredients, ABV calculations, unit switching and more.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+saltrim_enabled: true
+
+# You should change the secret key so something very long and random
+saltrim_secret_key: "very_long-string!-09skqlOJIOKSN-ofrandonm-charcters!_?"
+```
+
+By default, Salt Rim can be accessed at `http://[your_server_ip]:9003` or `https://saltrim.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+If for any reason you wanted to connect directly to the Bar Assistant, it can be accessed at `http://[your_server_ip]:9004` or `https://saltrimapi.[your_domain].com`.
+
+## Configuration
+
+You can change the name of your bar with:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+saltrim_bar_name: "Homelab Bar"
+saltrim_bar_description: ""
+```
+
+See the default configuration options for Salt Rim at [`roles/saltrim/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/saltrim/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

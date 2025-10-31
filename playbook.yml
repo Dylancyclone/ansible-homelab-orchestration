@@ -355,6 +355,10 @@
       tags: sabnzbd
       when: sabnzbd_enabled or (sabnzbd_container_names | intersect(running_containers) | length > 0)
 
+    - role: saltrim
+      tags: saltrim
+      when: saltrim_enabled or (saltrim_container_names | intersect(running_containers) | length > 0)
+
     - role: slskd
       tags: slskd
       when: slskd_enabled or (slskd_container_names | intersect(running_containers) | length > 0)

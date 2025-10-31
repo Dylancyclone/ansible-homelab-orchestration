@@ -1,0 +1,51 @@
+---
+saltrim_enabled: false
+saltrim_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+saltrim_available_externally: false
+
+saltrim_secret_key: "very_long-string!-09skqlOJIOKSN-ofrandonm-charcters!_?"
+
+saltrim_bar_name: "Homelab Bar"
+saltrim_bar_description: ""
+
+# directories
+saltrim_data_directory: "{{ docker_home }}/saltrim"
+
+# network
+saltrim_hostname: saltrim
+saltrim_api_hostname: saltrimapi
+saltrim_meilisearch_hostname: saltrimmeilisearch
+saltrim_port: 9003
+saltrim_api_port: 9004
+saltrim_meilisearch_port: 9005
+
+# container names
+saltrim_container_network_name: saltrim_network
+
+saltrim_container_name: saltrim_ui
+saltrim_container_image_name: barassistant/salt-rim
+saltrim_container_image_version: "v4"
+
+saltrim_meilisearch_container_name: saltrim_meilisearch
+saltrim_meilisearch_container_image_name: getmeili/meilisearch
+saltrim_meilisearch_container_image_version: "v1.15"
+
+saltrim_redis_container_name: saltrim_redis
+saltrim_redis_container_image_name: redis
+saltrim_redis_container_image_version: latest
+
+saltrim_barassistant_container_name: saltrim_barassistant
+saltrim_barassistant_container_image_name: barassistant/server
+saltrim_barassistant_container_image_version: "v5"
+
+saltrim_container_names: # Used to check if app is running
+  - "{{ saltrim_container_name }}"
+  - "{{ saltrim_meilisearch_container_name }}"
+  - "{{ saltrim_redis_container_name }}"
+  - "{{ saltrim_barassistant_container_name }}"
+
+# specs
+saltrim_memory: 1g
+saltrim_meilisearch_memory: 1g
+saltrim_redis_memory: 1g
+saltrim_barassistant_memory: 1g
