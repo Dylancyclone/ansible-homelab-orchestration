@@ -1,0 +1,26 @@
+---
+immich_selfie_timelapse_enabled: false
+immich_selfie_timelapse_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+immich_selfie_timelapse_available_externally: false
+
+immich_selfie_timelapse_immich_address: "https://localhost:{{ immich_port }}/api"
+# Immich API key: https://docs.immich.app/features/command-line-interface/#obtain-the-api-key
+immich_selfie_timelapse_immich_api_key: "abcdefghijklmnopqrstuvwxyz"
+
+# directories
+immich_selfie_timelapse_output_directory: "{{ docker_home }}/immich_selfie_timelapse/output"
+
+# network
+immich_selfie_timelapse_hostname: immich-selfie-timelapse
+immich_selfie_timelapse_port: 5000
+
+# containers
+immich_selfie_timelapse_container_name: immich_selfie_timelapse
+immich_selfie_timelapse_image_name: arnaudcayrol/immich-selfie-timelapse
+immich_selfie_timelapse_image_version: latest
+
+immich_selfie_timelapse_container_names: # Used to check if app is running
+  - "{{ immich_selfie_timelapse_container_name }}"
+
+# specs
+immich_selfie_timelapse_memory: 1g

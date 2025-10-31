@@ -1,0 +1,47 @@
+---
+- name: Start Immich Selfie Timelapse
+  when: immich_selfie_timelapse_enabled
+  block:
+    - name: Check for Immich Selfie Timelapse Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: immich_selfie_timelapse
+
+    - name: Create Immich Selfie Timelapse Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ immich_selfie_timelapse_output_directory }}"
+
+    - name: Create Immich Selfie Timelapse Docker Container
+      community.docker.docker_container:
+        name: "{{ immich_selfie_timelapse_container_name }}"
+        image: "{{ immich_selfie_timelapse_image_name }}:{{ immich_selfie_timelapse_image_version }}"
+        pull: true
+        volumes:
+          - "{{ immich_selfie_timelapse_output_directory }}:/app/output:rw"
+        ports:
+          - "{{ immich_selfie_timelapse_port }}:5000"
+        env:
+          IMMICH_BASE_URL: "{{ immich_selfie_timelapse_immich_address }}"
+          IMMICH_API_KEY: "{{ immich_selfie_timelapse_immich_api_key }}"
+        restart_policy: unless-stopped
+        memory: "{{ immich_selfie_timelapse_memory }}"
+        labels:
+          traefik.enable: "{{ (immich_selfie_timelapse_dns_accessible or immich_selfie_timelapse_available_externally) | string }}"
+          traefik.http.services.immich_selfie_timelapse.loadbalancer.server.port: "5000"
+          traefik.http.routers.immich_selfie_timelapse.rule: "Host(`{{ immich_selfie_timelapse_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.immich_selfie_timelapse.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.immich_selfie_timelapse.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.immich_selfie_timelapse.tls.certresolver: "letsencrypt"
+          traefik.http.routers.immich_selfie_timelapse.middlewares: "{{ omit if immich_selfie_timelapse_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Immich Selfie Timelapse
+  when: not immich_selfie_timelapse_enabled
+  block:
+    - name: Stop Immich Selfie Timelapse Docker Container
+      community.docker.docker_container:
+        name: "{{ immich_selfie_timelapse_container_name }}"
+        state: absent

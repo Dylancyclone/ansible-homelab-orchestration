@@ -1,0 +1,34 @@
+---
+title: Immich Selfie Timelapse
+tags: ["Photos"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Repository](https://github.com/ArnaudCrl/immich-automated-selfie-timelapse)
+
+<Tags tags={frontmatter.tags} />
+
+Automated face extraction, resizing and alignment suitable to make a selfie timelapse video.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+immich_selfie_timelapse_enabled: true
+
+# Immich API key: https://docs.immich.app/features/command-line-interface/#obtain-the-api-key
+immich_selfie_timelapse_immich_api_key: "abcdefghijklmnopqrstuvwxyz"
+```
+
+By default, Immich Selfie Timelapse can be accessed at `http://[your_server_ip]:5000` or `https://immich_selfie_timelapse.[your_domain].com` if you have [DNS access](../guides/dns-access) configured.
+
+## Configuration
+
+See the default configuration options for Immich Selfie Timelapse at [`roles/immich_selfie_timelapse/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/immich_selfie_timelapse/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

@@ -183,6 +183,10 @@
       tags: immich
       when: immich_enabled or (immich_container_names | intersect(running_containers) | length > 0)
 
+    - role: immich_selfie_timelapse
+      tags: immich_selfie_timelapse
+      when: immich_selfie_timelapse_enabled or (immich_selfie_timelapse_container_names | intersect(running_containers) | length > 0)
+
     - role: ispyagentdvr
       tags: ispyagentdvr
       when: ispyagentdvr_enabled or (ispyagentdvr_container_names | intersect(running_containers) | length > 0)
