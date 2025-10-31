@@ -22,6 +22,10 @@
       tags: general
 
     # Application roles
+    - role: actualbudget
+      tags: actualbudget
+      when: actualbudget_enabled or (actualbudget_container_names | intersect(running_containers) | length > 0)
+
     - role: airsonic_advanced
       tags: airsonic_advanced
       when: airsonic_advanced_enabled or (airsonic_advanced_container_names | intersect(running_containers) | length > 0)

@@ -1,0 +1,50 @@
+---
+- name: Start Actual Budget
+  when: actualbudget_enabled
+  block:
+    - name: Check for Actual Budget Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: actualbudget
+
+    - name: Create Actual Budget Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ actualbudget_data_directory }}/data"
+
+
+    - name: Create Actual Budget Docker Container
+      community.docker.docker_container:
+        name: "{{ actualbudget_container_name }}"
+        image: "{{ actualbudget_image_name }}:{{ actualbudget_image_version }}"
+        ports:
+          - "{{ actualbudget_port }}:5006"
+        restart_policy: unless-stopped
+        volumes:
+          - "{{ actualbudget_data_directory }}/data:/data:rw"
+        memory: "{{ actualbudget_memory }}"
+        healthcheck:
+          test: ['CMD-SHELL', 'node src/scripts/health-check.js']
+          interval: 60s
+          timeout: 10s
+          retries: 3
+          start_period: 20s
+        labels:
+          traefik.enable: "{{ (actualbudget_dns_accessible or actualbudget_available_externally) | string }}"
+          traefik.http.services.actualbudget.loadbalancer.server.port: "5006"
+          traefik.http.routers.actualbudget.rule: "Host(`{{ actualbudget_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.actualbudget.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.actualbudget.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.actualbudget.tls.certresolver: "letsencrypt"
+          traefik.http.routers.actualbudget.middlewares: "{{ omit if actualbudget_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Actual Budget
+  when: not actualbudget_enabled
+  block:
+    - name: Stop Actual Budget Docker Container
+      community.docker.docker_container:
+        name: "{{ actualbudget_container_name }}"
+        state: absent

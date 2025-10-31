@@ -1,0 +1,22 @@
+---
+actualbudget_enabled: false
+actualbudget_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+actualbudget_available_externally: false
+
+# directories
+actualbudget_data_directory: "{{ docker_home }}/actualbudget"
+
+# network
+actualbudget_hostname: actualbudget
+actualbudget_port: 5006
+
+# containers
+actualbudget_container_name: actualbudget
+actualbudget_image_name: actualbudget/actual-server
+actualbudget_image_version: latest
+
+actualbudget_container_names: # Used to check if app is running
+  - "{{ actualbudget_container_name }}"
+
+# specs
+actualbudget_memory: 1g
