@@ -33,15 +33,21 @@ import { Aside } from "@astrojs/starlight/components"
    git clone https://github.com/Dylancyclone/ansible-homelab-orchestration.git && cd ansible-homelab-orchestration
    ```
 
-2. Make a copy of the example inventory file:
+2. Install the Ansible Dependencies:
+
+   ```sh
+   ansible-galaxy install -r requirements.yml
+   ```
+
+3. Make a copy of the example inventory file:
 
    ```sh
    cp -r inventory/example inventory/homelab
    ```
 
-3. Edit `inventory/homelab/inventory` to add your homelab server's IP address
-4. Edit `inventory/homelab/group_vars/homelab.yml` and update the default variables to suit your setup
-5. Run the playbook:
+4. Edit `inventory/homelab/inventory` to add your homelab server's IP address
+5. Edit `inventory/homelab/group_vars/homelab.yml` and update the default variables to suit your setup
+6. Run the playbook:
    ```sh
    ansible-playbook -i inventories/homelab/inventory playbook.yml
    ```
