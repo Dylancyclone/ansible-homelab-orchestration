@@ -42,11 +42,11 @@ import { Aside } from "@astrojs/starlight/components"
 3. Make a copy of the example inventory file:
 
    ```sh
-   cp -r inventory/example inventory/homelab
+   cp -r inventories/example inventories/homelab
    ```
 
-4. Edit `inventory/homelab/inventory` to add your homelab server's IP address
-5. Edit `inventory/homelab/group_vars/homelab.yml` and update the default variables to suit your setup
+4. Edit `inventories/homelab/inventory` to add your homelab server's IP address
+5. Edit `inventories/homelab/group_vars/homelab.yml` and update the default variables to suit your setup
 6. Run the playbook:
    ```sh
    ansible-playbook -i inventories/homelab/inventory playbook.yml
