@@ -24,6 +24,11 @@ if os.path.exists(breaking_change_file_path):
 
 # Open state file
 state_file_path = "../../../state/application_last_run_hashes.csv"
+if not os.path.exists(state_file_path):
+    # Create the state file if it doesn't exist
+    with open(state_file_path, "w") as f:
+        pass
+
 for line in fileinput.input(state_file_path, inplace=True):
     app, last_hash = line.strip().split(",")
     if app == application_to_check:
