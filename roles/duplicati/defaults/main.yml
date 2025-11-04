@@ -9,7 +9,12 @@ duplicati_encryption_key: "changeme"
 duplicati_webui_password: "changeme"
 
 # directories
-duplicati_data_directory: "{{ docker_home }}/duplicati/config"
+duplicati_data_directory: "{{ docker_home }}/duplicati/data"
+duplicati_tmp_directory: "/tmp"
+
+# Additional volumes to mount into the duplicati container
+# duplicati_extra_volumes:
+#   - "/path/to/backup:/source/important_backups:ro" # ro = read-only, rw = read-write
 
 # permissions
 duplicati_data_permissions: "ro" # set this to rw to enable the ability to restore data
@@ -24,7 +29,7 @@ duplicati_port: 8200
 
 # containers
 duplicati_container_name: duplicati
-duplicati_image_name: linuxserver/duplicati
+duplicati_image_name: duplicati/duplicati
 duplicati_image_version: latest
 
 duplicati_container_names: # Used to check if app is running

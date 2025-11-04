@@ -14,19 +14,24 @@
         state: directory
       with_items:
         - "{{ duplicati_data_directory }}"
+        - "{{ duplicati_tmp_directory }}"
 
     - name: Dupicati Docker Container
+      vars:
+        duplicati_volumes:
+          - "/etc/timezone:/etc/timezone:ro"
+          - "{{ duplicati_data_directory }}:/data:rw"
+          - "{{ data_home }}:/source/data:{{ duplicati_data_permissions }}"
+          - "{{ docker_home }}:/source/docker:{{ duplicati_data_permissions }}"
+          - "{{ duplicati_tmp_directory }}:/tmp:rw"
+        duplicati_volumes_with_extras: "{{ duplicati_volumes + duplicati_extra_volumes | default([]) }}"
       community.docker.docker_container:
         name: "{{ duplicati_container_name }}"
         image: "{{ duplicati_image_name }}:{{ duplicati_image_version }}"
         pull: true
         ports:
           - "{{ duplicati_port }}:8200"
-        volumes:
-          - "{{ duplicati_data_directory }}:/config:rw"
-          - "{{ data_home }}:/source/shares:{{ duplicati_data_permissions }}"
-          - "{{ docker_home }}:/source/docker:{{ duplicati_data_permissions }}"
-          - "/etc/timezone:/etc/timezone:ro"
+        volumes: "{{ duplicati_volumes_with_extras }}"
         env:
           TZ: "{{ computer_timezone }}"
           PUID: "{{ duplicati_user_id }}"
