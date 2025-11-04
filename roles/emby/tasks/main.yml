@@ -18,14 +18,17 @@
         - "{{ emby_tv_directory }}"
 
     - name: Emby Docker Container
+      vars:
+        emby_volumes:
+          - "{{ emby_config_directory }}:/config:rw"
+          - "{{ emby_movies_directory }}:/movies:{{ emby_movies_permissions }}"
+          - "{{ emby_tv_directory }}:/tv:{{ emby_tv_permissions }}"
+        emby_volumes_with_extras: "{{ emby_volumes + emby_extra_volumes | default([]) }}"
       community.docker.docker_container:
         name: "{{ emby_container_name }}"
         image: "{{ emby_image_name }}:{{ emby_image_version }}"
         pull: true
-        volumes:
-          - "{{ emby_config_directory }}:/config:rw"
-          - "{{ emby_movies_directory }}:/movies:{{ emby_movies_permissions }}"
-          - "{{ emby_tv_directory }}:/tv:{{ emby_tv_permissions }}"
+        volumes: "{{ emby_volumes_with_extras }}"
         ports:
           - "{{ emby_http_port }}:8096"
           - "{{ emby_https_port }}:8920"

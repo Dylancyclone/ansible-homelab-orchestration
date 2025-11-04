@@ -8,6 +8,10 @@ emby_config_directory: "{{ docker_home }}/emby/config"
 emby_movies_directory: "{{ movies_root }}"
 emby_tv_directory: "{{ tv_root }}"
 
+# Additional volumes to mount into the emby container
+# emby_extra_volumes:
+#   - "/path/to/more/media:/path_in_container:ro" # ro = read-only, rw = read-write
+
 # If you're paranoid, set permissions to "ro" so Emby won't ever be able to
 # delete your files
 emby_movies_permissions: "rw"
