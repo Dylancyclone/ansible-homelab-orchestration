@@ -13,6 +13,10 @@ plex_podcasts_directory: "{{ podcasts_root }}"
 plex_music_directory: "{{ music_root }}"
 plex_audiobooks_directory: "{{ audiobooks_root }}"
 
+# Additional volumes to mount into the plex container
+# plex_extra_volumes:
+#   - "/path/to/more/media:/path_in_container:ro" # ro = read-only, rw = read-write
+
 # uid / gid
 plex_user_id: "1000"
 plex_group_id: "1000"
