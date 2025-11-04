@@ -22,11 +22,8 @@
         - "{{ jellyfin_audiobooks_directory }}"
 
     - name: Jellyfin Docker Container
-      community.docker.docker_container:
-        name: "{{ jellyfin_container_name }}"
-        image: "{{ jellyfin_image_name }}:{{ jellyfin_image_version }}"
-        pull: true
-        volumes:
+      vars:
+        jellyfin_volumes:
           - "{{ jellyfin_config_directory }}:/config:rw"
           - "{{ jellyfin_movies_directory }}:/movies:{{ jellyfin_movies_permissions }}"
           - "{{ jellyfin_music_directory }}:/music:{{ jellyfin_music_permissions }}"
@@ -34,6 +31,12 @@
           - "{{ jellyfin_tv_directory }}:/tv:{{ jellyfin_tv_permissions }}"
           - "{{ jellyfin_books_directory }}:/books:{{ jellyfin_books_permissions }}"
           - "{{ jellyfin_audiobooks_directory }}:/audiobooks:{{ jellyfin_audiobooks_permissions }}"
+        jellyfin_volumes_with_extras: "{{ jellyfin_volumes + jellyfin_extra_volumes | default([]) }}"
+      community.docker.docker_container:
+        name: "{{ jellyfin_container_name }}"
+        image: "{{ jellyfin_image_name }}:{{ jellyfin_image_version }}"
+        pull: true
+        volumes: "{{ jellyfin_volumes_with_extras }}"
         ports:
           - "{{ jellyfin_http_port }}:8096"
         env:
