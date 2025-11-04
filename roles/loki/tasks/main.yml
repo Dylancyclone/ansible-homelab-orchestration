@@ -8,11 +8,6 @@
       vars:
         breaking_changes_application: loki
 
-    - name: Check for Minio installation
-      ansible.builtin.fail:
-        msg: "Loki requires Minio enabled and running for storage, please set that up first."
-      when: minio_enabled is false
-
     - name: Check for Grafana installation
       ansible.builtin.fail:
         msg: "Loki requires Grafana enabled and running for visualization, please set that up first."
@@ -24,14 +19,6 @@
         state: directory
       with_items:
         - "{{ loki_data_directory }}"
-
-    - name: Create Minio buckets for Loki
-      ansible.builtin.file:
-        path: "{{ item }}"
-        state: directory
-      with_items:
-        - "{{ minio_data_directory }}/data/loki-data"
-        - "{{ minio_data_directory }}/data/loki-ruler"
 
     - name: Template Loki config
       ansible.builtin.template:
