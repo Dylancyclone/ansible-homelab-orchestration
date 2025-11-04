@@ -8,15 +8,15 @@ watchtower_cron_schedule: 0 0 5 * * *
 # notifications or not, some examples are provided below. See https://containrrr.dev/watchtower/arguments/ for more options.
 
 # No notifications
-watchtower_command: "--schedule '{{ watchtower_cron_schedule }}'"
+watchtower_command: "--schedule '{{ watchtower_cron_schedule }}' --cleanup"
 
 # Email notifications
-# watchtower_command: "--schedule '{{ watchtower_cron_schedule }}' --notifications 'email'\
+# watchtower_command: "--schedule '{{ watchtower_cron_schedule }}' --cleanup --notifications 'email'\
 #   --notification-email-from 'me@example.com' --notification-email-to 'me@example.com' --notification-email-server 'my.email.server.com'\
 #   --notification-email-server-port '25' --notification-email-server-user 'email_username' --notification-email-server-password 'top-secret'"
 
 # Slack notifications
-# watchtower_command: "--schedule '{{ watchtower_cron_schedule }}' --notifications 'slack'\
+# watchtower_command: "--schedule '{{ watchtower_cron_schedule }}' --cleanup --notifications 'slack'\
 #   --notification-slack-hook-url 'https://hooks.slack.com/services/xxx/yyyyyyyyyyyyyyy' --notification-slack-identifier 'ansible-homelab-orchestration'"
 
 # containers

@@ -26,13 +26,15 @@ const tagCounts: { [tag: string]: number } = {}
 
 allApps.forEach((app) => {
 	const tags = app.frontmatter.tags || []
-	tags.forEach((tag: string) => {
-		if (tag in tagCounts) {
-			tagCounts[tag] += 1
-		} else {
-			tagCounts[tag] = 1
-		}
-	})
+	tags
+		.filter((tag) => tag !== "*arr")
+		.forEach((tag: string) => {
+			if (tag in tagCounts) {
+				tagCounts[tag] += 1
+			} else {
+				tagCounts[tag] = 1
+			}
+		})
 })
 
 const sortedTagCounts = sortObjectByKeys(tagCounts)
