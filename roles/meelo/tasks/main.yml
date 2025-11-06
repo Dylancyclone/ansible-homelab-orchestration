@@ -193,11 +193,11 @@
         networks:
           - name: "{{ meelo_network_name }}"
         env:
-          PUBLIC_SERVER_URL: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}/api"
+          PUBLIC_SERVER_URL: "https://{{ meelo_hostname }}.{{ dns_domain }}/api"
           SSR_SERVER_URL: "http://{{ meelo_container_name }}:4000"
-          PUBLIC_SCANNER_URL: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}/scanner"
+          PUBLIC_SCANNER_URL: "https://{{ meelo_hostname }}.{{ dns_domain }}/scanner"
           SSR_SCANNER_URL: "http://{{ meelo_scanner_container_name }}:8133"
-          PUBLIC_MATCHER_URL: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}/matcher"
+          PUBLIC_MATCHER_URL: "https://{{ meelo_hostname }}.{{ dns_domain }}/matcher"
           SSR_MATCHER_URL: "http://{{ meelo_matcher_container_name }}:6789"
         restart_policy: unless-stopped
         memory: "{{ meelo_web_memory }}"
