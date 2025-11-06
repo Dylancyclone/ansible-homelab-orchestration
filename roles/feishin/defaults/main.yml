@@ -1,0 +1,19 @@
+---
+feishin_enabled: false
+feishin_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+feishin_available_externally: false
+
+# network
+feishin_hostname: feishin
+feishin_port: 9180
+
+# containers
+feishin_container_name: feishin
+feishin_image_name: ghcr.io/jeffvli/feishin
+feishin_image_version: latest
+
+feishin_container_names: # Used to check if app is running
+  - "{{ feishin_container_name }}"
+
+# specs
+feishin_memory: 1g

@@ -111,6 +111,10 @@
       tags: fastenhealth
       when: fastenhealth_enabled or (fastenhealth_container_names | intersect(running_containers) | length > 0)
 
+    - role: feishin
+      tags: feishin
+      when: feishin_enabled or (feishin_container_names | intersect(running_containers) | length > 0)
+
     - role: firefly
       tags: firefly
       when: firefly_enabled or (firefly_container_names | intersect(running_containers) | length > 0)
