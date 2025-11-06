@@ -1,6 +1,6 @@
 # Ansible Homelab Orchestration
 
-[![Number of Available Applications](https://img.shields.io/github/directory-file-count/Dylancyclone/ansible-homelab-orchestration/docs/src/content/docs/applications?label=Available%20Applications)](https://dylancyclone.github.io/ansible-homelab-orchestration/applications)
+[![Number of Available Applications](https://img.shields.io/github/directory-file-count/Dylancyclone/ansible-homelab-orchestration/docs/src/content/docs/applications?label=Available%20Applications)](https://dylancyclone.github.io/ansible-homelab-orchestration/tags)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Dylancyclone/ansible-homelab-orchestration/run-tests.yml?event=push&logo=github&label=Tests)](https://github.com/Dylancyclone/ansible-homelab-orchestration/actions/workflows/run-tests.yml)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Dylancyclone/ansible-homelab-orchestration/ansible-lint.yml?event=push&logo=github&label=ansible-lint)](https://github.com/Dylancyclone/ansible-homelab-orchestration/actions/workflows/ansible-lint.yml)
 
