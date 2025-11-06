@@ -1,0 +1,16 @@
+{
+	"trackRegex": {{ meelo_track_regex | to_json }},
+	"metadata": {
+		"source": "{{ meelo_metadata_source }}",
+		"order": "{{ meelo_metadata_order }}",
+		"useExternalProviderGenres": true
+	},
+	"providers": {{ meelo_metadata_providers | to_json | default({}) }},
+	"compilations": {
+		"useID3CompTag": {{ meelo_use_itunes_id3_tag | to_json }},
+		"artists": [
+			"Various Artists"
+		]
+	},
+	"useEmbeddedThumbnails": {{ meelo_use_embedded_thumbnails | to_json }}
+}

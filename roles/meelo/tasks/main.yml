@@ -1,0 +1,294 @@
+---
+- name: Start Meelo
+  when: meelo_enabled
+  block:
+    - name: Check for Meelo Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: meelo
+
+    - name: Create Meelo Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ meelo_music_directory }}"
+        - "{{ meelo_config_directory }}"
+        - "{{ meelo_db_directory }}"
+        - "{{ meelo_meilisearch_directory }}"
+        - "{{ meelo_cache_directory }}"
+        - "{{ meelo_mq_directory }}"
+        - "{{ meelo_nginx_directory }}"
+
+    - name: Copy nginx config template
+      ansible.builtin.copy:
+        src: nginx.conf.template
+        dest: "{{ meelo_nginx_directory }}/nginx.conf.template"
+        force: false
+
+    - name: Template Meelo config
+      ansible.builtin.template:
+        src: settings.json.j2
+        dest: "{{ meelo_config_directory }}/settings.json"
+      register: meelo_config
+
+    - name: Create Meelo network
+      community.docker.docker_network:
+        name: "{{ meelo_network_name }}"
+        state: present
+
+    - name: Meelo Database Docker Container
+      community.docker.docker_container:
+        name: "{{ meelo_db_container_name }}"
+        image: "{{ meelo_db_image_name }}:{{ meelo_db_image_version }}"
+        pull: true
+        networks:
+          - name: "{{ meelo_network_name }}"
+        volumes:
+          - "{{ meelo_db_directory }}:/var/lib/postgresql/data:rw"
+        env:
+          POSTGRES_DB: "{{ meelo_db_name }}"
+          POSTGRES_USER: "{{ meelo_db_username }}"
+          POSTGRES_PASSWORD: "{{ meelo_db_password }}"
+        healthcheck:
+          test:
+            [
+              "CMD-SHELL",
+              "pg_isready -U {{ meelo_db_username }} -d {{ meelo_db_name }}",
+            ]
+          interval: 5s
+          timeout: 5s
+          retries: 5
+        restart_policy: unless-stopped
+        memory: "{{ meelo_memory }}"
+
+    - name: Meelo Meilisearch Docker Container
+      community.docker.docker_container:
+        name: "{{ meelo_meilisearch_container_name }}"
+        image: "{{ meelo_meilisearch_image_name }}:{{ meelo_meilisearch_image_version }}"
+        pull: true
+        networks:
+          - name: "{{ meelo_network_name }}"
+        volumes:
+          - "{{ meelo_meilisearch_directory }}:/meili_data:rw"
+        env:
+          MEILI_ENV: "production"
+          MEILI_MASTER_KEY: "{{ meelo_meilisearch_secret_key }}"
+          MEILI_LOG_LEVEL: "WARN"
+        healthcheck:
+          test:
+            [
+              "CMD",
+              "wget",
+              "--no-verbose",
+              "--spider",
+              "http://0.0.0.0:7700/health",
+            ]
+          timeout: 5s
+          retries: 5
+        restart_policy: unless-stopped
+        memory: "{{ meelo_memory }}"
+
+    - name: Meelo Transcoder Docker Container
+      community.docker.docker_container:
+        name: "{{ meelo_transcoder_container_name }}"
+        image: "{{ meelo_transcoder_image_name }}:{{ meelo_transcoder_image_version }}"
+        pull: true
+        networks:
+          - name: "{{ meelo_network_name }}"
+        volumes:
+          - "{{ meelo_music_directory }}:/data:rw"
+          - "{{ meelo_cache_directory }}:/cache:rw"
+        env:
+          GOCODER_SAFE_PATH: "/data"
+          POSTGRES_URL: "postgres://{{ meelo_db_username }}:{{ meelo_db_password }}@{{ meelo_db_container_name }}:5432/{{ meelo_db_name }}?sslmode=disable"
+          POSTGRES_SCHEMA: "gocoder"
+        restart_policy: unless-stopped
+        memory: "{{ meelo_memory }}"
+
+    - name: Meelo RabbitMQ Docker Container
+      community.docker.docker_container:
+        name: "{{ meelo_mq_container_name }}"
+        image: "{{ meelo_mq_image_name }}:{{ meelo_mq_image_version }}"
+        pull: true
+        networks:
+          - name: "{{ meelo_network_name }}"
+        volumes:
+          - "{{ meelo_mq_directory }}:/var/lib/rabbitmq:rw"
+        env:
+          RABBITMQ_NODENAME: "meelo"
+          RABBITMQ_DEFAULT_USER: "{{ meelo_mq_username }}"
+          RABBITMQ_DEFAULT_PASS: "{{ meelo_mq_password }}"
+        healthcheck:
+          test: rabbitmq-diagnostics -q ping
+          interval: 5s
+          timeout: 5s
+          retries: 10
+        restart_policy: unless-stopped
+        memory: "{{ meelo_memory }}"
+
+    - name: Meelo Server Docker Container
+      community.docker.docker_container:
+        name: "{{ meelo_container_name }}"
+        image: "{{ meelo_image_name }}:{{ meelo_image_version }}"
+        pull: true
+        networks:
+          - name: "{{ meelo_network_name }}"
+        volumes:
+          - "{{ meelo_music_directory }}:/data:rw"
+          - "{{ meelo_config_directory }}:/config:rw"
+        env:
+          API_KEYS: "{{ meelo_api_keys }}"
+          ALLOW_ANONYMOUS: "{{ meelo_allow_anonymous }}"
+          ENABLE_USER_REGISTRATION: "{{ meelo_allow_registration }}"
+          LASTFM_API_KEY: "{{ meelo_lastfm_api_key }}"
+          LASTFM_API_SECRET: "{{ meelo_lastfm_api_secret }}"
+          JWT_SIGNATURE: "{{ meelo_jwt_secret_key }}"
+          TRANSCODER_URL: "http://{{ meelo_transcoder_container_name }}:7666"
+          MEILI_HOST: "http://{{ meelo_meilisearch_container_name }}:7700"
+          MEILI_MASTER_KEY: "{{ meelo_meilisearch_secret_key }}"
+          RABBITMQ_URL: "amqp://{{ meelo_mq_username }}:{{ meelo_mq_password }}@{{ meelo_mq_container_name }}:5672"
+          RABBITMQ_USER: "{{ meelo_mq_username }}"
+          RABBITMQ_PASSWORD: "{{ meelo_mq_password }}"
+          DATABASE_URL: "postgresql://{{ meelo_db_username }}:{{ meelo_db_password }}@{{ meelo_db_container_name }}:5432/{{ meelo_db_name }}?schema=public"
+          POSTGRES_USER: "{{ meelo_db_username }}"
+          POSTGRES_PASSWORD: "{{ meelo_db_password }}"
+          POSTGRES_DB: "{{ meelo_db_name }}"
+          INTERNAL_CONFIG_DIR: "/config"
+          INTERNAL_DATA_DIR: "/data"
+        healthcheck:
+          test: ["CMD-SHELL", "wget -qO- localhost:4000"]
+          interval: 5s
+          timeout: 5s
+          retries: 5
+        restart_policy: unless-stopped
+        recreate: "{{ meelo_config is changed }}"
+        memory: "{{ meelo_memory }}"
+
+    - name: Meelo Scanner Docker Container
+      community.docker.docker_container:
+        name: "{{ meelo_scanner_container_name }}"
+        image: "{{ meelo_scanner_image_name }}:{{ meelo_scanner_image_version }}"
+        pull: true
+        networks:
+          - name: "{{ meelo_network_name }}"
+        volumes:
+          - "{{ meelo_music_directory }}:/data:ro"
+          - "{{ meelo_config_directory }}:/config:ro"
+        env:
+          API_URL: "http://{{ meelo_container_name }}:4000"
+          INTERNAL_CONFIG_DIR: "/config"
+          INTERNAL_DATA_DIR: "/data"
+          API_KEYS: "{{ meelo_api_keys }}" # TODO
+        restart_policy: unless-stopped
+        recreate: "{{ meelo_config is changed }}"
+        memory: "{{ meelo_scanner_memory }}"
+
+    - name: Meelo Web Docker Container
+      community.docker.docker_container:
+        name: "{{ meelo_web_container_name }}"
+        image: "{{ meelo_web_image_name }}:{{ meelo_web_image_version }}"
+        pull: true
+        networks:
+          - name: "{{ meelo_network_name }}"
+        env:
+          PUBLIC_SERVER_URL: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}/api"
+          SSR_SERVER_URL: "http://{{ meelo_container_name }}:4000"
+          PUBLIC_SCANNER_URL: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}/scanner"
+          SSR_SCANNER_URL: "http://{{ meelo_scanner_container_name }}:8133"
+          PUBLIC_MATCHER_URL: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}/matcher"
+          SSR_MATCHER_URL: "http://{{ meelo_matcher_container_name }}:6789"
+        restart_policy: unless-stopped
+        memory: "{{ meelo_web_memory }}"
+
+    - name: Meelo Matcher Docker Container
+      community.docker.docker_container:
+        name: "{{ meelo_matcher_container_name }}"
+        image: "{{ meelo_matcher_image_name }}:{{ meelo_matcher_image_version }}"
+        pull: true
+        networks:
+          - name: "{{ meelo_network_name }}"
+        env:
+          API_URL: "http://{{ meelo_container_name }}:4000"
+          INTERNAL_CONFIG_DIR: "/config"
+          API_KEYS: "{{ meelo_api_keys }}"
+          RABBITMQ_URL: "amqp://{{ meelo_mq_username }}:{{ meelo_mq_password }}@{{ meelo_mq_container_name }}:5672"
+        volumes:
+          - "{{ meelo_config_directory }}:/config:ro"
+        restart_policy: unless-stopped
+        recreate: "{{ meelo_config is changed }}"
+        memory: "{{ meelo_matcher_memory }}"
+
+    - name: Meelo Nginx Docker Container
+      community.docker.docker_container:
+        name: "{{ meelo_nginx_container_name }}"
+        image: "{{ meelo_nginx_image_name }}:{{ meelo_nginx_image_version }}"
+        pull: true
+        networks:
+          - name: "{{ meelo_network_name }}"
+        volumes:
+          - "{{ meelo_nginx_directory }}/nginx.conf.template:/etc/nginx/templates/meelo.conf.template:ro"
+        ports:
+          - "{{ meelo_port }}:5000"
+        env:
+          PORT: "5000"
+          FRONT_URL: "http://{{ meelo_web_container_name }}:3000"
+          SERVER_URL: "http://{{ meelo_container_name }}:4000"
+          SCANNER_URL: "http://{{ meelo_scanner_container_name }}:8133"
+          MATCHER_URL: "http://{{ meelo_matcher_container_name }}:6789"
+        restart_policy: unless-stopped
+        recreate: "{{ meelo_config is changed }}"
+        memory: "{{ meelo_nginx_memory }}"
+        labels:
+          traefik.enable: "{{ (meelo_dns_accessible or meelo_available_externally) | string }}"
+          traefik.http.services.meelo.loadbalancer.server.port: "5000"
+          traefik.http.routers.meelo.rule: "Host(`{{ meelo_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.meelo.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.meelo.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.meelo.tls.certresolver: "letsencrypt"
+          traefik.http.routers.meelo.middlewares: "{{ omit if meelo_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Meelo
+  when: not meelo_enabled
+  block:
+    - name: Stop Meelo nginx
+      community.docker.docker_container:
+        name: "{{ meelo_nginx_container_name }}"
+        state: absent
+    - name: Stop Meelo Matcher
+      community.docker.docker_container:
+        name: "{{ meelo_matcher_container_name }}"
+        state: absent
+    - name: Stop Meelo Web
+      community.docker.docker_container:
+        name: "{{ meelo_web_container_name }}"
+        state: absent
+    - name: Stop Meelo Scanner
+      community.docker.docker_container:
+        name: "{{ meelo_scanner_container_name }}"
+        state: absent
+    - name: Stop Meelo Server
+      community.docker.docker_container:
+        name: "{{ meelo_container_name }}"
+        state: absent
+    - name: Stop Meelo RabbitMQ
+      community.docker.docker_container:
+        name: "{{ meelo_mq_container_name }}"
+        state: absent
+    - name: Stop Meelo Transcoder
+      community.docker.docker_container:
+        name: "{{ meelo_transcoder_container_name }}"
+        state: absent
+    - name: Stop Meelo Meilisearch
+      community.docker.docker_container:
+        name: "{{ meelo_meilisearch_container_name }}"
+        state: absent
+    - name: Stop Meelo Database
+      community.docker.docker_container:
+        name: "{{ meelo_db_container_name }}"
+        state: absent
+    - name: Remove Meelo network
+      community.docker.docker_network:
+        name: "{{ meelo_network_name }}"
+        state: absent

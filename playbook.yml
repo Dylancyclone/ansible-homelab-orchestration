@@ -227,6 +227,10 @@
       tags: mealie
       when: mealie_enabled or (mealie_container_names | intersect(running_containers) | length > 0)
 
+    - role: meelo
+      tags: meelo
+      when: meelo_enabled or (meelo_container_names | intersect(running_containers) | length > 0)
+
     - role: memos
       tags: memos
       when: memos_enabled or (memos_container_names | intersect(running_containers) | length > 0)

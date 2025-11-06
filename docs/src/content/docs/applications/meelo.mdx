@@ -1,0 +1,58 @@
+---
+title: Meelo
+tags: ["Music", "Media Server"]
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Repository](https://github.com/Arthi-chaud/Meelo)
+
+<Tags tags={frontmatter.tags} />
+
+Self-Hosted, Personal Music Server, designed for collectors and music maniacs. Check out the Github repository for a list of unique features not found in most other music servers.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+meelo_enabled: true
+```
+
+By default, Meelo can be accessed at `http://[your_server_ip]:5000` or `https://meelo.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured.
+
+## Configuration
+
+Meelo has a ton of configuration options, some of the most notable ones are:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+# Where your music is located
+meelo_music_directory: "{{ music_root }}"
+
+# See https://github.com/Arthi-chaud/Meelo/wiki/Setup:-Settings
+# How Meelo identifies tracks based on file path
+meelo_track_regex:
+  - "^([\\/\\\\]+.*)*[\\/\\\\]+(?P<AlbumArtist>.+)[\\/\\\\]+Unknown Album[\\/\\\\]+(?P<Track>.*)\\..*$"
+  - "^([\\/\\\\]+.*)*[\\/\\\\]+(?P<AlbumArtist>.+)[\\/\\\\]+(?P<Album>.+)(\\s+\\((?P<Year>\\d{4})\\))?[\\/\\\\]+((?P<Disc>[0-9]+)-)?(?P<Index>[0-9]+)\\s+(?P<Track>.*)\\..*$"
+# See https://github.com/Arthi-chaud/Meelo/wiki/Setup:-Providers
+meelo_metadata_providers:
+  genius: { apiKey: "3x4mp13-k3y_but-th3_r341-th1ng_1s-much_10ng3r" }
+  musicbrainz: {}
+
+# Should the primary source for metadata be from embedded tags, or the path of the file?
+meelo_metadata_source: "embedded" # options: "embedded", "path"
+# Should the above source be the only source, or should the other be used as a fallback?
+meelo_metadata_order: "preferred" # options: "only", "preferred"
+meelo_use_itunes_id3_tag: false # If true, use iTunes' non-standard ID3 tags for compilations
+
+# Last.fm API credentials for scrobbling
+meelo_lastfm_api_key: ""
+meelo_lastfm_api_secret: ""
+```
+
+Please see the default configuration options for Meelo at [`roles/meelo/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/meelo/defaults/main.yml), as there are a lot of them.
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}

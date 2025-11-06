@@ -1,0 +1,118 @@
+---
+meelo_enabled: false
+meelo_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+meelo_available_externally: false
+
+# directories
+meelo_music_directory: "{{ music_root }}"
+meelo_config_directory: "{{ docker_home }}/meelo/config"
+meelo_db_directory: "{{ docker_home }}/meelo/db"
+meelo_meilisearch_directory: "{{ docker_home }}/meelo/meilisearch"
+meelo_cache_directory: "{{ docker_home }}/meelo/cache"
+meelo_mq_directory: "{{ docker_home }}/meelo/mq"
+meelo_nginx_directory: "{{ docker_home }}/meelo/nginx"
+
+# network
+meelo_hostname: meelo
+meelo_port: 5000
+
+# configuration
+
+meelo_allow_anonymous: "0" # "1" enables anonymous access to read-only endpoints
+meelo_allow_registration: "1" # "1" enables user registration
+
+# This is Golang flavored regex!
+# See https://pkg.go.dev/regexp/syntax
+# You can test your regex here: https://regex101.com/ (set the flavor to Golang)
+# These defaults (from https://github.com/Arthi-chaud/Meelo/wiki/Setup:-Settings#configuration-files) uses the iTunes folder structure
+meelo_track_regex:
+  - "^([\\/\\\\]+.*)*[\\/\\\\]+(?P<AlbumArtist>.+)[\\/\\\\]+Unknown Album[\\/\\\\]+(?P<Track>.*)\\..*$"
+  - "^([\\/\\\\]+.*)*[\\/\\\\]+(?P<AlbumArtist>.+)[\\/\\\\]+(?P<Album>.+)(\\s+\\((?P<Year>\\d{4})\\))?[\\/\\\\]+((?P<Disc>[0-9]+)-)?(?P<Index>[0-9]+)\\s+(?P<Track>.*)\\..*$"
+
+# See https://github.com/Arthi-chaud/Meelo/wiki/Setup:-Providers
+meelo_metadata_providers:
+  musicbrainz: {}
+  # genius: { apiKey: "" } # Example of provider with configuration, (get genius API key at https://genius.com/api-clients)
+
+meelo_metadata_source: "embedded" # options: "embedded", "path"
+meelo_metadata_order: "only" # options: "only", "preferred"
+meelo_use_itunes_id3_tag: true # If true, use iTunes' non-standard ID3 tags for compilations
+meelo_use_embedded_thumbnails: false # If true, illustrations embedded in video files will be considered as thumbnails, not album artwork
+
+# Optional for Last.fm scrobbling
+meelo_lastfm_api_key: ""
+meelo_lastfm_api_secret: ""
+
+# You should change the secret keys so something very long and random
+meelo_meilisearch_secret_key: "very_long-string!-09skqIOJlOKSN-ofrandonm-charcters!_?"
+meelo_jwt_secret_key: "another_very-l0ng_string!!_8!bKjsp0smMMn_of-difffernt-chars!-?"
+
+#  A comma-separated list of random strings used for internal authentication
+meelo_api_keys: "azertyuip,qwertyuiop"
+
+meelo_db_username: meelo_db_user
+meelo_db_password: meelo_db_password
+meelo_db_name: meelo_db
+meelo_mq_username: meelo_mq_user
+meelo_mq_password: meelo_mq_password
+
+# containers
+meelo_network_name: meelo_network
+
+meelo_container_name: meelo-server
+meelo_image_name: arthichaud/meelo-server
+meelo_image_version: latest
+
+meelo_scanner_container_name: meelo-scanner
+meelo_scanner_image_name: arthichaud/meelo-scanner
+meelo_scanner_image_version: latest
+
+meelo_web_container_name: meelo-web
+meelo_web_image_name: arthichaud/meelo-front
+meelo_web_image_version: latest
+
+meelo_matcher_container_name: meelo-matcher
+meelo_matcher_image_name: arthichaud/meelo-matcher
+meelo_matcher_image_version: latest
+
+meelo_db_container_name: meelo-db
+meelo_db_image_name: postgres
+meelo_db_image_version: alpine3.14
+
+meelo_meilisearch_container_name: meelo-meilisearch
+meelo_meilisearch_image_name: getmeili/meilisearch
+meelo_meilisearch_image_version: "v1.5"
+
+meelo_transcoder_container_name: meelo-transcoder
+meelo_transcoder_image_name: ghcr.io/zoriya/kyoo_transcoder
+meelo_transcoder_image_version: master
+
+meelo_mq_container_name: meelo-mq
+meelo_mq_image_name: rabbitmq
+meelo_mq_image_version: 4.0-alpine
+
+meelo_nginx_container_name: meelo-nginx
+meelo_nginx_image_name: nginx
+meelo_nginx_image_version: 1.24.0-alpine
+
+meelo_container_names: # Used to check if app is running
+  - "{{ meelo_container_name }}"
+  - "{{ meelo_scanner_container_name }}"
+  - "{{ meelo_web_container_name }}"
+  - "{{ meelo_matcher_container_name }}"
+  - "{{ meelo_db_container_name }}"
+  - "{{ meelo_meilisearch_container_name }}"
+  - "{{ meelo_transcoder_container_name }}"
+  - "{{ meelo_mq_container_name }}"
+  - "{{ meelo_nginx_container_name }}"
+
+# specs
+meelo_memory: 1g
+meelo_scanner_memory: 1g
+meelo_web_memory: 1g
+meelo_matcher_memory: 1g
+meelo_db_memory: 1g
+meelo_meilisearch_memory: 1g
+meelo_transcoder_memory: 1g
+meelo_mq_memory: 1g
+meelo_nginx_memory: 1g
