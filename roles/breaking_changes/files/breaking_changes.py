@@ -73,7 +73,7 @@ for line in fileinput.input(state_file_path, inplace=True):
                         f"{msg} | https://github.com/Dylancyclone/ansible-homelab-orchestration/commit/{commit_hash}\n"
                         for msg, commit_hash in regex_search
                     )
-                    f.write("\nPlease review the documentation for this application:\n")
+                    f.write("\nPlease review the links above and the documentation for this application:\n")
                     f.write(
                         f"https://dylancyclone.github.io/ansible-homelab-orchestration/applications/{application_to_check}"
                     )
