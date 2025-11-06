@@ -12,7 +12,7 @@ immich_selfie_timelapse_output_directory: "{{ docker_home }}/immich_selfie_timel
 
 # network
 immich_selfie_timelapse_hostname: immich-selfie-timelapse
-immich_selfie_timelapse_port: 5000
+immich_selfie_timelapse_port: 2293
 
 # containers
 immich_selfie_timelapse_container_name: immich_selfie_timelapse
