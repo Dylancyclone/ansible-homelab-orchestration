@@ -1,3 +1,4 @@
 .hero {
-  grid: none;
+	grid: none;
+	padding-bottom: 0;
 }

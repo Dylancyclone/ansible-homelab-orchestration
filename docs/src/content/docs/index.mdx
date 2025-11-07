@@ -3,12 +3,14 @@ title: Ansible Homelab Orchestration
 tableOfContents: false
 hero:
   tagline: A project to help manage the containers on your homelab
-  actions:
-    - text: Getting started
-      link: guides/getting-started
-      icon: right-arrow
-    # - text: List of applications
-    #   link: /docs/applications/
-    #   icon: right-arrow
-    #   variant: minimal
 ---
+
+import { LinkButton } from "@astrojs/starlight/components"
+import ApplicationCounter from "../../components/ApplicationCounter.astro"
+
+<LinkButton href="guides/getting-started" icon="right-arrow">
+	Getting started
+</LinkButton>
+<LinkButton href="tags/" icon="right-arrow" variant="minimal">
+	Browse all <ApplicationCounter/> applications
+</LinkButton>

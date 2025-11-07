@@ -1,0 +1,37 @@
+---
+import { Badge } from "@astrojs/starlight/components"
+
+interface Props {
+	tags: string[]
+}
+
+const applicationCount = Object.keys(
+	import.meta.glob("../content/docs/applications/*.mdx", { eager: true })
+).length
+---
+
+<script define:vars={{ applicationCount }}>
+	window.onload = () => {
+		const countElement = document.getElementById("count")
+		countElement.style.setProperty("--application-count", applicationCount) // The styles below will animate to this number
+		countElement.classList.add("count") // This way it wont just read 0 if JS is disabled
+	}
+</script>
+
+<style>
+	@property --application-count {
+		syntax: "<integer>";
+		initial-value: 0;
+		inherits: false;
+	}
+	.count {
+		transition: --application-count 2s cubic-bezier(0.22, 1, 0.36, 1);
+		counter-reset: application-count var(--application-count);
+		font-weight: bold;
+	}
+	.count::after {
+		content: counter(application-count); /* Display the animated count */
+	}
+</style>
+
+<span id="count"></span>
