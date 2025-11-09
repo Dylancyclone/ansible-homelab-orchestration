@@ -175,6 +175,10 @@
       tags: homeassistant
       when: homeassistant_enabled or (homeassistant_container_names | intersect(running_containers) | length > 0)
 
+    - role: homebox
+      tags: homebox
+      when: homebox_enabled or (homebox_container_names | intersect(running_containers) | length > 0)
+
     - role: homebridge
       tags: homebridge
       when: homebridge_enabled or (homebridge_container_names | intersect(running_containers) | length > 0)

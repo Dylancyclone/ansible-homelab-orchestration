@@ -1,0 +1,23 @@
+---
+homebox_enabled: false
+homebox_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+homebox_available_externally: false
+
+# directories
+homebox_data_directory: "{{ docker_home }}/homebox/"
+
+# network
+homebox_hostname: homebox
+homebox_port: 7745
+
+# containers
+homebox_container_name: homebox
+homebox_image_name: ghcr.io/sysadminsmedia/homebox
+homebox_image_version: latest
+
+homebox_container_names: # Used to check if app is running
+  - "{{ homebox_container_name }}"
+
+# specs
+homebox_memory: 1g
+homebox_log_level: info

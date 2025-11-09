@@ -1,0 +1,32 @@
+---
+title: HomeBox
+tags: []
+---
+
+import Tags from "../../../components/Tags.astro"
+
+[Homepage](https://homebox.software/) |
+[Repository](https://github.com/sysadminsmedia/homebox)
+
+<Tags tags={frontmatter.tags} />
+
+HomeBox is the inventory and organization system built for the Home User! With a focus on simplicity and ease of use, Homebox is the perfect solution for your home inventory, organization, and management needs.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+homebox_enabled: true
+```
+
+By default, HomeBox can be accessed at `http://[your_server_ip]:7745` or `https://homebox.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured.
+
+## Configuration
+
+See the default configuration options for HomeBox at [`roles/homebox/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/homebox/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}
