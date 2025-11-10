@@ -36,9 +36,9 @@ else:
 
 while True:
     docker_container = input(
-        "Enter the Docker container image name (e.g. `portainer/portainer-ce`): "
+        "Enter the Docker container image name without tag (e.g. `portainer/portainer-ce`): "
     )
-    if docker_container.strip() != "":
+    if docker_container.strip() != "" and ":" not in docker_container:
         break
 
 docker_tag = input("Enter the Docker container tag (Default: 'latest'): ")
@@ -56,13 +56,14 @@ if default_port is not None:
     has_web_interface = input("Does the app have a web interface (Y/n): ")
     network_enabled = has_web_interface.lower() != "n"
 
-    has_docker_network = input("Does the app need Docker network (y/N): ")
+    has_docker_network = input("Does the app need its own Docker Network (y/N): ")
     has_docker_network = has_docker_network.lower() == "y"
 else:
     network_enabled = False
     has_docker_network = False
 
 
+print() # Separate generated files visually
 env = Environment(loader=FileSystemLoader("./templates"), trim_blocks=True)
 defaults_template = env.get_template("defaults.yml.j2")
 tasks_template = env.get_template("tasks.yml.j2")
