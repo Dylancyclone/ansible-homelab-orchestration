@@ -3,7 +3,7 @@ immich_selfie_timelapse_enabled: false
 immich_selfie_timelapse_dns_accessible: "{{ traefik_enable_dns_for_all }}"
 immich_selfie_timelapse_available_externally: false
 
-immich_selfie_timelapse_immich_address: "https://{{ immich_hostname }}.{{ ansible_nas_domain }}/api"
+immich_selfie_timelapse_immich_address: "https://{{ immich_hostname }}.{{ dns_domain }}/api"
 # Immich API key: https://docs.immich.app/features/command-line-interface/#obtain-the-api-key
 immich_selfie_timelapse_immich_api_key: "abcdefghijklmnopqrstuvwxyz"
 
