@@ -66,7 +66,6 @@
       tags: cloudcmd
       when: cloudcmd_enabled or (cloudcmd_container_names | intersect(running_containers) | length > 0)
 
-
     - role: code_server
       tags: code_server
       when: code_server_enabled or (code_server_container_names | intersect(running_containers) | length > 0)
