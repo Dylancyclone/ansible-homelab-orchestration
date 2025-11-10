@@ -10,7 +10,7 @@
 
     - name: Create Kometa Directories
       ansible.builtin.file:
-        path: ""
+        path: "{{ item }}"
         state: directory
       with_items:
         - "{{ kometa_config_directory }}"
