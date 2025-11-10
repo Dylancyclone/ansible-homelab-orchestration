@@ -23,8 +23,8 @@
         volumes:
           - "{{ kometa_config_directory }}:/config:rw"
         env:
-          - KOMETA_RUN: "{{ kometa_run_immediately | string }}"
-          - KOMETA_TIMES: "{{ kometa_run_times }}"
+          KOMETA_RUN: "{{ kometa_run_immediately | string }}"
+          KOMETA_TIMES: "{{ kometa_run_times }}"
         restart_policy: unless-stopped
         memory: "{{ kometa_memory }}"
 
