@@ -13,13 +13,14 @@ traefik_enable_dns_for_all: false
 # To make an app available externally, you must set `[app]_available_externally` to true
 # as well as either `traefik_enable_dns_for_all` to true or `[app]_dns_accessible` to true
 
-# traefik_dns_accessible: "{{ traefik_enable_dns_for_all }}"
-# traefik_available_externally: false
+traefik_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+traefik_available_externally: false
 
 # directories
 traefik_data_directory: "{{ docker_home }}/traefik"
 
 # network
+traefik_hostname: traefik
 traefik_http_port: 80
 traefik_https_port: 443
 traefik_ui_port: 8083

@@ -426,34 +426,35 @@ for role in roles_to_test:
         ]
 
         # If container has network_mode host, add it's traefik port to ports_in_use
-        for docker_task in docker_start_container_tasks:
-            if (
-                docker_task["community.docker.docker_container"].get("network_mode", "")
-                == "host"
-            ):
-                if "labels" not in docker_task["community.docker.docker_container"]:
-                    continue
+        if role != "traefik": # Don't need to worry about traefik colliding with itself
+            for docker_task in docker_start_container_tasks:
                 if (
-                    f"traefik.http.services.{role}.loadbalancer.server.port"
-                    not in docker_task["community.docker.docker_container"].get(
-                        "labels", {}
-                    )
+                    docker_task["community.docker.docker_container"].get("network_mode", "")
+                    == "host"
                 ):
-                    continue
-                port_string = (
-                    docker_task["community.docker.docker_container"]
-                    .get("labels", {})
-                    .get(
-                        f"traefik.http.services.{role}.loadbalancer.server.port",
-                        "",
+                    if "labels" not in docker_task["community.docker.docker_container"]:
+                        continue
+                    if (
+                        f"traefik.http.services.{role}.loadbalancer.server.port"
+                        not in docker_task["community.docker.docker_container"].get(
+                            "labels", {}
+                        )
+                    ):
+                        continue
+                    port_string = (
+                        docker_task["community.docker.docker_container"]
+                        .get("labels", {})
+                        .get(
+                            f"traefik.http.services.{role}.loadbalancer.server.port",
+                            "",
+                        )
                     )
-                )
-                if port_string.startswith("{{") and port_string.endswith("}}"):
-                    # If the port is a variable, it's already tracked
-                    continue
-                else:
-                    port = int(port_string)
-                ports_in_use[f"{role} (host mode)"] = port
+                    if port_string.startswith("{{") and port_string.endswith("}}"):
+                        # If the port is a variable, it's already tracked
+                        continue
+                    else:
+                        port = int(port_string)
+                    ports_in_use[f"{role} (host mode)"] = port
 
         # Each docker container task must have a variable name
         if not docker_start_container_tasks:
