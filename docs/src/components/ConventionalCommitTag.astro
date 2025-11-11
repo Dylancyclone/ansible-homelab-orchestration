@@ -1,0 +1,157 @@
+---
+import { Badge } from "@astrojs/starlight/components"
+
+export type ConventionalCommitTagName = "build" | "chore" | "ci" | "docs" | "feat" | "fix" | "perf" | "refactor" | "revert" | "style" | "test"
+
+interface Props {
+	name: ConventionalCommitTagName
+}
+
+const colors: Record<
+	ConventionalCommitTagName,
+	"note" | "success" | "caution" | "tip" | "danger" | "default" | undefined
+> = {
+	build: "note",
+	chore: "note",
+	ci: "note",
+	docs: "note",
+	feat: "success",
+	fix: "caution",
+	perf: "tip",
+	refactor: "note",
+	revert: "caution",
+	style: "note",
+	test: "tip",
+}
+
+const { name } = Astro.props
+const cleanName =
+	name === "ci" ? "CI" : name.charAt(0).toUpperCase() + name.slice(1)
+---
+
+<style>
+	/* Adapted from Refined Github's conventional commits, which in turn is inspired by Github's labels */
+	/* Default color from `wontfix` label. Also applies to `chore` because it's the most common and meaningless type of commit */
+	[rgh-conventional-commits] {
+		--label-r: 255;
+		--label-g: 255;
+		--label-b: 255;
+		--label-h: 0;
+		--label-s: 0;
+		--label-l: 100;
+		--lightness-threshold: 0.6;
+		--background-alpha: 0.18;
+		--border-alpha: 0.3;
+		--perceived-lightness: calc(
+			(
+					(var(--label-r) * 0.2126) + (var(--label-g) * 0.7152) +
+						(var(--label-b) * 0.0722)
+				) / 255
+		);
+		--lightness-switch: max(
+			0,
+			min(calc((1 / (0.6 - var(--perceived-lightness)))), 1)
+		);
+		--lighten-by: calc(
+			((0.6 - var(--perceived-lightness)) * 100) * var(--lightness-switch)
+		);
+		color: hsl(
+			var(--label-h),
+			calc(var(--label-s) * 1%),
+			calc((var(--label-l) + var(--lighten-by)) * 1%)
+		);
+		background: rgba(
+			var(--label-r),
+			var(--label-g),
+			var(--label-b),
+			var(--background-alpha)
+		);
+		border-color: hsla(
+			var(--label-h),
+			calc(var(--label-s) * 1%),
+			calc((var(--label-l) + var(--lighten-by)) * 1%),
+			var(--border-alpha)
+		);
+	}
+
+	/* Color from `enhancement` label */
+	[rgh-conventional-commits="feat"] {
+		--label-r: 162;
+		--label-g: 238;
+		--label-b: 239;
+		--label-h: 180;
+		--label-s: 70;
+		--label-l: 78;
+	}
+
+	/* Color from `bug` label */
+	[rgh-conventional-commits="fix"] {
+		--label-r: 215;
+		--label-g: 58;
+		--label-b: 74;
+		--label-h: 353;
+		--label-s: 66;
+		--label-l: 53;
+	}
+
+	/* Color from `documentation` label */
+	[rgh-conventional-commits="docs"] {
+		--label-r: 0;
+		--label-g: 117;
+		--label-b: 202;
+		--label-h: 205;
+		--label-s: 100;
+		--label-l: 39;
+	}
+
+	[rgh-conventional-commits="build"] {
+		--label-r: 217;
+		--label-g: 63;
+		--label-b: 11;
+		--label-h: 15;
+		--label-s: 90;
+		--label-l: 44;
+	}
+
+	[rgh-conventional-commits="refactor"] {
+		--label-r: 0;
+		--label-g: 107;
+		--label-b: 117;
+		--label-h: 185;
+		--label-s: 100;
+		--label-l: 22;
+	}
+
+	[rgh-conventional-commits="test"] {
+		--label-r: 251;
+		--label-g: 202;
+		--label-b: 4;
+		--label-h: 48;
+		--label-s: 96;
+		--label-l: 50;
+	}
+
+	[rgh-conventional-commits="ci"] {
+		--label-r: 197;
+		--label-g: 222;
+		--label-b: 245;
+		--label-h: 208;
+		--label-s: 70;
+		--label-l: 86;
+	}
+
+	[rgh-conventional-commits="perf"] {
+		--label-r: 83;
+		--label-g: 25;
+		--label-b: 231;
+		--label-h: 256;
+		--label-s: 81;
+		--label-l: 50;
+	}
+</style>
+
+<Badge
+	text={cleanName}
+	class="conventional-commit-tag"
+	rgh-conventional-commits={name}
+/>

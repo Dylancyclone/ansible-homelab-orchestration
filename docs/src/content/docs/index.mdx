@@ -7,6 +7,7 @@ hero:
 
 import { LinkButton } from "@astrojs/starlight/components"
 import ApplicationCounter from "../../components/ApplicationCounter.astro"
+import RecentChanges from "../../components/RecentChanges.astro"
 
 <LinkButton href="guides/getting-started" icon="right-arrow">
 	Getting started
@@ -14,3 +15,9 @@ import ApplicationCounter from "../../components/ApplicationCounter.astro"
 <LinkButton href="tags/" icon="right-arrow" variant="minimal">
 	Browse all <ApplicationCounter/> applications
 </LinkButton>
+
+<div style="margin-bottom: 15rem;"/>
+
+#### Recently Added Applications
+
+<RecentChanges onlyAdded={true} />

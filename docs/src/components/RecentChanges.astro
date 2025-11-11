@@ -1,0 +1,105 @@
+---
+import { Badge } from "@astrojs/starlight/components"
+// import changelog from "../../public/changelog.json" with { type: "json" }
+import fs from "fs"
+import ConventionalCommitTag, {
+	type ConventionalCommitTagName,
+} from "./ConventionalCommitTag.astro"
+
+interface Props {
+	application: string
+	onlyAdded?: boolean
+}
+
+const { application, onlyAdded } = Astro.props
+
+let changelog: any[] = []
+try {
+	changelog = JSON.parse(fs.readFileSync("./public/changelog.json", "utf-8"))
+} catch (error) {
+	console.warn(
+		"Warning: Could not read changelog.json file, proceeding with empty changelog."
+	)
+}
+const changelogWithoutMerges = changelog.filter(
+	(commit) => !commit.commit.message.startsWith("Merge pull request")
+)
+
+const allApps = Object.keys(
+	import.meta.glob("../content/docs/applications/*.mdx", { eager: true })
+).map((app: any) => app
+	.replace("../content/docs/applications/", "")
+	.replace(".mdx", ""))
+const newApplicationRegex = /feat\(([\w\-\.]+)\): Add /
+
+const filteredCommits = application
+	? changelogWithoutMerges.filter((commit) =>
+			commit.commit.message.includes(`(${application})`)
+		)
+	: onlyAdded
+		? changelogWithoutMerges.filter((commit) => newApplicationRegex.test(commit.commit.message) && allApps.includes(commit.commit.message.match(newApplicationRegex)![1]))
+		: changelogWithoutMerges
+
+const conventionalCommitsRegex =
+	/^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test){1}(?:\(([\w\-\.]+)\))?(!)?: (.+)([\s\S]*)/m
+
+let lastDate = ""
+---
+
+{
+	changelog.length === 0 && <p>Warning: No changelog available. Please ensure the `GH_TOKEN` environment variable is set, or build in CI.</p>
+}
+
+<div style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem;">
+		{
+			filteredCommits.map((commit) => {
+				const match = commit.commit.message.match(conventionalCommitsRegex)
+				let isBreaking = false
+				if (match) {
+					match[1] = match[1]
+					isBreaking = !!match[3]
+				}
+				const logItem = (
+					<span style="color: #777; text-align: right">
+						{
+							lastDate !== new Date(commit.commit.author.date).toISOString().split("T")[0] &&
+							new Date(commit.commit.author.date).toLocaleDateString(undefined, {
+								year: "numeric",
+								month: "short",
+								day: "numeric",
+							})
+						}
+					</span>
+					<span>
+						<div class="row">
+							{isBreaking && <Badge variant="danger" text="BREAKING" style="filter: brightness(90%)" />}
+							{match && (
+								<ConventionalCommitTag
+									name={match[1] as ConventionalCommitTagName}
+								/>
+							)}
+							{match?.[2] && !application &&
+								(allApps.includes(match[2])
+									? <a href={`/ansible-homelab-orchestration/applications/${match[2]}/`} style="color: #777;">{match[2]}:</a>
+									: <span style="color: #777;">{match[2]}:</span>
+								)
+							}
+							<a
+								href={`https://github.com/Dylancyclone/ansible-homelab-orchestration/commit/${commit.sha}`}
+								title={match ? match[5].trim() : commit.commit.message.split("\n")[1]}
+							>
+								{match ? match[4] : commit.commit.message.split("\n")[0]}
+							</a>
+						</div>
+						{/*
+						<div class="row" style="margin: 0">
+							<small> {commit.commit.author.name}</small>
+						</div>
+						*/}
+					</span>
+				)
+				lastDate = new Date(commit.commit.author.date).toISOString().split("T")[0]
+				return logItem
+			})
+		}
+</div>

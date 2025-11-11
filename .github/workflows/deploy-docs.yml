@@ -19,14 +19,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout your repository using git
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install, build, and upload your site
-        uses: withastro/action@v3
+        uses: withastro/action@v5
         with:
           path: ./docs # The root location of your Astro project inside the repository. (optional)
+          build-cmd: | # The command to build your Astro site. Defaults to `<package-manager> run build`. (optional)
+            yarn generateChangelog:ci
+            yarn build
           # node-version: 20 # The specific version of Node that should be used to build your site. Defaults to 20. (optional)
           # package-manager: pnpm@latest # The Node package manager that should be used to install dependencies and build your site. Automatically detected based on your lockfile. (optional)
-        # env:
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # PUBLIC_POKEAPI: 'https://pokeapi.co/api/v2' # Use single quotation marks for the variable value. (optional)
 
   deploy:

@@ -2,12 +2,15 @@
   "name": "docs",
   "type": "module",
   "version": "0.0.1",
+  "license": "MIT",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "generateChangelog": "node ./scripts/generateChangelog.mjs", 
+    "generateChangelog:ci": "node ./scripts/generateChangelog.mjs --ci"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.36.2",
@@ -15,6 +18,9 @@
     "astro-mermaid": "^1.1.0",
     "mermaid": "^11.12.1",
     "sharp": "^0.34.2"
+  },
+  "devDependencies": {
+    "@octokit/request": "^10.0.6"
   },
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }
