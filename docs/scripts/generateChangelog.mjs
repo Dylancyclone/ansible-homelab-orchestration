@@ -25,11 +25,11 @@ const result = await request("GET /repos/{owner}/{repo}/commits", {
 	},
 	owner: "Dylancyclone",
 	repo: "ansible-homelab-orchestration",
-	per_page: 100,
+	per_page: 100, // 100 is the max, should more be wanted, will have to implement pagination
 })
 
 fs.writeFileSync(
 	"./public/changelog.json",
 	JSON.stringify(result.data, null, 2)
 )
-console.log("Changelog generated: changelog.json")
+console.log("Changelog generated: ./public/changelog.json")

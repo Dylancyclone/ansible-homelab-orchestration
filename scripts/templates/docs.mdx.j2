@@ -4,6 +4,7 @@ tags: []
 ---
 
 import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
 
 [Homepage]({/* REPLACE WITH PROJECT HOMEPAGE (Remove line if only has a repository) */}) |
 [Repository]({/* REPLACE WITH PROJECT REPOSITORY */})
@@ -32,3 +33,8 @@ Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` 
 ## Breaking Changes
 
 */}
+
+## Recent Changes
+
+<RecentChanges application="{{ short_name }}" />
+

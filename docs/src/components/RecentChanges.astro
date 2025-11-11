@@ -47,7 +47,12 @@ let lastDate = ""
 ---
 
 {
-	changelog.length === 0 && <p>Warning: No changelog available. Please ensure the `GH_TOKEN` environment variable is set, or build in CI.</p>
+	changelog.length === 0 &&
+		<p>Warning: No changelog available. Please ensure the `GH_TOKEN` environment variable is set, or build in CI.</p>
+}
+{
+	changelog.length > 0 && filteredCommits.length === 0 &&
+		<p style="color: #777;">No changes in the last {changelog.length} commits (since {new Date(changelog[changelog.length - 1].commit.author.date).toLocaleDateString()}).</p>
 }
 
 <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem;">
