@@ -63,7 +63,7 @@ Be sure to fix any linting errors before submitting a pull request!
 ### Commit Messages
 
 This project uses [conventional commit messages](https://www.conventionalcommits.org/en/v1.0.0/).
-This lets the playbook automatically detect breaking changes, and enables easily parsable changelogs.
+This lets the playbook automatically detect breaking changes, and enables automatic changelog generation.
 
 The basic format of a commit message is:
 
@@ -119,7 +119,7 @@ As much as I love linear history, this project relies on continuous history for 
 This means **_DO NOT_** use squash merges or rebase merges or rebase in general if you can avoid it.
 
 Breaking change detection works by reading all commit messages between the last time the user ran an application role and the current commit.
-If the commits were rebased, there is no longer a continous line of commits to read, and thus breaking changes may be missed.
+If the commits were rebased, there is no longer a continuous line of commits to read, and thus breaking changes may be missed.
 
 For Example:
 
