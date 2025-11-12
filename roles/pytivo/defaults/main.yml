@@ -17,8 +17,8 @@ pytivo_port: 9032
 pytivo_udp_port: 2190
 
 # uid / gid
-pytivo_user_id: "0"
-pytivo_group_id: "0"
+pytivo_user_id: "1000"
+pytivo_group_id: "1000"
 
 # containers
 pytivo_container_name: pytivo

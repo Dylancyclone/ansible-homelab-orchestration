@@ -7,8 +7,8 @@ speedtest_tracker_available_externally: false
 speedtest_tracker_data_directory: "{{ docker_home }}/speedtest_tracker"
 
 # uid / gid
-speedtest_tracker_user_id: "0"
-speedtest_tracker_group_id: "0"
+speedtest_tracker_user_id: "1000"
+speedtest_tracker_group_id: "1000"
 
 # network
 speedtest_tracker_hostname: speedtest-tracker

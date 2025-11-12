@@ -11,8 +11,8 @@ gotify_hostname: gotify
 gotify_port: 2346
 
 # uid / gid
-gotify_user_id: "0"
-gotify_group_id: "0"
+gotify_user_id: "1000"
+gotify_group_id: "1000"
 
 # containers
 gotify_container_name: gotify

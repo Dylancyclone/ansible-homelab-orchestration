@@ -9,8 +9,8 @@ calibre_books_directory: "{{ books_root }}"
 calibre_comics_directory: "{{ comics_root }}"
 
 # uid / gid
-calibre_user_id: "0"
-calibre_group_id: "0"
+calibre_user_id: "1000"
+calibre_group_id: "1000"
 
 # network
 calibre_hostname: calibre
