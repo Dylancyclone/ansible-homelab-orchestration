@@ -46,6 +46,7 @@ const sortedTagCounts = sortObjectByKeys(tagCounts)
 		{
 			Object.keys(sortedTagCounts).map((tag: any) => (
 				<LinkCard
+					class="no-stack"
 					title={tag}
 					description={`${sortedTagCounts[tag]} apps`}
 					href={`./${tag}/`}

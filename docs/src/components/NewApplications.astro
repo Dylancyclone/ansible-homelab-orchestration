@@ -1,0 +1,88 @@
+---
+import { LinkCard } from "@astrojs/starlight/components"
+import AnchorHeading from '@astrojs/starlight/components/AnchorHeading.astro';
+import fs from "fs"
+
+let changelog: any[] = []
+try {
+	changelog = JSON.parse(fs.readFileSync("./public/changelog.json", "utf-8"))
+} catch (error) {
+	console.warn(
+		"Warning: Could not read changelog.json file, proceeding with empty changelog."
+	)
+}
+const changelogWithoutMerges = changelog.filter(
+	(commit) => !commit.commit.message.startsWith("Merge pull request")
+)
+
+const allAppsRaw = import.meta.glob("../content/docs/applications/*.mdx", { eager: true })
+const allApps: any = {}
+for (let [path, rawApp] of Object.entries(allAppsRaw)) {
+	const app = rawApp as {
+		frontmatter: {
+			title: string
+			tags: string[]
+		}
+		url: string
+	}
+	const appName = path
+		.replace("../content/docs/applications/", "")
+		.replace(".mdx", "")
+	allApps[appName] = {
+		...app,
+		url: app.url
+			.replace("src/content/docs/", "/ansible-homelab-orchestration/")
+			.replace(".mdx", ""),
+	}
+}
+const allAppNames = Object.keys(allApps)
+const newApplicationRegex = /feat\(([\w\-\.]+)\): Add /
+
+const filteredCommits = changelogWithoutMerges.filter((commit) => newApplicationRegex.test(commit.commit.message) && allAppNames.includes(commit.commit.message.match(newApplicationRegex)![1]))
+
+
+let lastDate = ""
+---
+
+{
+	filteredCommits.length > 0 &&
+	<AnchorHeading level="4" id="recently-added-applications">Recently Added Applications</AnchorHeading>
+	<div style="margin-bottom: 2rem;" />
+}
+
+{
+	changelog.length === 0 &&
+		<p>Warning: No changelog available. Please ensure the `GH_TOKEN` environment variable is set, or build in CI.</p>
+}
+
+<div style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem;">
+		{
+			filteredCommits.map((commit) => {
+				const matchedApp = allApps[commit.commit.message.match(newApplicationRegex)![1]]
+				const logItem = (
+					<span style="color: #777; text-align: right;">
+						{
+							lastDate !== new Date(commit.commit.author.date).toISOString().split("T")[0] &&
+							new Date(commit.commit.author.date).toLocaleDateString(undefined, {
+								year: "numeric",
+								month: "short",
+								day: "numeric",
+							})
+						}
+					</span>
+					<span>
+						<LinkCard
+							class="no-stack"
+							title={matchedApp.frontmatter.title}
+							description={
+								!!matchedApp.frontmatter.tags.length ? `(${matchedApp.frontmatter.tags.join(", ")})` : undefined
+							}
+							href={matchedApp.url}
+						/>
+					</span>
+				)
+				lastDate = new Date(commit.commit.author.date).toISOString().split("T")[0]
+				return logItem
+			})
+		}
+</div>

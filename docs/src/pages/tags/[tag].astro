@@ -39,6 +39,7 @@ const { apps } = Astro.props
 				const otherTags = app.frontmatter.tags.filter((t: string) => t !== tag)
 				return (
 					<LinkCard
+						class="no-stack"
 						title={app.frontmatter.title}
 						description={
 							!!otherTags.length ? `(${otherTags.join(", ")})` : undefined

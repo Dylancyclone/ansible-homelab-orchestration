@@ -1,6 +1,5 @@
 ---
 import { Badge } from "@astrojs/starlight/components"
-// import changelog from "../../public/changelog.json" with { type: "json" }
 import fs from "fs"
 import ConventionalCommitTag, {
 	type ConventionalCommitTagName,
@@ -8,10 +7,9 @@ import ConventionalCommitTag, {
 
 interface Props {
 	application: string
-	onlyAdded?: boolean
 }
 
-const { application, onlyAdded } = Astro.props
+const { application } = Astro.props
 
 let changelog: any[] = []
 try {
@@ -30,15 +28,12 @@ const allApps = Object.keys(
 ).map((app: any) => app
 	.replace("../content/docs/applications/", "")
 	.replace(".mdx", ""))
-const newApplicationRegex = /feat\(([\w\-\.]+)\): Add /
 
 const filteredCommits = application
 	? changelogWithoutMerges.filter((commit) =>
 			commit.commit.message.includes(`(${application})`)
 		)
-	: onlyAdded
-		? changelogWithoutMerges.filter((commit) => newApplicationRegex.test(commit.commit.message) && allApps.includes(commit.commit.message.match(newApplicationRegex)![1]))
-		: changelogWithoutMerges
+	: changelogWithoutMerges
 
 const conventionalCommitsRegex =
 	/^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test){1}(?:\(([\w\-\.]+)\))?(!)?: (.+)([\s\S]*)/m

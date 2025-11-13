@@ -2,3 +2,7 @@
 	grid: none;
 	padding-bottom: 0;
 }
+
+.sl-link-card > .sl-flex.stack:has(> .no-stack) {
+	flex-direction: row;
+}
