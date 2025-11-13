@@ -1,0 +1,77 @@
+---
+title: tModLoader (Terraria Server)
+tags: ["Games", "Game Servers"]
+---
+
+import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
+
+[Homepage](https://www.tmodloader.net/) |
+[Repository](https://github.com/JACOBSMILE/tmodloader1.4)
+
+<Tags tags={frontmatter.tags} />
+
+An easy to configure Docker Image for tModLoader 1.4 servers
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+tmodloader_enabled: true
+
+# You can change the name of the world
+tmodloader_world_name: "Docker"
+# You will likely want to change the default password
+tmodloader_password: "docker" # Set to "N/A" to disable password.
+```
+
+This will start a tModLoader server with default settings. To install mods, see the [configuration options](#configuration) below.
+
+By default, tModLoader can be accessed at `http://[your_server_ip]:7777` or `https://tmodloader.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured.
+
+## Configuration
+
+There are a ton of configuration options available for tModLoader:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+tmodloader_enabled: true
+
+tmodloader_mods_enabled: "" # A Comma Separated list of Workshop Mod IDs to enable on the tModLoader server upon startup
+
+tmodloader_motd: "A tModLoader server powered by Docker!"
+tmodloader_password: "docker" # The password players must supply to join the server. Set this variable to "N/A" to disable requiring a password on join.
+tmodloader_max_players: "8"
+tmodloader_world_name: "Docker"
+tmodloader_world_seed: ""
+tmodloader_world_size: "3" # 1 = Small, 2 = Medium, 3 = Large
+tmodloader_difficulty: "1" # 0 = Normal, 1 = Expert, 2 = Master, 3 = Journey
+```
+
+See the documentation for more: https://github.com/JACOBSMILE/tmodloader1.4?tab=readme-ov-file#environment-variables
+
+Extra environment variables can be set using the `tmodloader_extra_env_vars` variable:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+tmodloader_extra_env_vars:
+  TMOD_AUTOSAVE_INTERVAL: "10"  # Autosave every 10 minutes
+```
+
+See the default configuration options for tModLoader at [`roles/tmodloader/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/tmodloader/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+### Interacting with the server
+
+To interact with the server console, you can run this on your homelab server to send commands to the server:
+
+```bash
+docker exec tmodloader inject "say Hello World!"
+```
+
+{/* 
+
+## Breaking Changes
+
+*/}
+
+## Recent Changes
+
+<RecentChanges application="tmodloader" />

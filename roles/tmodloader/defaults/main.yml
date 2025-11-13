@@ -1,0 +1,38 @@
+---
+tmodloader_enabled: false
+tmodloader_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+tmodloader_available_externally: false
+
+# directories
+tmodloader_data_directory: "{{ docker_home }}/tmodloader/"
+
+
+tmodloader_mods_enabled: "" # A Comma Separated list of Workshop Mod IDs to enable on the tModLoader server upon startup
+tmodloader_mods_to_download: "{{ tmodloader_mods_enabled }}" # A Comma Separated list of Workshop Mod IDs to download from Steam upon container startup
+tmodloader_motd: "A tModLoader server powered by Docker!"
+tmodloader_password: "docker" # The password players must supply to join the server. Set this variable to "N/A" to disable requiring a password on join.
+tmodloader_max_players: "8"
+tmodloader_world_name: "Docker"
+tmodloader_world_seed: ""
+tmodloader_world_size: "3" # 1 = Small, 2 = Medium, 3 = Large
+tmodloader_difficulty: "1" # 0 = Normal, 1 = Expert, 2 = Master, 3 = Journey
+
+# Extra variables, see the documentation for more details
+# https://github.com/JACOBSMILE/tmodloader1.4?tab=readme-ov-file#environment-variables
+# tmodloader_extra_env_vars:
+#   TMOD_AUTOSAVE_INTERVAL: "10"  # Autosave every 10 minutes
+
+# network
+tmodloader_hostname: terraria
+tmodloader_port: 7777
+
+# containers
+tmodloader_container_name: tmodloader
+tmodloader_image_name: jacobsmile/tmodloader1.4
+tmodloader_image_version: latest
+
+tmodloader_container_names: # Used to check if app is running
+  - "{{ tmodloader_container_name }}"
+
+# specs
+tmodloader_memory: 4g

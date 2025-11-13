@@ -422,6 +422,10 @@
       tags: tiddlywiki
       when: tiddlywiki_enabled or (tiddlywiki_container_names | intersect(running_containers) | length > 0)
 
+    - role: tmodloader
+      tags: tmodloader
+      when: tmodloader_enabled or (tmodloader_container_names | intersect(running_containers) | length > 0)
+
     - role: traefik
       tags: traefik
       when: traefik_enabled or (traefik_container_names | intersect(running_containers) | length > 0)

@@ -1,0 +1,57 @@
+---
+- name: Start tModLoader
+  when: tmodloader_enabled
+  block:
+    - name: Check for tModLoader Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: tmodloader
+
+    - name: Create tModLoader Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ tmodloader_data_directory }}"
+
+    - name: TModLoader Docker Container
+      vars:
+        tmodloader_environment_variables:
+          TMOD_AUTODOWNLOAD: "{{ tmodloader_mods_to_download }}"
+          TMOD_ENABLEDMODS: "{{ tmodloader_mods_enabled }}"
+          TMOD_MOTD: "{{ tmodloader_motd }}"
+          TMOD_PASS: "{{ tmodloader_password }}"
+          TMOD_MAXPLAYERS: "{{ tmodloader_max_players }}"
+          TMOD_WORLDNAME: "{{ tmodloader_world_name }}"
+          TMOD_WORLDSIZE: "{{ tmodloader_world_size }}"
+          TMOD_WORLDSEED: "{{ tmodloader_world_seed }}"
+          TMOD_DIFFICULTY: "{{ tmodloader_difficulty }}"
+        tmodloader_env_vars_with_extras: "{{ tmodloader_environment_variables | combine(tmodloader_extra_env_vars | default({})) }}"
+      community.docker.docker_container:
+        name: "{{ tmodloader_container_name }}"
+        image: "{{ tmodloader_image_name }}:{{ tmodloader_image_version }}"
+        pull: true
+        volumes:
+          - "{{ tmodloader_data_directory }}:/data:rw"
+        ports:
+          - "{{ tmodloader_port }}:7777"
+        env: "{{ tmodloader_env_vars_with_extras }}"
+        restart_policy: unless-stopped
+        memory: "{{ tmodloader_memory }}"
+        labels:
+          traefik.enable: "{{ (tmodloader_dns_accessible or tmodloader_available_externally) | string }}"
+          traefik.http.services.tmodloader.loadbalancer.server.port: "7777"
+          traefik.http.routers.tmodloader.rule: "Host(`{{ tmodloader_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.tmodloader.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.tmodloader.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.tmodloader.tls.certresolver: "letsencrypt"
+          traefik.http.routers.tmodloader.middlewares: "{{ omit if tmodloader_available_externally else 'blockExternal@file' }}"
+
+- name: Stop tModLoader
+  when: not tmodloader_enabled
+  block:
+    - name: Stop tModLoader
+      community.docker.docker_container:
+        name: "{{ tmodloader_container_name }}"
+        state: absent
