@@ -238,6 +238,10 @@
       tags: memos
       when: memos_enabled or (memos_container_names | intersect(running_containers) | length > 0)
 
+    - role: minecraft_server
+      tags: minecraft_server
+      when: minecraft_server_enabled or (minecraft_server_container_names | intersect(running_containers) | length > 0)
+
     - role: minidlna
       tags: minidlna
       when: minidlna_enabled or (minidlna_container_names | intersect(running_containers) | length > 0)

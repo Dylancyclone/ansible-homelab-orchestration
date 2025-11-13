@@ -1,0 +1,78 @@
+---
+title: Minecraft Server
+tags: ["Games", "Game Servers"]
+---
+
+import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
+
+[Homepage](https://docker-minecraft-server.readthedocs.io/en/latest/) |
+[Repository](https://github.com/itzg/docker-minecraft-server)
+
+<Tags tags={frontmatter.tags} />
+
+Docker image that provides a Minecraft Server for Java Edition that automatically installs/upgrades versions, modloaders, modpacks and more at startup.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+minecraft_server_enabled: true
+```
+
+This will set up a Vanialla server with default settings. To install mods, see the [configuration options](#configuration) below.
+
+By default, Minecraft Server can be accessed at `http://[your_server_ip]:25565` or `https://minecraft_server.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured.
+
+## Configuration
+
+This docker container supports running many different kinds of minecraft servers including modded servers using Forge, Fabric, Spigot, Paper, and more.
+See the documentation for all kinds of configuration options:
+- https://docker-minecraft-server.readthedocs.io/en/latest/variables/
+- https://docker-minecraft-server.readthedocs.io/en/latest/configuration/auto-rcon-commands/
+- https://docker-minecraft-server.readthedocs.io/en/latest/mods-and-plugins/
+Also look at the examples configurations: https://github.com/itzg/docker-minecraft-server/tree/master/examples
+
+For example, to run a Fabric server ready to be modded, you can set the following options:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+minecraft_server_enabled: true
+minecraft_server_type: FABRIC
+minecraft_server_version: 1.21.4
+minecraft_server_extra_env_vars:
+  MODRINTH_PROJECTS: | # `fabric-api` is required for most Fabric mods
+    fabric-api
+```
+
+Or, to run a Feed The Beast (FTB) modpack server:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+minecraft_server_enabled: true
+minecraft_server_type: FTBA
+minecraft_server_extra_env_vars:
+  FTB_MODPACK_ID: "119" # Use Pack ID from https://www.feed-the-beast.com/modpacks/119-ftb-presents-direwolf20-120?tab=about
+  # FTB_MODPACK_VERSION_ID: ""
+  MOTD: |
+    An FTB server running
+    %MODPACK_NAME% version %MODPACK_VERSION%
+```
+
+See the default configuration options for Minecraft Server at [`roles/minecraft_server/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/minecraft_server/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+### Interacting with the server
+
+[RCON](https://minecraft.wiki/w/RCON) is enabled by default. You can connect to the server console through the docker container:
+
+```bash
+docker exec -i minecraft_server rcon-cli
+```
+
+{/* 
+
+## Breaking Changes
+
+*/}
+
+## Recent Changes
+
+<RecentChanges application="minecraft_server" />

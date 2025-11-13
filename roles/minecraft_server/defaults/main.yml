@@ -1,0 +1,39 @@
+---
+minecraft_server_enabled: false
+minecraft_server_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+minecraft_server_available_externally: false
+
+# directories
+minecraft_server_data_directory: "{{ docker_home }}/minecraft_server/"
+
+# Additional volumes to mount into the Minecraft Server container
+# Not all Minecraft Server types need a separate volume for modpacks. Some can download them automatically.
+# Refer to the documentation for more information: https://docker-minecraft-server.readthedocs.io/en/latest/mods-and-plugins/
+# minecraft_server_extra_volumes:
+#   - "/path/to/modpacks:/modpacks:ro" # ro = read-only, rw = read-write
+
+minecraft_server_type: "VANILLA" # Can be replaced with other servers like "FABRIC", "FORGE", "SPIGOT", "PAPER", etc.
+minecraft_server_version: "LATEST" # Can be replaced with "SNAPSHOT" or specific versions like "1.21.1", "1.20", etc.
+
+# Refer to the documentation for more options:
+# https://docker-minecraft-server.readthedocs.io/en/latest/variables/
+# https://docker-minecraft-server.readthedocs.io/en/latest/configuration/auto-rcon-commands/
+# https://docker-minecraft-server.readthedocs.io/en/latest/mods-and-plugins/
+# Also look at the examples configurations: https://github.com/itzg/docker-minecraft-server/tree/master/examples
+minecraft_server_extra_env_vars:
+  MOTD: "Welcome to the Minecraft Server!"
+
+# network
+minecraft_server_hostname: minecraft
+minecraft_server_port: 25565
+
+# containers
+minecraft_server_container_name: minecraft_server
+minecraft_server_image_name: itzg/minecraft-server
+minecraft_server_image_version: latest
+
+minecraft_server_container_names: # Used to check if app is running
+  - "{{ minecraft_server_container_name }}"
+
+# specs
+minecraft_server_memory: 4g

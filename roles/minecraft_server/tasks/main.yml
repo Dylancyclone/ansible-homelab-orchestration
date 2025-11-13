@@ -1,0 +1,55 @@
+---
+- name: Start Minecraft Server
+  when: minecraft_server_enabled
+  block:
+    - name: Check for Minecraft Server Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: minecraft_server
+
+    - name: Create Minecraft Server Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ minecraft_server_data_directory }}"
+
+    - name: Minecraft Server Docker Container
+      vars:
+        minecraft_server_volumes:
+          - "{{ minecraft_server_data_directory }}:/data:rw"
+        minecraft_server_volumes_with_extras: "{{ minecraft_server_volumes + minecraft_server_extra_volumes | default([]) }}"
+        minecraft_server_environment_variables:
+          EULA: "true"
+          TYPE: "{{ minecraft_server_type }}"
+          VERSION: "{{ minecraft_server_version }}"
+          MEMORY: "{{ minecraft_server_memory }}"
+          TZ: "{{ computer_timezone }}"
+        minecraft_server_env_vars_with_extras: "{{ minecraft_server_environment_variables | combine(minecraft_server_extra_env_vars | default({})) }}"
+      community.docker.docker_container:
+        name: "{{ minecraft_server_container_name }}"
+        image: "{{ minecraft_server_image_name }}:{{ minecraft_server_image_version }}"
+        pull: true
+        volumes: "{{ minecraft_server_volumes_with_extras }}"
+        env: "{{ minecraft_server_env_vars_with_extras }}"
+        ports:
+          - "{{ minecraft_server_port }}:25565"
+        restart_policy: unless-stopped
+        memory: "{{ minecraft_server_memory }}"
+        labels:
+          traefik.enable: "{{ (minecraft_server_dns_accessible or minecraft_server_available_externally) | string }}"
+          traefik.http.services.minecraft_server.loadbalancer.server.port: "25565"
+          traefik.http.routers.minecraft_server.rule: "Host(`{{ minecraft_server_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.minecraft_server.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.minecraft_server.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.minecraft_server.tls.certresolver: "letsencrypt"
+          traefik.http.routers.minecraft_server.middlewares: "{{ omit if minecraft_server_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Minecraft Server
+  when: not minecraft_server_enabled
+  block:
+    - name: Stop Minecraft Server
+      community.docker.docker_container:
+        name: "{{ minecraft_server_container_name }}"
+        state: absent
