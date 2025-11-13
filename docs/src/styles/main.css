@@ -3,6 +3,10 @@
 	padding-bottom: 0;
 }
 
+.sl-link-card:has(> .sl-flex.stack > .no-stack) {
+	margin-top: 0;
+}
+
 .sl-link-card > .sl-flex.stack:has(> .no-stack) {
 	flex-direction: row;
 }
