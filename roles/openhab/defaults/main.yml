@@ -8,8 +8,8 @@ openhab_data_directory: "{{ docker_home }}/openhab"
 
 # network
 openhab_hostname: openhab
-openhab_http_port: 7777
-openhab_https_port: 7778
+openhab_http_port: 7778
+openhab_https_port: 7779
 
 # containers
 openhab_container_name: openhab
