@@ -1,0 +1,53 @@
+---
+- name: Start TeamSpeak 3
+  when: teamspeak3_enabled
+  block:
+    - name: Check for TeamSpeak 3 Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: teamspeak3
+
+    - name: Create TeamSpeak 3 Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ teamspeak3_data_directory }}"
+
+    - name: TeamSpeak 3 Docker Container
+      community.docker.docker_container:
+        name: "{{ teamspeak3_container_name }}"
+        image: "{{ teamspeak3_image_name }}:{{ teamspeak3_image_version }}"
+        pull: true
+        volumes:
+          - "{{ teamspeak3_data_directory }}:/var/ts3server:rw"
+        ports:
+          - "{{ teamspeak3_port }}:9987/udp"
+          - "{{ teamspeak3_serverquery_port }}:10011"
+          - "{{ teamspeak3_serverquery_secure_port }}:10022"
+          - "{{ teamspeak3_filebrowser_port }}:30033"
+        env:
+          TS3SERVER_LICENSE: accept
+          TS3SERVER_IP_WHITELIST: "{{ teamspeak3_ip_whitelist }}"
+          TS3SERVER_IP_BLACKLIST: "{{ teamspeak3_ip_blacklist }}"
+          TS3SERVER_QUERY_PROTOCOLS: "{{ teamspeak3_query_protocols }}"
+        user: "{{ teamspeak3_user_id }}:{{ teamspeak3_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ teamspeak3_memory }}"
+        labels:
+          traefik.enable: "{{ (teamspeak3_dns_accessible or teamspeak3_available_externally) | string }}"
+          traefik.http.services.teamspeak3.loadbalancer.server.port: "9987"
+          traefik.http.routers.teamspeak3.rule: "Host(`{{ teamspeak3_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.teamspeak3.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.teamspeak3.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.teamspeak3.tls.certresolver: "letsencrypt"
+          traefik.http.routers.teamspeak3.middlewares: "{{ omit if teamspeak3_available_externally else 'blockExternal@file' }}"
+
+- name: Stop TeamSpeak 3
+  when: not teamspeak3_enabled
+  block:
+    - name: Stop TeamSpeak 3
+      community.docker.docker_container:
+        name: "{{ teamspeak3_container_name }}"
+        state: absent

@@ -1,0 +1,48 @@
+---
+title: TeamSpeak 3
+tags: ["Voice Chat"]
+---
+
+import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
+
+[Homepage](https://www.teamspeak.com/en/) |
+[Repository](https://hub.docker.com/_/teamspeak/)
+
+<Tags tags={frontmatter.tags} />
+
+TeamSpeak offers the ideal voice communication for online gaming, education and training, internal business communication, and staying in touch with friends and family. Our primary focus is delivering a solution that is easy to use, with high security standards, excellent voice quality, and low system and bandwidth usage.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+teamspeak3_enabled: true
+```
+
+The first time you start the TeamSpeak 3 server, it will generate a random Server Query Admin Account password, api key, and ServerAdmin privilege key.
+Make sure you write these down!
+The Server Query Admin Account will let you manage the server remotely, and the ServerAdmin privilege key will let you make yourself the Server Admin when you connect with your TeamSpeak client.
+
+By default, TeamSpeak 3 can be accessed at `http://[your_server_ip]:9987` or `https://teamspeak3.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured.
+
+## Configuration
+
+See the default configuration options for TeamSpeak 3 at [`roles/teamspeak3/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/teamspeak3/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+### TeamSpeak License
+
+A TeamSpeak server requires a license file when using more then 1 virtual server with 32 slots.
+Once you have a license file, place it in the `teamspeak3_data_directory` defined in your configuration (default: `{{ docker_home }}/teamspeak3/`) and restart the server.
+
+Most individuals will not need a license file, but if you do, you can obtain a license from the TeamSpeak website: https://teamspeak.com/en/features/licensing/
+
+{/* 
+
+## Breaking Changes
+
+*/}
+
+## Recent Changes
+
+<RecentChanges application="teamspeak3" />

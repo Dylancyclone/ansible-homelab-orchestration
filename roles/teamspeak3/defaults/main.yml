@@ -1,0 +1,32 @@
+---
+teamspeak3_enabled: false
+teamspeak3_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+teamspeak3_available_externally: false
+
+# directories
+teamspeak3_data_directory: "{{ docker_home }}/teamspeak3/"
+
+teamspeak3_ip_whitelist: "" # Comma separated list of IPs that are allowed to connect to the server, leave empty to allow all
+teamspeak3_ip_blacklist: "" # Comma separated list of IPs that are blocked from connecting to the server, leave empty to block none
+teamspeak3_query_protocols: "raw,ssh" # Comma separated list of query protocols to enable, options are raw and ssh
+
+teamspeak3_user_id: "1000"
+teamspeak3_group_id: "1000"
+
+# network
+teamspeak3_hostname: teamspeak3
+teamspeak3_port: 9987
+teamspeak3_serverquery_port: 10011
+teamspeak3_serverquery_secure_port: 10022
+teamspeak3_filebrowser_port: 30033
+
+# containers
+teamspeak3_container_name: teamspeak3
+teamspeak3_image_name: teamspeak
+teamspeak3_image_version: latest
+
+teamspeak3_container_names: # Used to check if app is running
+  - "{{ teamspeak3_container_name }}"
+
+# specs
+teamspeak3_memory: 1g
