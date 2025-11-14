@@ -3,6 +3,7 @@ kometa_enabled: false
 
 # directories
 kometa_config_directory: "{{ docker_home }}/kometa/config"
+kometa_assets_directory: "{{ docker_home }}/kometa/config/assets"
 
 # containers
 kometa_container_name: kometa
