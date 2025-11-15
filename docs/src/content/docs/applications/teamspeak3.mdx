@@ -27,6 +27,15 @@ By default, TeamSpeak 3 can be accessed at `http://[your_server_ip]:9987` or `ht
 
 ## Configuration
 
+[Telegraf](../telegraf/) can scrape metrics from TeamSpeak 3 for monitoring through ServerQuery.
+To enable this integration, set `telegraf_teamspeak3_serverquery_username` and `telegraf_teamspeak3_serverquery_password` to the Server Query Admin Account credentials.
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+# By default these are generated on the first run of the TeamSpeak 3 server
+telegraf_teamspeak3_serverquery_username: serverqueryuser
+telegraf_teamspeak3_serverquery_password: serverquerypass
+```
+
 See the default configuration options for TeamSpeak 3 at [`roles/teamspeak3/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/teamspeak3/defaults/main.yml).
 Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
 
