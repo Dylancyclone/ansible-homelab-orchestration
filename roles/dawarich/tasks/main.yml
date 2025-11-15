@@ -54,7 +54,7 @@
           POSTGRES_USER: "{{ dawarich_postgres_user }}"
           POSTGRES_PASSWORD: "{{ dawarich_postgres_password }}"
         healthcheck:
-          test: ["CMD-SHELL", "pg_isready -U postgres -d dawarich_development"]
+          test: ["CMD-SHELL", "pg_isready -U {{ dawarich_postgres_user }} -d dawarich_development"]
           interval: 10s
           retries: 5
           start_period: 30s
@@ -93,6 +93,7 @@
           PROMETHEUS_EXPORTER_HOST: "0.0.0.0"
           PROMETHEUS_EXPORTER_PORT: "9394"
           SELF_HOSTED: "true"
+          STORE_GEODATA: "true"
 
         healthcheck:
           test:

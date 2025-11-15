@@ -44,11 +44,6 @@ dawarich_container_names: # Used to check if app is running
   - "{{ dawarich_postgres_container_name }}"
   - "{{ dawarich_redis_container_name }}"
 
-
-# settings
-dawarich_app_version: "latest"
-dawarich_languages: "eng"
-
 # specs
 dawarich_memory: 1g
 dawarich_sidekiq_memory: 1g
