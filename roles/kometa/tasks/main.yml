@@ -26,6 +26,7 @@
         env:
           KOMETA_RUN: "{{ kometa_run_immediately | string }}"
           KOMETA_TIMES: "{{ kometa_run_times }}"
+          TZ: "{{ computer_timezone }}"
         restart_policy: unless-stopped
         memory: "{{ kometa_memory }}"
 
