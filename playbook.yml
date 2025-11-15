@@ -410,6 +410,10 @@
       tags: teamspeak3
       when: teamspeak3_enabled or (teamspeak3_container_names | intersect(running_containers) | length > 0)
 
+    - role: teamspeak6
+      tags: teamspeak6
+      when: teamspeak6_enabled or (teamspeak6_container_names | intersect(running_containers) | length > 0)
+
     - role: telegraf
       tags: telegraf
       when: telegraf_enabled or (telegraf_container_names | intersect(running_containers) | length > 0)

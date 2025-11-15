@@ -1,0 +1,50 @@
+---
+- name: Start TeamSpeak 6
+  when: teamspeak6_enabled
+  block:
+    - name: Check for TeamSpeak 6 Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: teamspeak6
+
+    - name: Create TeamSpeak 6 Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ teamspeak6_data_directory }}"
+
+    - name: TeamSpeak 6 Docker Container
+      community.docker.docker_container:
+        name: "{{ teamspeak6_container_name }}"
+        image: "{{ teamspeak6_image_name }}:{{ teamspeak6_image_version }}"
+        pull: true
+        volumes:
+          - "{{ teamspeak6_data_directory }}:/var/tsserver:rw"
+        ports:
+          - "{{ teamspeak6_port }}:9987/udp"
+          - "{{ teamspeak6_webquery_port }}:10080"
+          - "{{ teamspeak6_filebrowser_port }}:{{ teamspeak6_filebrowser_port }}"
+        env:
+          TSSERVER_LICENSE_ACCEPTED: accept
+          TSSERVER_FILE_TRANSFER_PORT: "{{ teamspeak6_filebrowser_port | string }}"
+        user: "{{ teamspeak6_user_id }}:{{ teamspeak6_group_id }}"
+        restart_policy: unless-stopped
+        memory: "{{ teamspeak6_memory }}"
+        labels:
+          traefik.enable: "{{ (teamspeak6_dns_accessible or teamspeak6_available_externally) | string }}"
+          traefik.http.services.teamspeak6.loadbalancer.server.port: "9987"
+          traefik.http.routers.teamspeak6.rule: "Host(`{{ teamspeak6_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.teamspeak6.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.teamspeak6.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.teamspeak6.tls.certresolver: "letsencrypt"
+          traefik.http.routers.teamspeak6.middlewares: "{{ omit if teamspeak6_available_externally else 'blockExternal@file' }}"
+
+- name: Stop TeamSpeak 6
+  when: not teamspeak6_enabled
+  block:
+    - name: Stop TeamSpeak 6
+      community.docker.docker_container:
+        name: "{{ teamspeak6_container_name }}"
+        state: absent

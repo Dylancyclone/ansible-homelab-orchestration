@@ -1,0 +1,69 @@
+---
+title: TeamSpeak 6
+tags: ["Voice Chat"]
+---
+
+import { Aside } from "@astrojs/starlight/components"
+import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
+
+[Homepage](https://www.teamspeak.com/en/) |
+[Repository](https://github.com/teamspeak/teamspeak6-server)
+
+<Tags tags={frontmatter.tags} />
+
+<Aside type="caution">
+  TeamSpeak 6 is still in beta, and TeamSpeak has the following to say ([abridged from readme](https://github.com/teamspeak/teamspeak6-server?tab=readme-ov-file#%E2%84%B9%EF%B8%8F-beta-status--known-issues)):
+  
+  - The dedicated server software for TeamSpeak 6 is still under active development and is not yet fully feature-complete. We are committed to delivering the complete TS6 experience for self-hosted servers.
+  - Some of the new features may be unstable or subject to change as we continue refining them.
+  - Please note that TeamSpeak 3 Server licenses are **not compatible** with TeamSpeak 6 Servers, and currently, there is **no migration path available between the two versions**.
+  - The server includes a 32-slot Beta License that will be renewed **every two months** throughout the beta/evaluation period, until licensing and pricing are finalized.
+  - Additionally, it is not yet possible to obtain or upgrade to a larger license for TeamSpeak 6.
+
+  Unless you are specifically looking for some of the new features in TeamSpeak 6 (such as screen sharing), it is recommended to continue using [TeamSpeak 3](../teamspeak3/) for now.
+</Aside>
+
+<Aside>
+  A TS6 client can connect to a TS3 server, and a TS3 client can connect to a TS6 server (but will not have access to the new features).
+</Aside>
+
+Tried & tested for nearly 25 years, we have a solution that fits everyone's needs. TeamSpeak offers the ideal voice communication for gaming, education and training, internal business communication, and staying in touch with friends and family. Our primary focus is delivering a solution that is easy to use, with high security standards, excellent voice quality, and low system and bandwidth usage.
+
+<details>
+	<summary>Why is it called TeamSpeak 6? What happened to 4 and 5?</summary>
+  TeamSpeak 4 was rumored to be skipped due to [Tetraphobia](https://en.wikipedia.org/wiki/Tetraphobia) (avoidance of the number 4 due to it's association with death in some East Asian cultures).
+
+  TeamSpeak 5 did release as a beta back in 2020, but as they continued adding features like screen sharing (and potentially due to the long development time of TeamSpeak 5 that cooled public attention before release), the next major release was named TeamSpeak 6.
+</details>
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+teamspeak6_enabled: true
+
+# If you're not running TeamSpeak 3, you may want to change the default port to TeamSpeak's standard port of 9987
+# If you don't do this, you'll need to specify the port when connecting with your TeamSpeak client
+teamspeak6_port: 9987
+```
+
+The first time you start the TeamSpeak 6 server, it will generate a random Server Query Admin Account password, api key, and ServerAdmin privilege key.
+Make sure you write these down!
+The Server Query Admin Account will let you manage the server remotely, and the ServerAdmin privilege key will let you make yourself the Server Admin when you connect with your TeamSpeak client.
+
+By default, TeamSpeak 6 can be accessed at `http://[your_server_ip]:9988` or `https://teamspeak6.[your_domain].com:9988` if you have [DNS access](../../guides/dns-access/) configured.
+
+## Configuration
+
+See the default configuration options for TeamSpeak 6 at [`roles/teamspeak6/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/teamspeak6/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}
+
+## Recent Changes
+
+<RecentChanges application="teamspeak6" />

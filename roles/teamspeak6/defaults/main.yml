@@ -1,0 +1,28 @@
+---
+teamspeak6_enabled: false
+teamspeak6_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+teamspeak6_available_externally: false
+
+# directories
+teamspeak6_data_directory: "{{ docker_home }}/teamspeak6/"
+
+# uid/gid
+teamspeak6_user_id: "1000"
+teamspeak6_group_id: "1000"
+
+# network
+teamspeak6_hostname: teamspeak6
+teamspeak6_port: 9988
+teamspeak6_webquery_port: 10080
+teamspeak6_filebrowser_port: 30034
+
+# containers
+teamspeak6_container_name: teamspeak6
+teamspeak6_image_name: teamspeaksystems/teamspeak6-server
+teamspeak6_image_version: latest
+
+teamspeak6_container_names: # Used to check if app is running
+  - "{{ teamspeak6_container_name }}"
+
+# specs
+teamspeak6_memory: 1g
