@@ -25,3 +25,7 @@ telegraf_memory: 1g
 
 # config
 telegraf_collection_interval: 15s
+
+# uncomment to scrape metrics from Teamspeak 3
+# telegraf_teamspeak3_serverquery_username: serverqueryuser
+# telegraf_teamspeak3_serverquery_password: serverquerypass

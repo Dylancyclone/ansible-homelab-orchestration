@@ -9122,17 +9122,19 @@
 
 
 # # Reads metrics from a Teamspeak 3 Server via ServerQuery
-# [[inputs.teamspeak]]
-#   ## Server address for Teamspeak 3 ServerQuery
-#   # server = "127.0.0.1:10011"
-#   ## Username for ServerQuery
-#   username = "serverqueryuser"
-#   ## Password for ServerQuery
-#   password = "secret"
-#   ## Nickname of the ServerQuery client
-#   nickname = "telegraf"
-#   ## Array of virtual servers
-#   # virtual_servers = [1]
+{% if teamspeak3_enabled %}
+[[inputs.teamspeak]]
+  ## Server address for Teamspeak 3 ServerQuery
+  # server = "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ teamspeak3_port }}:{{ teamspeak3_serverquery_port }}"
+  ## Username for ServerQuery
+  username = "{{ telegraf_teamspeak3_serverquery_username }}"
+  ## Password for ServerQuery
+  password = "{{ telegraf_teamspeak3_serverquery_password }}"
+  ## Nickname of the ServerQuery client
+  nickname = "telegraf"
+  ## Array of virtual servers
+  # virtual_servers = [1]
+{% endif %}
 
 
 # # Read metrics about temperature
