@@ -31,7 +31,7 @@
         restart_policy: unless-stopped
         memory: "{{ dashy_memory }}"
         volumes:
-          - "{{ dashy_data_directory }}/conf.yml:/app/public/conf.yml:rw"
+          - "{{ dashy_data_directory }}/conf.yml:/app/user-data/conf.yml:rw"
         labels:
           traefik.enable: "{{ (dashy_dns_accessible or dashy_available_externally) | string }}"
           traefik.http.services.dashy.loadbalancer.server.port: "8080"
