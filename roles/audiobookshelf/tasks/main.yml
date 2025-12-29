@@ -20,16 +20,19 @@
         - "{{ audiobookshelf_podcasts_directory }}"
 
     - name: Audiobookshelf Docker Container
-      community.docker.docker_container:
-        name: "{{ audiobookshelf_container_name }}"
-        image: "{{ audiobookshelf_image_name }}:{{ audiobookshelf_image_version }}"
-        pull: true
-        volumes:
+      vars:
+        audiobookshelf_volumes:
           - "{{ audiobookshelf_data_directory }}/config:/config:rw"
           - "{{ audiobookshelf_data_directory }}/metadata:/metadata:rw"
           - "{{ audiobookshelf_audiobooks_directory }}:/audiobooks:rw"
           - "{{ audiobookshelf_books_directory }}:/books:rw"
           - "{{ audiobookshelf_podcasts_directory }}:/podcasts:rw"
+        audiobookshelf_volumes_with_extras: "{{ audiobookshelf_volumes + audiobookshelf_extra_volumes | default([]) }}"
+      community.docker.docker_container:
+        name: "{{ audiobookshelf_container_name }}"
+        image: "{{ audiobookshelf_image_name }}:{{ audiobookshelf_image_version }}"
+        pull: true
+        volumes: "{{ audiobookshelf_volumes_with_extras }}"
         ports:
           - "{{ audiobookshelf_port }}:80"
         env:

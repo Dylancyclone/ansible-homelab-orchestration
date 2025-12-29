@@ -9,6 +9,10 @@ audiobookshelf_books_directory: "{{ books_root }}"
 audiobookshelf_podcasts_directory: "{{ podcasts_root }}"
 audiobookshelf_data_directory: "{{ docker_home }}/audiobookshelf"
 
+# Additional volumes to mount into the audiobookshelf container
+# audiobookshelf_extra_volumes:
+#   - "/path/to/more/media:/path_in_container:ro" # ro = read-only, rw = read-write
+
 # uid/gid
 audiobookshelf_user_id: "99"
 audiobookshelf_group_id: "100"
