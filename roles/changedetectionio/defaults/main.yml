@@ -1,0 +1,30 @@
+---
+changedetectionio_enabled: false
+changedetectionio_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+changedetectionio_available_externally: false
+
+# directories
+changedetectionio_data_directory: "{{ docker_home }}/changedetectionio/"
+
+# network
+changedetectionio_hostname: changedetectionio
+changedetectionio_port: 5050
+
+# containers
+changedetectionio_container_network_name: changedetectionio_network
+
+changedetectionio_container_name: changedetectionio
+changedetectionio_image_name: ghcr.io/dgtlmoon/changedetection.io
+changedetectionio_image_version: latest
+
+changedetectionio_sockpuppet_container_name: changedetectionio_browser_sockpuppet_chrome
+changedetectionio_sockpuppet_image_name: dgtlmoon/sockpuppetbrowser
+changedetectionio_sockpuppet_image_version: latest
+
+changedetectionio_container_names: # Used to check if app is running
+  - "{{ changedetectionio_container_name }}"
+  - "{{ changedetectionio_sockpuppet_container_name }}"
+
+# specs
+changedetectionio_memory: 1g
+changedetectionio_sockpuppet_memory: 1g

@@ -1,0 +1,79 @@
+---
+- name: Start changedetection.io
+  when: changedetectionio_enabled
+  block:
+    - name: Check for changedetection.io Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: changedetectionio
+
+    - name: Create changedetection.io Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ changedetectionio_data_directory }}"
+
+    - name: Create changedetection.io network
+      community.docker.docker_network:
+        name: "{{ changedetectionio_container_network_name }}"
+
+    - name: Changedetection.io Sockpuppet Docker Container
+      community.docker.docker_container:
+        name: "{{ changedetectionio_sockpuppet_container_name }}"
+        image: "{{ changedetectionio_sockpuppet_image_name }}:{{ changedetectionio_sockpuppet_image_version }}"
+        pull: true
+        env:
+          SCREEN_WIDTH: "1920"
+          SCREEN_HEIGHT: "1024"
+          SCREEN_DEPTH: "16"
+          MAX_CONCURRENT_CHROME_PROCESSES: "10"
+        networks:
+          - name: "{{ changedetectionio_container_network_name }}"
+        restart_policy: unless-stopped
+        memory: "{{ changedetectionio_sockpuppet_memory }}"
+
+    - name: Changedetection.io Docker Container
+      community.docker.docker_container:
+        name: "{{ changedetectionio_container_name }}"
+        image: "{{ changedetectionio_image_name }}:{{ changedetectionio_image_version }}"
+        pull: true
+        volumes:
+          - "{{ changedetectionio_data_directory }}:/datastore:rw"
+        ports:
+          - "{{ changedetectionio_port }}:5000"
+        env:
+          PLAYWRIGHT_DRIVER_URL: "ws://{{ changedetectionio_sockpuppet_container_name }}:3000"
+          BASE_URL: "https://{{ changedetectionio_hostname }}.{{ dns_domain }}"
+          USE_X_SETTINGS: "1"
+          HIDE_REFERER: "true"
+          TZ: "{{ computer_timezone }}"
+        networks:
+          - name: "{{ changedetectionio_container_network_name }}"
+        restart_policy: unless-stopped
+        memory: "{{ changedetectionio_memory }}"
+        labels:
+          traefik.enable: "{{ (changedetectionio_dns_accessible or changedetectionio_available_externally) | string }}"
+          traefik.http.services.changedetectionio.loadbalancer.server.port: "5000"
+          traefik.http.routers.changedetectionio.rule: "Host(`{{ changedetectionio_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.changedetectionio.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.changedetectionio.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.changedetectionio.tls.certresolver: "letsencrypt"
+          traefik.http.routers.changedetectionio.middlewares: "{{ omit if changedetectionio_available_externally else 'blockExternal@file' }}"
+
+- name: Stop changedetection.io
+  when: not changedetectionio_enabled
+  block:
+    - name: Stop changedetection.io
+      community.docker.docker_container:
+        name: "{{ changedetectionio_container_name }}"
+        state: absent
+    - name: Stop changedetection.io sockpuppet
+      community.docker.docker_container:
+        name: "{{ changedetectionio_sockpuppet_container_name }}"
+        state: absent
+    - name: Remove changedetection.io Network
+      community.docker.docker_network:
+        name: "{{ changedetectionio_container_network_name }}"
+        state: absent

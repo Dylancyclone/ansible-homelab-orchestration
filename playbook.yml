@@ -62,6 +62,10 @@
       tags: calibreweb
       when: calibreweb_enabled or (calibreweb_container_names | intersect(running_containers) | length > 0)
 
+    - role: changedetectionio
+      tags: changedetectionio
+      when: changedetectionio_enabled or (changedetectionio_container_names | intersect(running_containers) | length > 0)
+
     - role: cloudcmd
       tags: cloudcmd
       when: cloudcmd_enabled or (cloudcmd_container_names | intersect(running_containers) | length > 0)

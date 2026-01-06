@@ -1,0 +1,37 @@
+---
+title: changedetection.io
+tags: ["Tracking"]
+---
+
+import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
+
+[Homepage](https://changedetection.io/) |
+[Repository](https://github.com/dgtlmoon/changedetection.io)
+
+<Tags tags={frontmatter.tags} />
+
+Best and simplest tool for website change detection, web page monitoring, and website change alerts. Perfect for tracking content changes, price drops, restock alerts, and website defacement monitoring -- all for free
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+changedetectionio_enabled: true
+```
+
+By default, changedetection.io can be accessed at `http://[your_server_ip]:5050` or `https://changedetectionio.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured.
+
+## Configuration
+
+See the default configuration options for changedetection.io at [`roles/changedetectionio/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/changedetectionio/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}
+
+## Recent Changes
+
+<RecentChanges application="changedetectionio" />
