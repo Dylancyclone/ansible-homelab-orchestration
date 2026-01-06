@@ -21,7 +21,7 @@ watchtower_command: "--schedule '{{ watchtower_cron_schedule }}' --cleanup"
 
 # containers
 watchtower_container_name: watchtower
-watchtower_image_name: containrrr/watchtower
+watchtower_image_name: nickfedor/watchtower
 watchtower_image_version: latest
 
 watchtower_container_names: # Used to check if app is running
