@@ -1,0 +1,22 @@
+---
+readeck_enabled: false
+readeck_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+readeck_available_externally: false
+
+# directories
+readeck_data_directory: "{{ docker_home }}/readeck/"
+
+# network
+readeck_hostname: readeck
+readeck_port: 8005
+
+# containers
+readeck_container_name: readeck
+readeck_image_name: codeberg.org/readeck/readeck
+readeck_image_version: latest
+
+readeck_container_names: # Used to check if app is running
+  - "{{ readeck_container_name }}"
+
+# specs
+readeck_memory: 1g

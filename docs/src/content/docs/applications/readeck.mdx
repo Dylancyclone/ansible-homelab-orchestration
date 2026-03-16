@@ -1,0 +1,42 @@
+---
+title: Readeck
+tags: ["Productivity"]
+---
+
+import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
+
+[Homepage](https://readeck.org) |
+[Repository](https://codeberg.org/readeck/readeck)
+
+<Tags tags={frontmatter.tags} />
+
+Readeck is a simple web application that lets you save the precious readable content of web pages you like and want to keep forever.
+See it as a bookmark manager and a read later tool.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+readeck_enabled: true
+```
+
+By default, Readeck can be accessed at `http://[your_server_ip]:8005` or `https://readeck.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured.
+
+## Configuration
+
+See the default configuration options for Readeck at [`roles/readeck/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/readeck/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+## Alternatives
+
+- [Wallabag](../wallabag/)
+
+{/* 
+
+## Breaking Changes
+
+*/}
+
+## Recent Changes
+
+<RecentChanges application="readeck" />

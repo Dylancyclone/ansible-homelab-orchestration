@@ -366,6 +366,10 @@
       tags: radarr
       when: radarr_enabled or (radarr_container_names | intersect(running_containers) | length > 0)
 
+    - role: readeck
+      tags: readeck
+      when: readeck_enabled or (readeck_container_names | intersect(running_containers) | length > 0)
+
     - role: romm
       tags: romm
       when: romm_enabled or (romm_container_names | intersect(running_containers) | length > 0)
