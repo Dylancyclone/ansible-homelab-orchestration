@@ -36,7 +36,7 @@
         labels:
           traefik.enable: "{{ (deluge_dns_accessible or deluge_available_externally) | string }}"
           traefik.http.services.deluge.loadbalancer.server.port: "8112"
-          traefik.http.routers.deluge.rule: "Host(`{{ deluge_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.deluge.rule: "Host(`{{ deluge_hostname ~ '.' if deluge_hostname else ''}}{{ dns_domain }}`)"
           traefik.http.routers.deluge.tls.domains[0].main: "{{ dns_domain }}"
           traefik.http.routers.deluge.tls.domains[0].sans: "*.{{ dns_domain }}"
           traefik.http.routers.deluge.tls.certresolver: "letsencrypt"

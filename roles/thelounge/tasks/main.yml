@@ -38,7 +38,7 @@
         labels:
           traefik.enable: "{{ (thelounge_dns_accessible or thelounge_available_externally) | string }}"
           traefik.http.services.thelounge.loadbalancer.server.port: "9000"
-          traefik.http.routers.thelounge.rule: "Host(`{{ thelounge_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.thelounge.rule: "Host(`{{ thelounge_hostname ~ '.' if thelounge_hostname else ''}}{{ dns_domain }}`)"
           traefik.http.routers.thelounge.tls.domains[0].main: "{{ dns_domain }}"
           traefik.http.routers.thelounge.tls.domains[0].sans: "*.{{ dns_domain }}"
           traefik.http.routers.thelounge.tls.certresolver: "letsencrypt"

@@ -42,7 +42,7 @@
         labels:
           traefik.enable: "{{ "{{" }} ({{ short_name }}_dns_accessible or {{ short_name }}_available_externally) | string {{ "}}" }}"
           traefik.http.services.{{ short_name }}.loadbalancer.server.port: "{{ default_port }}"
-          traefik.http.routers.{{ short_name }}.rule: "Host(`{{ "{{" }} {{ short_name }}_hostname {{ "}}" }}.{{ "{{" }} dns_domain {{ "}}" }}`)"
+          traefik.http.routers.{{ short_name }}.rule: "Host(`{{ "{{" }} {{ short_name }}_hostname ~ '.' if {{ short_name }}_hostname else '' {{ "}}" }}{{ "{{" }} dns_domain {{ "}}" }}`)"
           traefik.http.routers.{{ short_name }}.tls.domains[0].main: "{{ "{{" }} dns_domain {{ "}}" }}"
           traefik.http.routers.{{ short_name }}.tls.domains[0].sans: "*.{{ "{{" }} dns_domain {{ "}}" }}"
           traefik.http.routers.{{ short_name }}.tls.certresolver: "letsencrypt"

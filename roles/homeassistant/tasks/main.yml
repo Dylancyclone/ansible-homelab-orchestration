@@ -29,7 +29,7 @@
         labels:
           traefik.enable: "{{ (homeassistant_dns_accessible or homeassistant_available_externally) | string }}"
           traefik.http.services.homeassistant.loadbalancer.server.port: "8123"
-          traefik.http.routers.homeassistant.rule: "Host(`{{ homeassistant_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.homeassistant.rule: "Host(`{{ homeassistant_hostname ~ '.' if homeassistant_hostname else ''}}{{ dns_domain }}`)"
           traefik.http.routers.homeassistant.tls.domains[0].main: "{{ dns_domain }}"
           traefik.http.routers.homeassistant.tls.domains[0].sans: "*.{{ dns_domain }}"
           traefik.http.routers.homeassistant.tls.certresolver: "letsencrypt"

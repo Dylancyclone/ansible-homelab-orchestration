@@ -32,7 +32,7 @@
         labels:
           traefik.enable: "{{ (heimdall_dns_accessible or heimdall_available_externally) | string }}"
           traefik.http.services.heimdall.loadbalancer.server.port: "80"
-          traefik.http.routers.heimdall.rule: "Host(`{{ heimdall_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.heimdall.rule: "Host(`{{ heimdall_hostname ~ '.' if heimdall_hostname else ''}}{{ dns_domain }}`)"
           traefik.http.routers.heimdall.tls.domains[0].main: "{{ dns_domain }}"
           traefik.http.routers.heimdall.tls.domains[0].sans: "*.{{ dns_domain }}"
           traefik.http.routers.heimdall.tls.certresolver: "letsencrypt"

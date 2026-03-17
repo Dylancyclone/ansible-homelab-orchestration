@@ -34,7 +34,7 @@
         labels:
           traefik.enable: "{{ (freshrss_dns_accessible or freshrss_available_externally) | string }}"
           traefik.http.services.freshrss.loadbalancer.server.port: "80"
-          traefik.http.routers.freshrss.rule: "Host(`{{ freshrss_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.freshrss.rule: "Host(`{{ freshrss_hostname ~ '.' if freshrss_hostname else ''}}{{ dns_domain }}`)"
           traefik.http.routers.freshrss.tls.domains[0].main: "{{ dns_domain }}"
           traefik.http.routers.freshrss.tls.domains[0].sans: "*.{{ dns_domain }}"
           traefik.http.routers.freshrss.tls.certresolver: "letsencrypt"

@@ -58,7 +58,7 @@
         labels:
           traefik.enable: "{{ (joomla_dns_accessible or joomla_available_externally) | string }}"
           traefik.http.services.joomla.loadbalancer.server.port: "80"
-          traefik.http.routers.joomla.rule: "Host(`{{ joomla_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.joomla.rule: "Host(`{{ joomla_hostname ~ '.' if joomla_hostname else ''}}{{ dns_domain }}`)"
           traefik.http.routers.joomla.tls.domains[0].main: "{{ dns_domain }}"
           traefik.http.routers.joomla.tls.domains[0].sans: "*.{{ dns_domain }}"
           traefik.http.routers.joomla.tls.certresolver: "letsencrypt"

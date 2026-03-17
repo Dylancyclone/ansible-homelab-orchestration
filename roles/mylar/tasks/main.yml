@@ -37,7 +37,7 @@
         labels:
           traefik.enable: "{{ (mylar_dns_accessible or mylar_available_externally) | string }}"
           traefik.http.services.mylar.loadbalancer.server.port: "8090"
-          traefik.http.routers.mylar.rule: "Host(`{{ mylar_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.mylar.rule: "Host(`{{ mylar_hostname ~ '.' if mylar_hostname else ''}}{{ dns_domain }}`)"
           traefik.http.routers.mylar.tls.domains[0].main: "{{ dns_domain }}"
           traefik.http.routers.mylar.tls.domains[0].sans: "*.{{ dns_domain }}"
           traefik.http.routers.mylar.tls.certresolver: "letsencrypt"
