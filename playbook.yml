@@ -290,6 +290,10 @@
       tags: nextcloud
       when: nextcloud_enabled or (nextcloud_container_names | intersect(running_containers) | length > 0)
 
+    - role: nginx
+      tags: nginx
+      when: nginx_enabled or (nginx_container_names | intersect(running_containers) | length > 0)
+
     - role: nzbget
       tags: nzbget
       when: nzbget_enabled or (nzbget_container_names | intersect(running_containers) | length > 0)

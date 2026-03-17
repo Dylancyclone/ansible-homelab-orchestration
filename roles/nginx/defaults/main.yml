@@ -1,0 +1,22 @@
+---
+nginx_enabled: false
+nginx_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+nginx_available_externally: false
+
+# directories
+nginx_data_directory: "{{ docker_home }}/nginx/"
+
+# network
+nginx_hostname: nginx
+nginx_port: 8079
+
+# containers
+nginx_container_name: nginx
+nginx_image_name: nginx
+nginx_image_version: latest
+
+nginx_container_names: # Used to check if app is running
+  - "{{ nginx_container_name }}"
+
+# specs
+nginx_memory: 1g
