@@ -28,6 +28,10 @@
         name: "{{ "{{" }} {{ short_name }}_container_name {{ "}}" }}"
         image: "{{ "{{" }} {{ short_name }}_image_name {{ "}}" }}:{{ "{{" }} {{ short_name }}_image_version {{ "}}" }}"
         pull: true
+{% if has_docker_network %}
+        networks:
+          - name: "{{ "{{" }} {{ short_name }}_network_name {{ "}}" }}"
+{% endif %}
 {% if has_directories %}
         volumes:
           - "{{ "{{" }} {{ short_name }}_data_directory {{ "}}" }}:/data:rw"
