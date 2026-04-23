@@ -1,0 +1,57 @@
+---
+title: Borg UI
+tags: ["Backups"]
+---
+
+import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
+
+[Homepage](https://borgui.com/) |
+[Repository](https://github.com/karanhudia/borg-ui)
+
+<Tags tags={frontmatter.tags} />
+
+Run backups, browse archives, restore files, manage repositories, and automate schedules from one interface. Replace complex Borg Backup terminal commands with a beautiful web UI. Create, schedule, and restore backups with just a few clicks. 
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+borg_ui_enabled: true
+
+# By default, Borg UI only has read access to your files. To give it write permission (for example to restore files) set this:
+borg_ui_data_permissions: "ro" # ro = read-only, rw = read-write
+```
+
+By default, Borg UI can be accessed at `http://[your_server_ip]:8204` or `https://borg_ui.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured.
+
+## Configuration
+
+You can add additional volumes to be accessible for backups like this:
+
+```yaml
+borg_ui_extra_volumes:
+  - "/path/to/backup:/local/important_backups:ro" # ro = read-only, rw = read-write
+```
+
+To give Borg UI access to the Docker Socket (For example, to stop containers before backing them up, see the [Documentation](https://docs.borgui.com/docker-hooks.html)):
+
+```yaml
+borg_ui_allow_docker_access: true
+```
+
+See the default configuration options for Borg UI at [`roles/borg_ui/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/borg_ui/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+## Alternatives
+
+- [Duplicati](../duplicati/)
+
+{/* 
+
+## Breaking Changes
+
+*/}
+
+## Recent Changes
+
+<RecentChanges application="borg_ui" />

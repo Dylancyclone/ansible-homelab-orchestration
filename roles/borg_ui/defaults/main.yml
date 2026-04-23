@@ -1,0 +1,41 @@
+---
+borg_ui_enabled: false
+borg_ui_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+borg_ui_available_externally: false
+
+# directories
+borg_ui_data_directory: "{{ docker_home }}/borg_ui/data"
+borg_ui_cache_directory: "{{ docker_home }}/borg_ui/cache"
+
+# Additional volumes to mount into the borg ui container
+# borg_ui_extra_volumes:
+#   - "/path/to/backup:/local/important_backups:ro" # ro = read-only, rw = read-write
+
+# permissions
+borg_ui_data_permissions: "ro" # set this to rw to enable the ability to restore data
+borg_ui_allow_docker_access: true
+
+borg_ui_user_id: "1000"
+borg_ui_group_id: "1000"
+
+# network
+borg_ui_hostname: borg_ui
+borg_ui_network_name: borg_ui
+borg_ui_port: 8204
+
+# containers
+borg_ui_container_name: borg_ui
+borg_ui_image_name: ainullcode/borg-ui
+borg_ui_image_version: latest
+
+borg_ui_redis_container_name: borg_ui_redis
+borg_ui_redis_image_name: redis
+borg_ui_redis_image_version: 7-alpine
+
+borg_ui_container_names: # Used to check if app is running
+  - "{{ borg_ui_container_name }}"
+  - "{{ borg_ui_redis_container_name }}"
+
+# specs
+borg_ui_memory: 1g
+borg_ui_redis_memory: 1g

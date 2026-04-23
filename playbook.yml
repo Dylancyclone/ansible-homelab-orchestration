@@ -54,6 +54,10 @@
       tags: bitwarden
       when: bitwarden_enabled or (bitwarden_container_names | intersect(running_containers) | length > 0)
 
+    - role: borg_ui
+      tags: borg_ui
+      when: borg_ui_enabled or (borg_ui_container_names | intersect(running_containers) | length > 0)
+
     - role: calibre
       tags: calibre
       when: calibre_enabled or (calibre_container_names | intersect(running_containers) | length > 0)
