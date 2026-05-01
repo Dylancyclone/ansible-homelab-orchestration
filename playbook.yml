@@ -503,4 +503,7 @@
       tags: woodpecker_ci
       when: woodpecker_ci_enabled or (woodpecker_ci_container_names | intersect(running_containers) | length > 0)
 
-    # Personal Applications (in personal/ folder)
+# Personal Applications (in personal/ folder)
+- name: Execute Personal Applications
+  ansible.builtin.import_playbook: personal_playbook.yml
+  tags: ansible_run_tags

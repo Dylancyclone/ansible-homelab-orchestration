@@ -9,6 +9,7 @@ inventories/*
 # Personal roles
 roles/personal/*
 !roles/personal/README.md
+personal_playbook.yml
 
 # Breaking change detection
 state/*
