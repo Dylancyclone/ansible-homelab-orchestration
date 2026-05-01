@@ -8,7 +8,7 @@ overseerr_data_directory: "{{ docker_home }}/overseerr"
 
 # network
 overseerr_hostname: overseerr
-overseerr_webui_port: 5055
+overseerr_webui_port: 5056
 
 # uid/gid
 overseerr_user_id: "1000"

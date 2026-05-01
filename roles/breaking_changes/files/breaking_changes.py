@@ -78,6 +78,9 @@ for line in fileinput.input(state_file_path, inplace=True):
                         f"https://dylancyclone.github.io/ansible-homelab-orchestration/applications/{application_to_check}"
                     )
                     f.write(
+                        f" (or https://dylancyclone.github.io/ansible-homelab-orchestration/archived_applications/{application_to_check} if the application has been deprecated)"
+                    )
+                    f.write(
                         "\n\nDelete this file once the breaking changes have been resolved.\n"
                     )
                 sys.exit(1)

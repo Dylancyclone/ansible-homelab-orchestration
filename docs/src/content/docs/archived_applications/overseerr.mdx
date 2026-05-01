@@ -1,0 +1,57 @@
+---
+title: Overseerr
+tags: ["*arr"]
+---
+
+import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
+import DeprecationNotice from "../../../components/DeprecationNotice.astro"
+
+<DeprecationNotice>
+The Overseerr repo has been archived and the project has been replaced with [Seerr](../../applications/seerr/). The official migration guide can be found [here](https://docs.seerr.dev/migration-guide), but all you should need to do is:
+```yml
+overseerr_enabled: false # Or delete line entirely
+
+seerr_enabled: true
+seerr_data_directory: "{{ docker_home }}/overseerr/" # Or move the `overseerr` directory to a new `seerr` (the new default location)
+```
+And seerr will automatically migrate your data.
+</DeprecationNotice>
+
+[Homepage](https://overseerr.dev/) |
+[Repository](https://github.com/sct/overseerr)
+
+<Tags tags={frontmatter.tags} />
+
+Overseerr is a free and open source software application for managing requests for your media library. It integrates with your existing services, such as [Sonarr](../../applications/sonarr/), [Radarr](../../applications/radarr/), and [Plex](../../applications/plex/)!
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+overseerr_enabled: true
+```
+
+By default, Overseerr can be accessed at `http://[your_server_ip]:5056` or `https://overseerr.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured.
+
+## Configuration
+
+See the default configuration options for Overseerr at [`roles/overseerr/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/overseerr/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+## Alternatives
+
+- [Seerr](../../applications/seerr/)
+- [Ombi](../../applications/ombi/)
+
+
+## Breaking Changes
+
+- April 30th 2026: With the project's archival, the default port has been moved from `5055` to `5056` to make room for Seerr. You can revert this to continue using overseerr as before for whatever reason:
+```yaml
+overseerr_webui_port: 5055
+```
+
+
+## Recent Changes
+
+<RecentChanges application="overseerr" />
