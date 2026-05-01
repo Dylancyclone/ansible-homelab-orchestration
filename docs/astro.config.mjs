@@ -41,6 +41,11 @@ export default defineConfig({
 					label: "Applications List",
 					autogenerate: { directory: "applications" },
 				},
+				{
+					label: "Archived Applications",
+					autogenerate: { directory: "archived_applications" },
+					collapsed: true,
+				},
 			],
 		}),
 	],

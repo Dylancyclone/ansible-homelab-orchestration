@@ -200,11 +200,14 @@ for role in roles_to_test:
     doc_file_path = f"./docs/src/content/docs/applications/{role}.mdx"
     test_passed = True
     if not os.path.exists(doc_file_path):
-        add_role_fail(
-            role,
-            f"Documentation file `{doc_file_path}` not found",
-        )
-        test_passed = False
+        # Maybe it's been archived?
+        archived_doc_file_path = f"./docs/src/content/docs/archived_applications/{role}.mdx"
+        if not os.path.exists(archived_doc_file_path):
+            add_role_fail(
+                role,
+                f"Documentation file `{doc_file_path}` not found",
+            )
+            test_passed = False
     else:
         docs_lines = load_raw_file(f"./docs/src/content/docs/applications/{role}.mdx")
     print_test_result(test_passed)
