@@ -1,0 +1,24 @@
+---
+seerr_enabled: false
+seerr_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+seerr_available_externally: false
+
+# directories
+seerr_data_directory: "{{ docker_home }}/seerr/"
+
+seerr_log_level: debug
+
+# network
+seerr_hostname: seerr
+seerr_port: 5055
+
+# containers
+seerr_container_name: seerr
+seerr_image_name: ghcr.io/seerr-team/seerr
+seerr_image_version: latest
+
+seerr_container_names: # Used to check if app is running
+  - "{{ seerr_container_name }}"
+
+# specs
+seerr_memory: 1g

@@ -394,6 +394,10 @@
       tags: saltrim
       when: saltrim_enabled or (saltrim_container_names | intersect(running_containers) | length > 0)
 
+    - role: seerr
+      tags: seerr
+      when: seerr_enabled or (seerr_container_names | intersect(running_containers) | length > 0)
+
     - role: slskd
       tags: slskd
       when: slskd_enabled or (slskd_container_names | intersect(running_containers) | length > 0)
