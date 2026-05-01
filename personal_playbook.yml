@@ -1,0 +1,7 @@
+---
+- name: Personal Applications
+  hosts: all
+  # roles:
+    # - role: personal/my_personal_application
+    #   tags: my_personal_application
+    #   when: my_personal_application_enabled or (my_personal_application_container_names | intersect(running_containers) | length > 0)
