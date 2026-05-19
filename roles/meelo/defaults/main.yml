@@ -89,11 +89,11 @@ meelo_transcoder_image_version: master
 
 meelo_mq_container_name: meelo-mq
 meelo_mq_image_name: rabbitmq
-meelo_mq_image_version: 4.0-alpine
+meelo_mq_image_version: 4.3-alpine
 
 meelo_nginx_container_name: meelo-nginx
 meelo_nginx_image_name: nginx
-meelo_nginx_image_version: 1.24.0-alpine
+meelo_nginx_image_version: 1.31.0-alpine
 
 meelo_container_names: # Used to check if app is running
   - "{{ meelo_container_name }}"
