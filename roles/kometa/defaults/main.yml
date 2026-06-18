@@ -15,6 +15,7 @@ kometa_container_names: # Used to check if app is running
 
 # specs
 kometa_memory: 1g
+kometa_memory_swap: 1g
 
 # config
 kometa_run_immediately: false # If true, Kometa will run immediately after startup instead of waiting until the scheduled times
