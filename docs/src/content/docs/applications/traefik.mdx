@@ -19,6 +19,20 @@ Traefik (pronounced traffic) is a modern HTTP reverse proxy and load balancer th
   Please refer to the [DNS Access Guide](/../../guides/dns-access/) for instructions on how to set up Traefik for DNS access.
 </Aside>
 
+## Configuration
+
+### DNS resolution (split-horizon DNS)
+
+Traefik determines the backend address for a host-network application (one that runs with `network_mode: host`, such as Home Assistant, Netdata, or Plex) by resolving your host's FQDN. By default the Traefik container resolves names using `8.8.8.8`.
+
+If you use **split-horizon DNS** — where your host name resolves to a **public** IP externally but a **private LAN** IP internally — the default `8.8.8.8` returns the public IP. Traefik then routes host-network backends to that public IP, which fails for any service whose port is not forwarded, returning **502 Bad Gateway** (for example, Home Assistant on port 8123).
+
+To fix this, point Traefik at your LAN resolver so those backends resolve to the internal LAN address:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+traefik_dns_servers: ["192.168.1.1"] # your LAN DNS resolver
+```
+
 {/* 
 
 ## Breaking Changes

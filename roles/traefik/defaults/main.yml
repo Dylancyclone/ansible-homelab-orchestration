@@ -25,6 +25,15 @@ traefik_http_port: 80
 traefik_https_port: 443
 traefik_ui_port: 8083
 
+# DNS server(s) the Traefik container uses to resolve service backends.
+# Traefik determines the backend for a host-network service (network_mode: host)
+# by resolving the host's FQDN. If you use split-horizon DNS -- your host name
+# resolves to a PUBLIC IP externally but a PRIVATE LAN IP internally -- set this
+# to your LAN resolver so those backends resolve to the internal LAN address.
+# Otherwise Traefik routes them to the public IP and returns 502 for any service
+# whose port is not forwarded (e.g. Home Assistant).
+traefik_dns_servers: ["8.8.8.8"]
+
 # containers
 traefik_container_name: traefik
 traefik_image_name: traefik
