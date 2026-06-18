@@ -14,8 +14,11 @@
         image: "{{ prometheus_smartctl_image_name }}:{{ prometheus_smartctl_image_version }}"
         pull: true
         privileged: true
+        # The prometheus-community image runs as a non-root user by default, which
+        # cannot open block devices even when privileged; smartctl needs root.
+        user: root
         ports:
-          - "{{ prometheus_smartctl_port }}:9902"
+          - "{{ prometheus_smartctl_port }}:9633"
         restart_policy: unless-stopped
         memory: "{{ prometheus_smartctl_memory }}"
 

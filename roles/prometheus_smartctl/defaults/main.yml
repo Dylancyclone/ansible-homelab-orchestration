@@ -2,11 +2,14 @@
 prometheus_smartctl_enabled: false
 
 # network
+# Host-published port (kept at 9902 so the Prometheus scrape config is unchanged);
+# the maintained exporter listens on 9633 inside the container.
 prometheus_smartctl_port: 9902
 
 # containers
 prometheus_smartctl_container_name: prometheus_smartctl
-prometheus_smartctl_image_name: matusnovak/prometheus-smartctl
+# Maintained prometheus-community exporter (replaces the archived matusnovak image).
+prometheus_smartctl_image_name: prometheuscommunity/smartctl-exporter
 prometheus_smartctl_image_version: latest
 
 prometheus_smartctl_container_names: # Used to check if app is running
