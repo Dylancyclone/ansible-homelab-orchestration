@@ -19,7 +19,7 @@
       ansible.builtin.template:
         src: telegraf.conf.j2
         dest: "{{ telegraf_config_directory }}/telegraf.conf"
-        force: false
+        force: true
       register: telegraf_config
 
     - name: Get Docker daemon uid
