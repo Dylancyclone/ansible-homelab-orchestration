@@ -26,6 +26,7 @@
           HBOX_LOG_LEVEL: "{{ homebox_log_level }}"
           HBOX_LOG_FORMAT: "text"
           HBOX_WEB_MAX_FILE_UPLOAD: "10"
+          HBOX_AUTH_API_KEY_PEPPER: "{{ homebox_api_key_pepper }}"
         ports:
           - "{{ homebox_port }}:7745"
         restart_policy: unless-stopped
