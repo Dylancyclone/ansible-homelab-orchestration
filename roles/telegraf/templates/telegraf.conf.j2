@@ -9126,7 +9126,7 @@
 
 
 # # Reads metrics from a Teamspeak 3 Server via ServerQuery
-{% if teamspeak3_enabled %}
+{% if teamspeak3_enabled and telegraf_teamspeak3_serverquery_username is defined and telegraf_teamspeak3_serverquery_password is defined %}
 [[inputs.teamspeak]]
   ## Server address for Teamspeak 3 ServerQuery
   # server = "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ teamspeak3_port }}:{{ teamspeak3_serverquery_port }}"
