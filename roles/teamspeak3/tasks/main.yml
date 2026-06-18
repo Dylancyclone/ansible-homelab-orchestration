@@ -32,7 +32,10 @@
           TS3SERVER_IP_WHITELIST: "{{ teamspeak3_ip_whitelist }}"
           TS3SERVER_IP_BLACKLIST: "{{ teamspeak3_ip_blacklist }}"
           TS3SERVER_QUERY_PROTOCOLS: "{{ teamspeak3_query_protocols }}"
-        user: "{{ teamspeak3_user_id }}:{{ teamspeak3_group_id }}"
+        # The TeamSpeak image runs as its built-in user (UID 9987) and does not
+        # support PUID/PGID. Overriding `user:` breaks the server's access to its
+        # own /files and /logs directories, so it is intentionally not set.
+        # https://github.com/TeamSpeak-Systems/teamspeak-linux-docker-images/issues/51
         restart_policy: unless-stopped
         memory: "{{ teamspeak3_memory }}"
         labels:
