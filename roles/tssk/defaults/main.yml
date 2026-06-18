@@ -1,0 +1,23 @@
+---
+tssk_enabled: false
+
+# directories
+tssk_data_directory: "{{ docker_home }}/tssk/"
+tssk_config_directory: "{{ docker_home }}/tssk/config/"
+
+
+# containers
+tssk_container_name: tssk
+tssk_image_name: netplexflix/tssk
+tssk_image_version: latest
+
+tssk_container_names: # Used to check if app is running
+  - "{{ tssk_container_name }}"
+
+# specs
+tssk_memory: 1g
+
+# config
+tssk_environment_variables:
+  CRON: 0 0,12 * * *   # every day at midnight and noon
+  DOCKER: "true" # important for path reference

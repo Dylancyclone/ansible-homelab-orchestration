@@ -1,0 +1,42 @@
+---
+- name: Start TV-show-status-for-Kometa
+  when: tssk_enabled
+  block:
+    - name: Check for TV-show-status-for-Kometa Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: tssk
+
+    - name: Check for Kometa installation
+      ansible.builtin.fail:
+        msg: "TSSK requires Kometa enabled and running, please set that up first."
+      when: kometa_enabled is false
+
+    - name: Create TV-show-status-for-Kometa Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ tssk_data_directory }}"
+        - "{{ tssk_config_directory }}"
+
+    - name: TV-show-status-for-Kometa Docker Container
+      community.docker.docker_container:
+        name: "{{ tssk_container_name }}"
+        image: "{{ tssk_image_name }}:{{ tssk_image_version }}"
+        pull: true
+        volumes:
+          - "{{ tssk_config_directory }}:/app/config:rw"
+          - "{{ kometa_config_directory }}:/config/kometa:rw"
+        env: "{{ tssk_environment_variables }}"
+        restart_policy: unless-stopped
+        memory: "{{ tssk_memory }}"
+
+- name: Stop TV-show-status-for-Kometa
+  when: not tssk_enabled
+  block:
+    - name: Stop TV-show-status-for-Kometa
+      community.docker.docker_container:
+        name: "{{ tssk_container_name }}"
+        state: absent
