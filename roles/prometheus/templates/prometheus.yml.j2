@@ -70,3 +70,14 @@ scrape_configs:
                     "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:8123"
                  ]
 {% endif %}
+
+{% if watchtower_metrics_enabled | default(false) %}
+  - job_name: "watchtower"
+    metrics_path: /v1/metrics
+    authorization:
+      credentials: "{{ watchtower_metrics_token | default('') }}"
+    static_configs:
+      - targets: [
+                    "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ watchtower_metrics_port | default(8080) }}"
+                 ]
+{% endif %}

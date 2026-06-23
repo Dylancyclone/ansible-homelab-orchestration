@@ -37,6 +37,32 @@ watchtower_enabled: true
 ```
 Watchtower will automatically monitor and update all other Docker containers.
 
+## Prometheus metrics
+
+Watchtower can publish metrics (containers scanned/updated/failed/skipped, scan counts) to
+[Prometheus](../prometheus/) for monitoring. This requires `prometheus_enabled: true`.
+
+Enable it and set a bearer token Prometheus uses to authenticate — generate one with
+`openssl rand -hex 32`:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+watchtower_metrics_enabled: true
+watchtower_metrics_token: "your-generated-token"
+watchtower_ephemeral_self_update_enabled: true
+```
+
+Prometheus scrapes `/v1/metrics` on `watchtower_metrics_port` (default `8080`)
+automatically. Import the dashboard from the Watchtower repo's
+`examples/metrics/grafana/dashboards/dashboard.json` to visualize the data.
+
+<Aside type="caution">
+	Publishing the metrics port would normally make Watchtower skip updating its **own**
+	container (to avoid a port conflict on self-recreation). Setting
+	`watchtower_ephemeral_self_update_enabled: true` uses the fork's ephemeral self-update
+	orchestrator (experimental) so Watchtower keeps self-updating. If a self-update fails,
+	the existing container is preserved. All other containers update normally regardless.
+</Aside>
+
 ## Configuration
 
 See the default configuration options for Watchtower at [`roles/watchtower/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/watchtower/defaults/main.yml).
