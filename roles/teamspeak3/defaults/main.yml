@@ -6,8 +6,10 @@ teamspeak3_available_externally: false
 # directories
 teamspeak3_data_directory: "{{ docker_home }}/teamspeak3/"
 
-teamspeak3_ip_whitelist: "" # Comma separated list of IPs that are allowed to connect to the server, leave empty to allow all
-teamspeak3_ip_blacklist: "" # Comma separated list of IPs that are blocked from connecting to the server, leave empty to block none
+# Comma separated IPs exempt from ServerQuery flood protection. Localhost is included by default so
+# local queries (e.g. telegraf) keep working; override the whole list to add or change entries.
+teamspeak3_ip_whitelist: "127.0.0.1,::1"
+teamspeak3_ip_blacklist: "" # Comma separated IPs to bar from ServerQuery entirely
 teamspeak3_query_protocols: "raw,ssh" # Comma separated list of query protocols to enable, options are raw and ssh
 
 teamspeak3_user_id: "1000"

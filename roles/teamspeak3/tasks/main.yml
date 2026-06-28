@@ -15,6 +15,15 @@
       with_items:
         - "{{ teamspeak3_data_directory }}"
 
+    - name: Template TeamSpeak 3 ServerQuery IP allow/block lists
+      ansible.builtin.template:
+        src: "{{ item }}.j2"
+        dest: "{{ teamspeak3_data_directory }}/{{ item }}"
+        mode: "0644"
+      with_items:
+        - query_ip_allowlist.txt
+        - query_ip_blocklist.txt
+
     - name: TeamSpeak 3 Docker Container
       community.docker.docker_container:
         name: "{{ teamspeak3_container_name }}"
@@ -29,8 +38,6 @@
           - "{{ teamspeak3_filebrowser_port }}:30033"
         env:
           TS3SERVER_LICENSE: accept
-          TS3SERVER_IP_WHITELIST: "{{ teamspeak3_ip_whitelist }}"
-          TS3SERVER_IP_BLACKLIST: "{{ teamspeak3_ip_blacklist }}"
           TS3SERVER_QUERY_PROTOCOLS: "{{ teamspeak3_query_protocols }}"
         user: "{{ teamspeak3_user_id }}:{{ teamspeak3_group_id }}"
         restart_policy: unless-stopped
