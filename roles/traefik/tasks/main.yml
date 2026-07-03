@@ -43,7 +43,7 @@
         restart_policy: unless-stopped
         memory: "{{ traefik_memory }}"
         recreate: "{{ traefik_template_static_config is changed or traefik_template_dynamic_config is changed }}"
-        dns_servers: ["8.8.8.8"]
+        dns_servers: "{{ traefik_dns_servers }}"
         labels:
           traefik.enable: "{{ (traefik_dns_accessible or traefik_available_externally) | string }}"
           traefik.http.services.traefik.loadbalancer.server.port: "{{ traefik_ui_port }}"
