@@ -21,3 +21,9 @@ homebox_container_names: # Used to check if app is running
 # specs
 homebox_memory: 1g
 homebox_log_level: info
+
+# auth
+# Secret used to sign API keys (HomeBox requires at least 32 bytes).
+# CHANGE THIS to your own value! Generate one with: openssl rand -base64 48
+# Note: rotating this invalidates all previously issued API keys.
+homebox_api_key_pepper: Y2hhbmdlLXRoaXMtcGVwcGVyLWdlbmVyYXRlLXdpdGgtb3BlbnNzbC1yYW5kLWJhc2U2NC00OA==
