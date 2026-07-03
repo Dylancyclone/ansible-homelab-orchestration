@@ -6042,6 +6042,7 @@
 
 
 # # Monitor disks' temperatures using hddtemp
+{% if prometheus_hddtemp_enabled %}
 [[inputs.hddtemp]]
   ## By default, telegraf gathers temps data from all disks detected by the
   ## hddtemp.
@@ -6050,8 +6051,11 @@
   ##
   ## A * as the device name will return the temperature values of all disks.
   ##
-  # address = "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ prometheus_hddtemp_port }}"
+  ## The hddtemp daemon runs as a separate container (prometheus_hddtemp role),
+  ## so point at the host's published port rather than telegraf's own loopback.
+  address = "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ prometheus_hddtemp_port }}"
   # devices = ["sda", "*"]
+{% endif %}
 
 
 # # HTTP/HTTPS request given an address a method and a timeout
@@ -9122,7 +9126,7 @@
 
 
 # # Reads metrics from a Teamspeak 3 Server via ServerQuery
-{% if teamspeak3_enabled %}
+{% if teamspeak3_enabled and telegraf_teamspeak3_serverquery_username is defined and telegraf_teamspeak3_serverquery_password is defined %}
 [[inputs.teamspeak]]
   ## Server address for Teamspeak 3 ServerQuery
   # server = "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ teamspeak3_port }}:{{ teamspeak3_serverquery_port }}"
