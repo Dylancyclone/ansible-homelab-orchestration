@@ -37,7 +37,8 @@
         restart_policy: unless-stopped
         restart: "{{ prometheus_config is changed }}"
         command: "--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.retention.size={{ prometheus_retention_size }} \
-          --storage.tsdb.retention.time={{ prometheus_retention_time }}"
+          --storage.tsdb.retention.time={{ prometheus_retention_time }} \
+          --web.enable-remote-write-receiver"
         memory: "{{ prometheus_memory }}"
         labels:
           traefik.enable: "{{ (prometheus_dns_accessible or prometheus_available_externally) | string }}"
