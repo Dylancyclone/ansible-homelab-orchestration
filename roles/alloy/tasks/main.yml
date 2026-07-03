@@ -27,6 +27,13 @@
       community.docker.docker_container:
         name: "{{ alloy_container_name }}"
         image: "{{ alloy_image_name }}:{{ alloy_image_version }}"
+        # Pin the container hostname so Alloy's `constants.hostname` resolves to
+        # the host rather than the random Docker container ID. Alloy runs
+        # in-container and builds the journal/syslog/node-metrics labels from
+        # that constant, so without this the host's logs and metrics are labeled
+        # with an unstable container ID that forks into a brand new source every
+        # time the container is recreated.
+        hostname: "{{ inventory_hostname }}"
         pull: true
         volumes:
           - "{{ alloy_config_directory }}/config.alloy:/etc/alloy/config.alloy:rw"
