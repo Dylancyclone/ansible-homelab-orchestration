@@ -7,7 +7,7 @@ import { Aside } from "@astrojs/starlight/components"
 import Tags from "../../../components/Tags.astro"
 import RecentChanges from "../../../components/RecentChanges.astro"
 
-[Repository](https://github.com/matusnovak/prometheus-smartctl)
+[Repository](https://github.com/prometheus-community/smartctl_exporter)
 
 <Tags tags={frontmatter.tags} />
 
@@ -16,7 +16,7 @@ import RecentChanges from "../../../components/RecentChanges.astro"
   On it's own, it won't do anything
 </Aside>
 
-HDD S.M.A.R.T exporter for Prometheus written in Python
+S.M.A.R.T. metrics exporter for Prometheus, using `smartctl` to report on HDD, SSD, and NVMe devices.
 
 ## Setting up
 
@@ -31,11 +31,26 @@ By default, Prometheus smartctl can be accessed at `http://[your_server_ip]:9902
 See the default configuration options for Prometheus smartctl at [`roles/prometheus_smartctl/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/prometheus_smartctl/defaults/main.yml).
 Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
 
-{/* 
-
 ## Breaking Changes
 
-*/}
+### Switched from `matusnovak/prometheus-smartctl` to `prometheuscommunity/smartctl-exporter`
+
+The original [`matusnovak/prometheus-smartctl`](https://github.com/matusnovak/prometheus-smartctl) exporter has been archived and is no longer maintained (it also logged a recurring `'NoneType' object cannot be interpreted as an integer` exception on every scrape). This role now uses the actively-maintained [prometheus-community `smartctl_exporter`](https://github.com/prometheus-community/smartctl_exporter).
+
+**All exported metric names have changed** from the `smartprom_*` prefix to `smartctl_*`. If you have custom Grafana panels, alerts, or recording rules referencing `smartprom_*` metrics, you must update them. The bundled monitoring overview dashboard has already been updated.
+
+Common metric mappings:
+
+| Old (`smartprom_*`) | New (`smartctl_*`) |
+| --- | --- |
+| `smartprom_temperature_celsius_raw` | `smartctl_device_temperature{temperature_type="current"}` |
+| `smartprom_power_on_hours_raw` | `smartctl_device_power_on_seconds` (seconds — divide by `3600` for hours) |
+| `smartprom_power_cycle_count_raw` | `smartctl_device_power_cycle_count` |
+| `smartprom_<attribute>_raw` | `smartctl_device_attribute{attribute_name="<Attribute>", attribute_value_type="raw"}` |
+
+The per-disk label also changed from `drive="/dev/sda"` to `device="sda"`.
+
+No `group_vars` changes are required: the role still publishes metrics on host port `9902` (the new exporter listens on `9633` inside the container). It runs as `root` so `smartctl` can open the block devices.
 
 ## Recent Changes
 

@@ -14,8 +14,10 @@
         image: "{{ prometheus_smartctl_image_name }}:{{ prometheus_smartctl_image_version }}"
         pull: true
         privileged: true
+        # https://github.com/prometheus-community/smartctl_exporter#why-is-root-required-cant-i-add-a-user-to-the-disk-group
+        user: root
         ports:
-          - "{{ prometheus_smartctl_port }}:9902"
+          - "{{ prometheus_smartctl_port }}:9633"
         restart_policy: unless-stopped
         memory: "{{ prometheus_smartctl_memory }}"
 

@@ -6,7 +6,7 @@ prometheus_smartctl_port: 9902
 
 # containers
 prometheus_smartctl_container_name: prometheus_smartctl
-prometheus_smartctl_image_name: matusnovak/prometheus-smartctl
+prometheus_smartctl_image_name: prometheuscommunity/smartctl-exporter
 prometheus_smartctl_image_version: latest
 
 prometheus_smartctl_container_names: # Used to check if app is running
