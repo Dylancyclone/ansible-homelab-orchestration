@@ -10,8 +10,9 @@ teamspeak3_ip_whitelist: "" # Comma separated list of IPs that are allowed to co
 teamspeak3_ip_blacklist: "" # Comma separated list of IPs that are blocked from connecting to the server, leave empty to block none
 teamspeak3_query_protocols: "raw,ssh" # Comma separated list of query protocols to enable, options are raw and ssh
 
-teamspeak3_user_id: "1000"
-teamspeak3_group_id: "1000"
+# Not supported by contianer https://github.com/TeamSpeak-Systems/teamspeak-linux-docker-images/issues/51
+# teamspeak3_user_id: "1000"
+# teamspeak3_group_id: "1000"
 
 # network
 teamspeak3_hostname: teamspeak3

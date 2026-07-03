@@ -32,7 +32,6 @@
           TS3SERVER_IP_WHITELIST: "{{ teamspeak3_ip_whitelist }}"
           TS3SERVER_IP_BLACKLIST: "{{ teamspeak3_ip_blacklist }}"
           TS3SERVER_QUERY_PROTOCOLS: "{{ teamspeak3_query_protocols }}"
-        user: "{{ teamspeak3_user_id }}:{{ teamspeak3_group_id }}"
         restart_policy: unless-stopped
         memory: "{{ teamspeak3_memory }}"
         labels:
