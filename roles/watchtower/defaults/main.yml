@@ -31,12 +31,11 @@ watchtower_container_names: # Used to check if app is running
 watchtower_memory: 1g
 
 # --- Prometheus metrics ---
-# Expose Watchtower's HTTP metrics endpoint (/v1/metrics on container port 8080).
-# Watchtower's HTTP API requires a token, so this is always authenticated.
+# Expose Watchtower's HTTP metrics endpoint `/v1/metrics`.
 watchtower_metrics_enabled: false
-# Host port to publish the metrics endpoint on (container's internal API port is always 8080).
+# Host port to publish the metrics endpoint on
 watchtower_metrics_port: 8081
-# Bearer token required to scrape the endpoint. Set this in your inventory (keep it secret).
+# Bearer token Prometheus uses to authenticate; generate with `openssl rand -hex 32` (keep it secret).
 watchtower_metrics_token: ""
 
 # Publishing a port normally makes Watchtower skip updating its OWN container (to avoid a

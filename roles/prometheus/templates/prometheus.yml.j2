@@ -75,9 +75,9 @@ scrape_configs:
   - job_name: "watchtower"
     metrics_path: /v1/metrics
     authorization:
-      credentials: "{{ watchtower_metrics_token | default('') }}"
+      credentials: "{{ watchtower_metrics_token }}"
     static_configs:
       - targets: [
-                    "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ watchtower_metrics_port | default(8080) }}"
+                    "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ watchtower_metrics_port }}"
                  ]
 {% endif %}

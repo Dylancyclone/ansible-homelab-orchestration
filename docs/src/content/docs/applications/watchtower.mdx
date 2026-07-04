@@ -37,7 +37,12 @@ watchtower_enabled: true
 ```
 Watchtower will automatically monitor and update all other Docker containers.
 
-## Prometheus metrics
+## Configuration
+
+See the default configuration options for Watchtower at [`roles/watchtower/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/watchtower/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+### Prometheus metrics
 
 Watchtower can publish metrics (containers scanned/updated/failed/skipped, scan counts) to
 [Prometheus](../prometheus/) for monitoring. This requires `prometheus_enabled: true`.
@@ -51,7 +56,7 @@ watchtower_metrics_token: "your-generated-token"
 watchtower_ephemeral_self_update_enabled: true
 ```
 
-Prometheus scrapes `/v1/metrics` on `watchtower_metrics_port` (default `8080`)
+Prometheus scrapes `/v1/metrics` on `watchtower_metrics_port` (default `8081`)
 automatically. Import the dashboard from the Watchtower repo's
 `examples/metrics/grafana/dashboards/dashboard.json` to visualize the data.
 
@@ -62,11 +67,6 @@ automatically. Import the dashboard from the Watchtower repo's
 	orchestrator (experimental) so Watchtower keeps self-updating. If a self-update fails,
 	the existing container is preserved. All other containers update normally regardless.
 </Aside>
-
-## Configuration
-
-See the default configuration options for Watchtower at [`roles/watchtower/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/watchtower/defaults/main.yml).
-Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
 
 {/* 
 

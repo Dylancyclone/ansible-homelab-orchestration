@@ -15,17 +15,13 @@
         pull: true
         volumes:
           - "/var/run/docker.sock:/var/run/docker.sock"
-        env: >-
-          {{
-            {'TZ': computer_timezone}
-            | combine({'WATCHTOWER_HTTP_API_METRICS': 'true',
-                       'WATCHTOWER_HTTP_API_TOKEN': watchtower_metrics_token}
-                      if watchtower_metrics_enabled else {})
-            | combine({'WATCHTOWER_EPHEMERAL_SELF_UPDATE': 'true'}
-                      if watchtower_ephemeral_self_update_enabled else {})
-          }}
+        env:
+          TZ: "{{ computer_timezone }}"
+          WATCHTOWER_HTTP_API_METRICS: "{{ 'true' if watchtower_metrics_enabled else 'false' }}"
+          WATCHTOWER_HTTP_API_TOKEN: "{{ watchtower_metrics_token }}"
+          WATCHTOWER_EPHEMERAL_SELF_UPDATE: "{{ 'true' if watchtower_ephemeral_self_update_enabled else 'false' }}"
         command: "{{ watchtower_command }}"
-        ports: "{{ ['%d:8080' | format(watchtower_metrics_port | int)] if watchtower_metrics_enabled else omit }}"
+        ports: "{{ [watchtower_metrics_port ~ ':8080'] if watchtower_metrics_enabled else omit }}"
         restart_policy: unless-stopped
         memory: "{{ watchtower_memory }}"
 
