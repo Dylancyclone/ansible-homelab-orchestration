@@ -6,8 +6,8 @@ teamspeak3_available_externally: false
 # directories
 teamspeak3_data_directory: "{{ docker_home }}/teamspeak3/"
 
-teamspeak3_ip_whitelist: "" # Comma separated list of IPs that are allowed to connect to the server, leave empty to allow all
-teamspeak3_ip_blacklist: "" # Comma separated list of IPs that are blocked from connecting to the server, leave empty to block none
+teamspeak3_ip_whitelist: "127.0.0.1,::1" # Comma separated list of IPs that are exempt from ServerQuery flood protection
+teamspeak3_ip_blacklist: "" # Comma separated list of IPs that are blocked from ServerQuery entirely
 teamspeak3_query_protocols: "raw,ssh" # Comma separated list of query protocols to enable, options are raw and ssh
 
 # Not supported by contianer https://github.com/TeamSpeak-Systems/teamspeak-linux-docker-images/issues/51

@@ -1,0 +1,1 @@
+{{ (teamspeak3_ip_blacklist.split(',') | map('trim') | select | list) | join('\n') }}
