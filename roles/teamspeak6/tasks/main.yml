@@ -29,6 +29,7 @@
         env:
           TSSERVER_LICENSE_ACCEPTED: accept
           TSSERVER_FILE_TRANSFER_PORT: "{{ teamspeak6_filebrowser_port | string }}"
+          TSSERVER_QUERY_HTTP_ENABLED: "{{ teamspeak6_query_http_enabled }}"
         restart_policy: unless-stopped
         memory: "{{ teamspeak6_memory }}"
         labels:

@@ -6,6 +6,8 @@ teamspeak6_available_externally: false
 # directories
 teamspeak6_data_directory: "{{ docker_home }}/teamspeak6/"
 
+teamspeak6_query_http_enabled: "false"
+
 # uid/gid
 
 # Not supported by contianer https://github.com/teamspeak/teamspeak6-server/issues/30
