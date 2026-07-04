@@ -29,7 +29,6 @@
         env:
           TSSERVER_LICENSE_ACCEPTED: accept
           TSSERVER_FILE_TRANSFER_PORT: "{{ teamspeak6_filebrowser_port | string }}"
-        user: "{{ teamspeak6_user_id }}:{{ teamspeak6_group_id }}"
         restart_policy: unless-stopped
         memory: "{{ teamspeak6_memory }}"
         labels:
