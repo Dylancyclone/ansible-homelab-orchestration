@@ -36,7 +36,7 @@ for (let [path, rawApp] of Object.entries(allAppsRaw)) {
 	}
 }
 const allAppNames = Object.keys(allApps)
-const newApplicationRegex = /feat\((\w)[\w\-\.]+\): Add \1/i
+const newApplicationRegex = /feat\((([\w\-\.])[\w\-\.]+)\): Add \2/i
 
 const filteredCommits = changelogWithoutMerges.filter((commit) => newApplicationRegex.test(commit.commit.message) && allAppNames.includes(commit.commit.message.match(newApplicationRegex)![1]))
 
