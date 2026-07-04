@@ -52,3 +52,7 @@ Please refer to the [Documentation](https://dylancyclone.github.io/ansible-homel
 ## Contributing
 
 Contributions are always welcome! Please refer to the [Contributing Guide](https://dylancyclone.github.io/ansible-homelab-orchestration/guides/contributing/) for details on how to contribute to this project.
+
+## AI Generated Code
+
+During the development of this project I did not use any AI coding agents or tools. Some PRs written by others have been co-authored by coding agents, but every single PR is hand reviewed for accuracy. I have no issue with using AI tools to assist or debug, but due to the nature of orchestrating a homelab, AI cannot be trusted to drive development and any AI slop PRs will be rejected.
