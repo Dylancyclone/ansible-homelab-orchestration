@@ -13,7 +13,7 @@ The Overseerr repo has been archived and the project has been replaced with [See
 overseerr_enabled: false # Or delete line entirely
 
 seerr_enabled: true
-seerr_data_directory: "{{ docker_home }}/overseerr/" # Or move the `overseerr` directory to a new `seerr` (the new default location)
+seerr_data_directory: "{{ docker_home }}/overseerr/config" # Or move the `overseerr/config` directory to a new `seerr` (the new default location, without the 'config' subfolder)
 ```
 And seerr will automatically migrate your data.
 </DeprecationNotice>
