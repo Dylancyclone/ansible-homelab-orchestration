@@ -41,8 +41,8 @@
         borg_ui_volumes:
           - "{{ borg_ui_data_directory }}:/data:rw"
           - "{{ borg_ui_cache_directory }}:/home/borg/.cache/borg:rw"
-          - "{{ data_home }}:/local/data:{{ duplicati_data_permissions }}"
-          - "{{ docker_home }}:/local/docker:{{ duplicati_data_permissions }}"
+          - "{{ data_home }}:/local/data:{{ borg_ui_data_permissions }}"
+          - "{{ docker_home }}:/local/docker:{{ borg_ui_data_permissions }}"
           - "{{ omit if borg_ui_allow_docker_access else '/var/run/docker.sock:/var/run/docker.sock:rw' }}"
           # - "{{ borg_ui_tmp_directory }}:/tmp:rw"
         borg_ui_volumes_with_extras: "{{ borg_ui_volumes + borg_ui_extra_volumes | default([]) }}"
