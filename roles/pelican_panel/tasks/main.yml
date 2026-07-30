@@ -1,0 +1,86 @@
+---
+- name: Start Pelican Panel
+  when: pelican_panel_enabled
+  block:
+    - name: Check for Pelican Panel Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: pelican_panel
+
+    - name: Create Pelican Panel Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ pelican_panel_data_directory }}"
+        - "{{ pelican_panel_data_directory }}/plugins"
+        - "{{ pelican_panel_logs_directory }}"
+
+    # The container runs as www-data (uid/gid 82), but Ansible creates the directories above owned
+    # by the connecting user. Chowning them with the file module would need root on the host, so use
+    # a throwaway root container instead (docker access is root-equivalent anyway) and the Panel can
+    # write its SQLite DB, .env, and supervisord log. Only runs when the ownership is wrong.
+    - name: Check Pelican Panel data ownership
+      ansible.builtin.stat:
+        path: "{{ pelican_panel_data_directory }}"
+      register: pelican_panel_data_stat
+
+    - name: Fix Pelican Panel bind-mount ownership
+      ansible.builtin.command:
+        cmd: >-
+          docker run --rm --user 0:0 --entrypoint chown
+          -v {{ pelican_panel_data_directory }}:/data
+          -v {{ pelican_panel_logs_directory }}:/logs
+          {{ pelican_panel_image_name }}:{{ pelican_panel_image_version }}
+          -R {{ pelican_panel_user_id }}:{{ pelican_panel_group_id }} /data /logs
+      when: pelican_panel_data_stat.stat.uid != pelican_panel_user_id
+      changed_when: true
+
+    - name: Pelican Panel Docker Container
+      vars:
+        pelican_panel_environment_variables:
+          XDG_DATA_HOME: /pelican-data
+          APP_URL: "{{ pelican_panel_app_url }}"
+          APP_ENV: "{{ pelican_panel_app_env }}"
+          APP_DEBUG: "{{ pelican_panel_app_debug }}"
+          # Keep the bundled Caddy but run it in plain-HTTP proxy mode, since Traefik does TLS. Do
+          # NOT set SKIP_CADDY: that drops the container to raw php-fpm on :9000, which Traefik's
+          # HTTP proxy can't serve.
+          BEHIND_PROXY: "true"
+          TRUSTED_PROXIES: "{{ pelican_panel_trusted_proxies }}"
+          MAIL_DRIVER: "{{ pelican_panel_mail_driver }}"
+          TZ: "{{ computer_timezone }}"
+        pelican_panel_env_vars_with_extras: "{{ pelican_panel_environment_variables | combine(pelican_panel_extra_env_vars | default({})) }}"
+      community.docker.docker_container:
+        name: "{{ pelican_panel_container_name }}"
+        image: "{{ pelican_panel_image_name }}:{{ pelican_panel_image_version }}"
+        pull: true
+        volumes:
+          - "{{ pelican_panel_data_directory }}:/pelican-data"
+          - "{{ pelican_panel_data_directory }}/plugins:/var/www/html/plugins"
+          - "{{ pelican_panel_logs_directory }}:/var/www/html/storage/logs"
+        env: "{{ pelican_panel_env_vars_with_extras }}"
+        ports:
+          - "{{ pelican_panel_port }}:80"
+        restart_policy: unless-stopped
+        memory: "{{ pelican_panel_memory }}"
+        labels:
+          # Pinned image, so opt out of Watchtower auto-updates. Upgrades are deliberate: bump
+          # pelican_panel_image_version.
+          com.centurylinklabs.watchtower.enable: "false"
+          traefik.enable: "{{ (pelican_panel_dns_accessible or pelican_panel_available_externally) | string }}"
+          traefik.http.services.pelican_panel.loadbalancer.server.port: "80"
+          traefik.http.routers.pelican_panel.rule: "Host(`{{ pelican_panel_hostname ~ '.' if pelican_panel_hostname else '' }}{{ dns_domain }}`)"
+          traefik.http.routers.pelican_panel.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.pelican_panel.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.pelican_panel.tls.certresolver: "letsencrypt"
+          traefik.http.routers.pelican_panel.middlewares: "{{ omit if pelican_panel_available_externally else 'blockExternal@file' }}"
+
+- name: Stop Pelican Panel
+  when: not pelican_panel_enabled
+  block:
+    - name: Stop Pelican Panel
+      community.docker.docker_container:
+        name: "{{ pelican_panel_container_name }}"
+        state: absent

@@ -1,0 +1,86 @@
+---
+title: Pelican Panel
+tags: ["Games", "Game Servers"]
+---
+
+import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
+
+[Homepage](https://pelican.dev/) |
+[Repository](https://github.com/pelican-dev/panel)
+
+<Tags tags={frontmatter.tags} />
+
+Pelican Panel is the web control panel half of the Pelican game-server stack (a FOSS project in the Pterodactyl lineage).
+It manages users, game servers, backups, schedules and an in-browser console/file manager, and hands the actual work of running game servers to [Pelican Wings](../pelican_wings/).
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+pelican_panel_enabled: true
+```
+
+By default, Pelican Panel can be accessed at `http://[your_server_ip]:8103` or `https://pelican.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured.
+
+This role runs the all-in-one `ghcr.io/pelican-dev/panel` image (php-fpm, a bundled Caddy, the queue worker and the scheduler under supervisord) against a **SQLite** database, so there is no separate database container to run.
+SQLite is the upstream default and is plenty for household-scale hosting.
+
+The Panel is only half the stack. You also need [Pelican Wings](../pelican_wings/) — the daemon that starts and stops the game-server containers — on whichever host should run the games.
+
+### First run
+
+1. Deploy the role, then browse to `https://pelican.[your_domain].com/installer` (or `http://[your_server_ip]:8103/installer`).
+2. In the installer, pick **SQLite** for the database and leave the cache/queue drivers at their file/database defaults, then create the admin user.
+3. Create your first node under **Admin → Nodes**. That is what generates the configuration file Wings needs, so do it before deploying Wings — see the [Pelican Wings](../pelican_wings/) page.
+
+Game servers created through the Panel are managed by the Panel and Wings, **not** by Ansible. That is expected: this role deploys the control plane, and the servers themselves are created in the UI.
+
+## Configuration
+
+See the default configuration options for Pelican Panel at [`roles/pelican_panel/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/pelican_panel/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+### Behind the reverse proxy
+
+The Panel image bundles Caddy, and this role runs it with `BEHIND_PROXY=true` so Caddy serves plain HTTP and Traefik terminates TLS in front of it.
+Do **not** set `SKIP_CADDY`: that drops the container to raw php-fpm on port 9000, which Traefik's HTTP proxy cannot serve.
+
+Two settings follow from being behind a proxy, and both default to sensible values:
+
+- `pelican_panel_app_url` must be the **external https URL**, because Laravel builds asset and redirect links from it. If it is wrong you get mixed-content warnings or redirect loops in the UI.
+- `pelican_panel_trusted_proxies` covers loopback and the private docker bridge range, so the real client IP and the `https` scheme survive the proxy hop. If it is wrong, file uploads and redirects break.
+
+### Mail
+
+Mail defaults to the `log` driver, which writes mail to the container log instead of sending it. To send real mail, switch the driver and supply the credentials as extra env vars:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+pelican_panel_mail_driver: smtp
+pelican_panel_extra_env_vars:
+  MAIL_HOST: smtp.example.com
+  MAIL_PORT: "587"
+  MAIL_USERNAME: pelican@example.com
+  MAIL_PASSWORD: "..."
+  MAIL_FROM_ADDRESS: pelican@example.com
+```
+
+### Upgrading
+
+The image version is **pinned** and the container is excluded from [Watchtower](../watchtower/), because the Panel and Wings share a compatibility contract.
+To upgrade, bump `pelican_panel_image_version` (and `pelican_wings_image_version` to the matching release), then re-run both roles.
+
+### Data ownership
+
+The Panel image runs as `www-data` (uid/gid 82) and writes its SQLite database, `.env` and logs into the bind-mounted data directory, so that directory has to be owned by uid 82.
+Because chowning it from Ansible would require root on the host, the role does the chown through a throwaway root container, and only when the ownership is actually wrong.
+If you rebuild the image with a different runtime user, set `pelican_panel_user_id` and `pelican_panel_group_id` to match.
+
+{/* 
+
+## Breaking Changes
+
+*/}
+
+## Recent Changes
+
+<RecentChanges application="pelican_panel" />
