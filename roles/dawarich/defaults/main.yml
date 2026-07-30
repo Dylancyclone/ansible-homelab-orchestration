@@ -17,6 +17,9 @@ dawarich_port: 9393
 dawarich_prometheus_port: 9394
 dawarich_prometheus_exporter_enabled: "false"
 
+dawarich_web_concurrency: 1
+dawarich_background_processing_concurrency: 3
+
 # postgres
 dawarich_postgres_user: postgres
 dawarich_postgres_password: password

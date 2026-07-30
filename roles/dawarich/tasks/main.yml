@@ -94,6 +94,7 @@
           PROMETHEUS_EXPORTER_PORT: "9394"
           SELF_HOSTED: "true"
           STORE_GEODATA: "true"
+          WEB_CONCURRENCY: "{{ dawarich_web_concurrency }}"
 
         healthcheck:
           test:
@@ -137,7 +138,7 @@
           DATABASE_PASSWORD: "{{ dawarich_postgres_password }}"
           DATABASE_NAME: "dawarich_development"
           APPLICATION_HOSTS: "{{ dawarich_hostname }}.{{ dns_domain }}"
-          BACKGROUND_PROCESSING_CONCURRENCY: "10"
+          BACKGROUND_PROCESSING_CONCURRENCY: "{{ dawarich_background_processing_concurrency }}"
           APPLICATION_PROTOCOL: "http"
           PROMETHEUS_EXPORTER_ENABLED: "{{ dawarich_prometheus_exporter_enabled }}"
           PROMETHEUS_EXPORTER_HOST: "dawarich_app"
