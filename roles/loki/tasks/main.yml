@@ -19,6 +19,7 @@
         state: directory
       with_items:
         - "{{ loki_data_directory }}"
+        - "{{ loki_storage_directory }}"
 
     - name: Template Loki config
       ansible.builtin.template:
@@ -31,6 +32,7 @@
         name: "{{ loki_container_name }}"
         image: "{{ loki_image_name }}:{{ loki_image_version }}"
         pull: true
+        user: "{{ loki_user_id }}:{{ loki_group_id }}"
         command: ["-config.file=/etc/loki/config.yml"]
         ports:
           - "{{ loki_http_port }}:3100"
@@ -38,6 +40,7 @@
           - "{{ loki_grpc_port }}:9095"
         volumes:
           - "{{ loki_data_directory }}/config.yml:/etc/loki/config.yml"
+          - "{{ loki_storage_directory }}:/var/loki:rw"
         restart_policy: unless-stopped
         memory: "{{ loki_memory }}"
         restart: "{{ loki_config is changed }}"

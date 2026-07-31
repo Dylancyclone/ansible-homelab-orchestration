@@ -5,12 +5,17 @@ loki_available_externally: false
 
 # directories
 loki_data_directory: "{{ docker_home }}/loki"
+loki_storage_directory: "{{ loki_data_directory }}/data"
 
 # network
 loki_hostname: loki
 loki_http_port: 3100
 loki_memberlist_port: 7946
 loki_grpc_port: 9095
+
+# uid/gid
+loki_user_id: "1000"
+loki_group_id: "1000"
 
 # containers
 loki_container_name: loki
