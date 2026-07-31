@@ -14,6 +14,7 @@
         state: directory
       with_items:
         - "{{ dashy_data_directory }}"
+        - "{{ dashy_item_icons_directory }}"
 
     - name: Copy base config
       ansible.builtin.copy:
@@ -32,6 +33,8 @@
         memory: "{{ dashy_memory }}"
         volumes:
           - "{{ dashy_data_directory }}/conf.yml:/app/user-data/conf.yml:rw"
+          # Container path is fixed: Dashy resolves local icons to the URL /item-icons/<file>.
+          - "{{ dashy_item_icons_directory }}:/app/user-data/item-icons:ro"
         labels:
           traefik.enable: "{{ (dashy_dns_accessible or dashy_available_externally) | string }}"
           traefik.http.services.dashy.loadbalancer.server.port: "8080"

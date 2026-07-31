@@ -5,6 +5,9 @@ dashy_available_externally: false
 
 # directories
 dashy_data_directory: "{{ docker_home }}/dashy"
+# Icons placed here are served by Dashy itself, and referenced in conf.yml by bare filename
+# (`icon: router.svg`) or `subfolder/name.svg`, instead of a URL to an external icon service.
+dashy_item_icons_directory: "{{ dashy_data_directory }}/item-icons"
 
 # network
 dashy_hostname: dashy
