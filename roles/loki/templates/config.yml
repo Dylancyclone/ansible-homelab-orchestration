@@ -8,11 +8,11 @@ server:
 
 common:
   instance_addr: 127.0.0.1
-  path_prefix: /tmp/loki
+  path_prefix: /var/loki
   storage:
     filesystem:
-      chunks_directory: /tmp/loki/chunks
-      rules_directory: /tmp/loki/rules
+      chunks_directory: /var/loki/chunks
+      rules_directory: /var/loki/rules
   replication_factor: 1
   ring:
     kvstore:
@@ -58,6 +58,6 @@ frontend:
 
 
 compactor:
-  working_directory: /tmp/loki/retention
+  working_directory: /var/loki/retention
   delete_request_store: filesystem
   retention_enabled: true
