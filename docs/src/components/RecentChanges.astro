@@ -20,7 +20,7 @@ try {
 	)
 }
 const changelogWithoutMerges = changelog.filter(
-	(commit) => !commit.commit.message.startsWith("Merge pull request")
+	(commit) => !(commit.commit.message.startsWith("Merge pull request") || commit.commit.message.startsWith("Merge commit"))
 )
 
 const allApps = Object.keys(
