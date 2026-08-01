@@ -48,11 +48,13 @@ This will prompt you to set a username, an optional e-mail address and finally a
 See the default configuration options for Paperless-ngx at [`roles/paperless_ngx/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/paperless_ngx/defaults/main.yml).
 Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
 
-{/* 
-
 ## Breaking Changes
 
-*/}
+### 2026-07-31 Upgrade to v3
+
+Most of the changes have been made and will be implemented when you run the playbook again, but you can read the [Official Migration Guide](https://docs.paperless-ngx.com/migration-v3/) for a complete list.
+
+The most important thing is [document and thumbnail encryption is no longer supported](https://docs.paperless-ngx.com/migration-v3/#encryption-support). If you have any encrypted documents you must run the `decrypt_documents` command before upgrading.
 
 ## Recent Changes
 

@@ -100,6 +100,7 @@
         env:
           PAPERLESS_REDIS: "redis://{{ paperless_ngx_redis_container_name | string }}:6379"
           PAPERLESS_DBHOST: "{{ paperless_ngx_postgres_container_name | string }}"
+          PAPERLESS_DBENGINE: postgresql
           USERMAP_UID: "{{ paperless_ngx_user_id }}"
           USERMAP_GID: "{{ paperless_ngx_group_id }}"
           PAPERLESS_TIKA_ENABLED: "1"

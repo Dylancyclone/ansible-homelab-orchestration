@@ -48,8 +48,8 @@ paperless_ngx_image_name: ghcr.io/paperless-ngx/paperless-ngx
 paperless_ngx_image_version: latest
 
 paperless_ngx_redis_container_name: paperless_ngx_redis
-paperless_ngx_redis_image_name: redis
-paperless_ngx_redis_image_version: "8"
+paperless_ngx_redis_image_name: docker.io/valkey/valkey
+paperless_ngx_redis_image_version: "9-alpine"
 
 paperless_ngx_postgres_container_name: paperless_ngx_postgres
 paperless_ngx_postgres_image_name: postgres
