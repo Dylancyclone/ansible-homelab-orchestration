@@ -36,3 +36,7 @@ prometheus_collection_interval: 15s
 
 # uncomment to scrape metrics from HomeAssistant. You'll need to create a long lived access token.
 # prometheus_homeassistant_long_lived_access_token: abcd
+
+# To scrape Watchtower's metrics, enable it in the Watchtower role (see roles/watchtower/defaults/main.yml):
+# watchtower_metrics_enabled: true
+# watchtower_metrics_token: "<bearer token>"
