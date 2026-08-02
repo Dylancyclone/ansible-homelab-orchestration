@@ -1,0 +1,56 @@
+---
+pelican_panel_enabled: false
+pelican_panel_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+pelican_panel_available_externally: false
+
+# directories
+# The Panel keeps everything (SQLite DB, app state, plugins) under XDG_DATA_HOME (/pelican-data)
+# inside the container, bind-mounted here so it survives container recreation. SQLite is the
+# upstream default and is plenty for household-scale hosting, so there's no separate DB container.
+pelican_panel_data_directory: "{{ docker_home }}/pelican_panel/data"
+pelican_panel_logs_directory: "{{ docker_home }}/pelican_panel/logs"
+
+# The image runs as www-data (uid/gid 82) and writes the SQLite DB, .env, and supervisord logs into
+# the bind mounts above, so the host directories must be owned by this uid/gid before first start.
+# The container can't do it itself (it isn't root), so the role chowns them with a throwaway root
+# container; see tasks/main.yml. Only change these if you use a rebuilt image with a different user.
+pelican_panel_user_id: 82
+pelican_panel_group_id: 82
+
+# application
+# Laravel builds asset and redirect URLs from APP_URL, so it must be the external https URL when
+# Traefik terminates TLS in front of the Panel's bundled Caddy (which runs plain HTTP here).
+pelican_panel_app_url: "https://{{ pelican_panel_hostname }}.{{ dns_domain }}"
+pelican_panel_app_env: production
+pelican_panel_app_debug: "false"
+
+# Proxies whose X-Forwarded-* headers the Panel trusts. Traefik reaches the Panel from the docker
+# bridge gateway, so trust the private docker ranges plus loopback and BEHIND_PROXY will recover the
+# real client IP and https scheme. Get this wrong and file uploads and redirects break.
+pelican_panel_trusted_proxies: "127.0.0.1,172.16.0.0/12"
+
+# mail: defaults to the "log" driver (writes mail to the container log). Set this to "smtp" and
+# supply the MAIL_* keys via pelican_panel_extra_env_vars to send real mail.
+pelican_panel_mail_driver: log
+
+# Extra env vars, merged over the ones set in tasks (e.g. MAIL_HOST/MAIL_PORT/MAIL_USERNAME...)
+pelican_panel_extra_env_vars: {}
+
+# network
+pelican_panel_hostname: pelican
+# Host port -> the container's bundled Caddy on :80 (plain HTTP; TLS is terminated by Traefik).
+# Also gives direct LAN access at http://[your_server_ip]:[this].
+pelican_panel_port: 8103
+
+# containers
+pelican_panel_container_name: pelican_panel
+pelican_panel_image_name: ghcr.io/pelican-dev/panel
+# Pinned and excluded from Watchtower (see tasks): the Panel and Wings share a compatibility
+# contract, so upgrade them together deliberately. Bump this and re-run the role to upgrade.
+pelican_panel_image_version: v1.0.0-beta35
+
+pelican_panel_container_names: # Used to check if app is running
+  - "{{ pelican_panel_container_name }}"
+
+# specs
+pelican_panel_memory: 1g
