@@ -1,0 +1,87 @@
+---
+- name: Start TS3Web
+  when: ts3web_enabled
+  block:
+    - name: Check for TS3Web Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: ts3web
+
+    - name: Create TS3Web Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ ts3web_build_directory }}"
+        - "{{ ts3web_data_directory }}"
+
+    # The upstream image is not published anywhere, so build it locally. Pinning the git ref to
+    # ts3web_image_version keeps the build reproducible against the archived upstream repo.
+    # recursive (the default) is REQUIRED: the actual PHP app lives in the `webinterface`
+    # git submodule (MEschenbacher/ts3web). Without it the image builds with an empty web root.
+    - name: Clone TS3Web Source
+      ansible.builtin.git:
+        repo: https://github.com/felbinger/TS3Web.git
+        dest: "{{ ts3web_build_directory }}"
+        version: "{{ ts3web_image_version }}"
+        recursive: true
+      register: ts3web_source
+
+    - name: Build TS3Web Image
+      community.docker.docker_image:
+        name: "{{ ts3web_image_name }}"
+        tag: "{{ ts3web_image_version }}"
+        source: build
+        build:
+          path: "{{ ts3web_build_directory }}"
+          pull: true
+        force_source: "{{ ts3web_source.changed }}"
+        state: present
+
+    # Auto-refresh wrapper (tsviewpub.php has no refresh of its own). Bind-mounted into the
+    # web root below. template replaces the file via atomic rename (new inode), but a single-file
+    # bind mount keeps pointing at the old inode until the container is recreated -- so recreate
+    # the container below when this changes.
+    # (Note the reverse is not handled: docker_container compares volumes as allow_more_present,
+    # so *removing* a mount still reports ok and needs a manual `docker rm -f` to take effect.)
+    - name: Template TS3Web Auto-refresh Viewer Page
+      ansible.builtin.template:
+        src: viewer.html.j2
+        dest: "{{ ts3web_data_directory }}/viewer.html"
+        mode: "0644"
+      register: ts3web_viewer
+
+    - name: TS3Web Docker Container
+      community.docker.docker_container:
+        name: "{{ ts3web_container_name }}"
+        image: "{{ ts3web_image_name }}:{{ ts3web_image_version }}"
+        pull: false
+        recreate: "{{ ts3web_viewer.changed }}"
+        volumes:
+          - "{{ ts3web_data_directory }}/viewer.html:/var/www/html/viewer.html:ro"
+        env:
+          HOST: "{{ ts3web_ts_host }}"
+          PORT: "{{ ts3web_ts_query_port | string }}"
+          ALIAS: "{{ ts3web_alias }}"
+          LANG: "{{ ts3web_lang }}"
+        ports:
+          - "{{ ts3web_port }}:80"
+        restart_policy: unless-stopped
+        memory: "{{ ts3web_memory }}"
+        labels:
+          traefik.enable: "{{ (ts3web_dns_accessible or ts3web_available_externally) | string }}"
+          traefik.http.services.ts3web.loadbalancer.server.port: "80"
+          traefik.http.routers.ts3web.rule: "Host(`{{ ts3web_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.ts3web.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.ts3web.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.ts3web.tls.certresolver: "letsencrypt"
+          traefik.http.routers.ts3web.middlewares: "{{ omit if ts3web_available_externally else 'blockExternal@file' }}"
+
+- name: Stop TS3Web
+  when: not ts3web_enabled
+  block:
+    - name: Stop TS3Web
+      community.docker.docker_container:
+        name: "{{ ts3web_container_name }}"
+        state: absent
