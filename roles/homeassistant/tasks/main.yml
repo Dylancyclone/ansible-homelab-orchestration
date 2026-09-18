@@ -20,9 +20,11 @@
         name: "{{ homeassistant_container_name }}"
         image: "{{ homeassistant_image_name }}:{{ homeassistant_image_version }}"
         pull: true
-        volumes:
-          - "{{ homeassistant_data_directory }}/config:/config:rw"
+        volumes: "{{ [homeassistant_data_directory ~ '/config:/config:rw'] + (['/run/dbus:/run/dbus:ro'] if homeassistant_bluetooth_enabled else []) }}"
         network_mode: host
+        capabilities: "{{ ['NET_ADMIN', 'NET_RAW'] if homeassistant_bluetooth_enabled else omit }}"
+        # Docker's default AppArmor profile denies raw sockets outright, which blocks Bluetooth HCI access even with NET_RAW granted above.
+        security_opts: "{{ ['apparmor:unconfined'] if homeassistant_bluetooth_enabled else omit }}"
         restart_policy: unless-stopped
         env:
           TZ: "{{ computer_timezone }}"

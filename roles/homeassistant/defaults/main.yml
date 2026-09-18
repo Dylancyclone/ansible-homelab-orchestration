@@ -2,6 +2,7 @@
 homeassistant_enabled: false
 homeassistant_dns_accessible: "{{ traefik_enable_dns_for_all }}"
 homeassistant_available_externally: false
+homeassistant_bluetooth_enabled: false # grants NET_ADMIN/NET_RAW for HA's Bluetooth integration (requires a host BT adapter)
 
 # directories
 homeassistant_data_directory: "{{ docker_home }}/homeassistant"

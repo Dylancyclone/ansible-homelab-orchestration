@@ -41,6 +41,12 @@ Though remember that a lot of power comes from less popular integrations that ma
 See the default configuration options for Home Assistant at [`roles/homeassistant/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/homeassistant/defaults/main.yml).
 Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
 
+If your server has a Bluetooth adapter you want Home Assistant to manage (e.g. the built-in [Bluetooth integration](https://www.home-assistant.io/integrations/bluetooth/)), grant the container the capabilities it needs:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+homeassistant_bluetooth_enabled: true
+```
+
 
 
 ## Complementary Applications
