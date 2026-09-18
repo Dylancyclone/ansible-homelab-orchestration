@@ -1,0 +1,95 @@
+---
+title: Plex Consent Remover
+tags: ["Media Server", "Privacy"]
+---
+
+import { Aside } from "@astrojs/starlight/components"
+import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
+
+[Repository](https://github.com/cyberbrix/plexconsentremover)
+
+<Tags tags={frontmatter.tags} />
+
+Periodically revokes the consent Plex holds to share your account data with advertising vendors.
+
+Plex keeps a per-account consent list, one entry per advertising vendor. Turning those off in the
+Plex UI is not permanent: new vendors can arrive with consent already granted, so a one-time opt-out
+drifts back open. This checks the list on an interval and switches any granted entry back off.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+plex_consent_remover_enabled: true
+
+# You will need to provide a Plex token
+plex_consent_remover_plex_token: ""
+
+# Optionally change how often consent is checked, in seconds (default: daily)
+plex_consent_remover_interval: 86400
+```
+
+### Getting a token
+
+Any Plex account token works, and [Finding an authentication
+token](https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/)
+describes the quickest way to get one.
+
+Copying a token out of Plex Web ties this to that browser session, so signing out of the browser can
+take it down with it. To give it a token of its own, use the PIN flow instead: `POST` to
+`https://plex.tv/api/v2/pins` with your own `X-Plex-Client-Identifier` and an
+`X-Plex-Product` of your choosing, enter the returned four character code at
+[plex.tv/link](https://plex.tv/link), then read `authToken` back from the pin. It appears under
+plex.tv → Authorized Devices as its own row, revocable without disturbing your Plex server or any
+signed-in client.
+
+## Usage
+
+There is nothing to interact with. The container checks on the interval and does nothing when there
+is no consent to revoke, so empty output from `docker logs plex_consent_remover` is the normal,
+healthy state. When it does act, it logs how many vendors it found and whether the update went
+through.
+
+To check immediately instead of waiting for the interval:
+
+```sh
+docker exec plex_consent_remover sh /app/plexconsent.sh
+```
+
+<Aside type="caution">
+	That is the real code path, not a dry run: it revokes consent if any is granted.
+  It exits `0` if Plex was reachable and the token was accepted, `1` if it could not read or write
+  the consent list.
+</Aside>
+
+## How this differs from the original script
+
+[The original](https://github.com/cyberbrix/plexconsentremover) is a bash script meant for cron on a
+host with `jq` installed, with the Plex token pasted into the file. The API calls and the approach
+are its work.
+
+This role ships a rewrite of that logic instead of a copy of the script, so that it can run the way
+everything else here does: in a container, taking its token from the environment rather than from
+inside the file, in POSIX `sh` so a plain Alpine image with `curl` and `jq` is enough. It logs a
+count of consenting vendors where the original names each one, which saves a second API call for a
+log line.
+
+It does not track the original project. If Plex changes the consent API, the script in
+[`roles/plex_consent_remover/files/plexconsent.sh`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/plex_consent_remover/files/plexconsent.sh)
+needs the change made by hand. `tests/plex_consent_remover.sh` exercises it against a stubbed Plex
+API and needs no network.
+
+## Configuration
+
+See the default configuration options for Plex Consent Remover at [`roles/plex_consent_remover/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/plex_consent_remover/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}
+
+## Recent Changes
+
+<RecentChanges application="plex_consent_remover" />

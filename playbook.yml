@@ -334,6 +334,10 @@
       tags: plex
       when: plex_enabled or (plex_container_names | intersect(running_containers) | length > 0)
 
+    - role: plex_consent_remover
+      tags: plex_consent_remover
+      when: plex_consent_remover_enabled or (plex_consent_remover_container_names | intersect(running_containers) | length > 0)
+
     - role: portainer
       tags: portainer
       when: portainer_enabled or (portainer_container_names | intersect(running_containers) | length > 0)

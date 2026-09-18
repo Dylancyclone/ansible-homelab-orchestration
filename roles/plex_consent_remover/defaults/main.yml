@@ -1,0 +1,21 @@
+---
+plex_consent_remover_enabled: false
+
+# Plex token: https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/
+plex_consent_remover_plex_token: ""
+# How often to check for granted consent, in seconds
+plex_consent_remover_interval: 86400
+
+# directories
+plex_consent_remover_data_directory: "{{ docker_home }}/plex_consent_remover"
+
+# containers
+plex_consent_remover_container_name: plex_consent_remover
+plex_consent_remover_image_name: alpine
+plex_consent_remover_image_version: "3"
+
+plex_consent_remover_container_names: # Used to check if app is running
+  - "{{ plex_consent_remover_container_name }}"
+
+# specs
+plex_consent_remover_memory: 128m

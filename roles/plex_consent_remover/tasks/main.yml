@@ -1,0 +1,47 @@
+---
+- name: Start Plex Consent Remover
+  when: plex_consent_remover_enabled
+  block:
+    - name: Check for Plex Consent Remover Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: plex_consent_remover
+
+    - name: Create Plex Consent Remover Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ plex_consent_remover_data_directory }}"
+
+    - name: Copy Plex Consent Remover Script
+      ansible.builtin.copy:
+        src: plexconsent.sh
+        dest: "{{ plex_consent_remover_data_directory }}/plexconsent.sh"
+        mode: "0755"
+      register: plex_consent_remover_script
+
+    - name: Plex Consent Remover Docker Container
+      community.docker.docker_container:
+        name: "{{ plex_consent_remover_container_name }}"
+        image: "{{ plex_consent_remover_image_name }}:{{ plex_consent_remover_image_version }}"
+        pull: true
+        command: ["/bin/sh", "-c", "while true; do /app/plexconsent.sh; sleep $INTERVAL; done"]
+        volumes:
+          - "{{ plex_consent_remover_data_directory }}:/app:ro"
+        env:
+          PLEX_TOKEN: "{{ plex_consent_remover_plex_token }}"
+          INTERVAL: "{{ plex_consent_remover_interval | string }}"
+        restart_policy: unless-stopped
+        restart: "{{ plex_consent_remover_script is changed }}"
+        memory: "{{ plex_consent_remover_memory }}"
+      no_log: true
+
+- name: Stop Plex Consent Remover
+  when: not plex_consent_remover_enabled
+  block:
+    - name: Stop Plex Consent Remover
+      community.docker.docker_container:
+        name: "{{ plex_consent_remover_container_name }}"
+        state: absent
