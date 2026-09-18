@@ -326,6 +326,14 @@
       tags: paperless_ngx
       when: paperless_ngx_enabled or (paperless_ngx_container_names | intersect(running_containers) | length > 0)
 
+    - role: pelican_panel
+      tags: pelican_panel
+      when: pelican_panel_enabled or (pelican_panel_container_names | intersect(running_containers) | length > 0)
+
+    - role: pelican_wings
+      tags: pelican_wings
+      when: pelican_wings_enabled or (pelican_wings_container_names | intersect(running_containers) | length > 0)
+
     - role: piwigo
       tags: piwigo
       when: piwigo_enabled or (piwigo_container_names | intersect(running_containers) | length > 0)
