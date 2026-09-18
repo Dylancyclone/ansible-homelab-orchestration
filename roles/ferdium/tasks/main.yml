@@ -1,0 +1,71 @@
+---
+- name: Start Ferdium Server
+  when: ferdium_enabled
+  block:
+    - name: Check for Ferdium Server Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: ferdium
+
+    - name: Create Ferdium Server Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ ferdium_data_directory }}"
+        - "{{ ferdium_database_directory }}"
+        - "{{ ferdium_recipes_directory }}"
+
+    - name: Ferdium Server Docker Container
+      community.docker.docker_container:
+        name: "{{ ferdium_container_name }}"
+        image: "{{ ferdium_image_name }}:{{ ferdium_image_version }}"
+        pull: true
+        env:
+          "NODE_ENV": "production"
+          "APP_URL": "{{ ferdium_hostname }}.{{ dns_domain }}"
+          "DB_CONNECTION": "sqlite"
+          "DB_HOST": "127.0.0.1"
+          "DB_PORT": "3306"
+          "DB_USER": "root"
+          "DB_PASSWORD": "password"
+          "DB_DATABASE": "ferdium"
+          "DB_SSL": "false"
+          # "MAIL_CONNECTION": "smtp"
+          # "SMTP_HOST": "127.0.0.1"
+          # "SMTP_PORT": "2525"
+          # "MAIL_SSL": "false"
+          # "MAIL_USERNAME": "username"
+          # "MAIL_PASSWORD": "password"
+          # "MAIL_SENDER": "noreply@ferdium.org"
+          "IS_CREATION_ENABLED": "{{ ferdium_user_creation_enabled }}"
+          "IS_DASHBOARD_ENABLED": "{{ ferdium_dashboard_enabled }}"
+          "IS_REGISTRATION_ENABLED": "{{ ferdium_registration_enabled }}"
+          "CONNECT_WITH_FRANZ": "false"
+          "DATA_DIR": "/data"
+          "JWT_USE_PEM": "true"
+        volumes:
+          - "{{ ferdium_database_directory }}:/data:rw"
+          - "{{ ferdium_recipes_directory }}:/app/build/recipes:rw"
+        ports:
+          - "{{ ferdium_port }}:3333"
+        restart_policy: unless-stopped
+        memory: "{{ ferdium_memory }}"
+        labels:
+          traefik.enable: "{{ (ferdium_dns_accessible or ferdium_available_externally) | string }}"
+          traefik.http.services.ferdium.loadbalancer.server.port: "3333"
+          traefik.http.routers.ferdium.rule: "Host(`{{ ferdium_hostname }}.{{ dns_domain }}`)"
+          traefik.http.routers.ferdium.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.ferdium.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.ferdium.tls.certresolver: "letsencrypt"
+          traefik.http.routers.ferdium.middlewares: "{{ omit if ferdium_available_externally else 'blockExternal@file' }}"
+
+
+- name: Stop Ferdium Server
+  when: not ferdium_enabled
+  block:
+    - name: Stop Ferdium Server
+      community.docker.docker_container:
+        name: "{{ ferdium_container_name }}"
+        state: absent

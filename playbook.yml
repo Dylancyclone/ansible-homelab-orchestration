@@ -122,6 +122,10 @@
       tags: feishin
       when: feishin_enabled or (feishin_container_names | intersect(running_containers) | length > 0)
 
+    - role: ferdium
+      tags: ferdium
+      when: ferdium_enabled or (ferdium_container_names | intersect(running_containers) | length > 0)
+
     - role: firefly
       tags: firefly
       when: firefly_enabled or (firefly_container_names | intersect(running_containers) | length > 0)

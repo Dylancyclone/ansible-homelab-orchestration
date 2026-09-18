@@ -1,0 +1,28 @@
+---
+ferdium_enabled: false
+ferdium_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+ferdium_available_externally: false
+
+# directories
+ferdium_data_directory: "{{ data_home }}/ferdium/"
+ferdium_database_directory: "{{ ferdium_data_directory }}/data"
+ferdium_recipes_directory: "{{ ferdium_data_directory }}/recipes"
+
+# network
+ferdium_hostname: ferdium
+ferdium_port: 3333
+
+ferdium_user_creation_enabled: "true"
+ferdium_dashboard_enabled: "true"
+ferdium_registration_enabled: "true"
+
+# containers
+ferdium_container_name: ferdium
+ferdium_image_name: ferdium/ferdium-server
+ferdium_image_version: latest
+
+ferdium_container_names: # Used to check if app is running
+  - "{{ ferdium_container_name }}"
+
+# specs
+ferdium_memory: 1g

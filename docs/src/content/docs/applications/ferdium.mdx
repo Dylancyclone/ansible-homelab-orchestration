@@ -1,0 +1,37 @@
+---
+title: Ferdium Server
+tags: [Productivity]
+---
+
+import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
+
+[Homepage](https://ferdium.org/) |
+[Repository](https://github.com/pdubbbbbs/ferdium-selfhost)
+
+<Tags tags={frontmatter.tags} />
+
+Ferdium is a free, open-source alternative to Franz and Ferdi, allowing you to combine various messaging services into one application. The Ferdium server provides synchronization of services, workspaces, and settings across multiple devices.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+ferdium_server_enabled: true
+```
+
+By default, Ferdium Server can be accessed at `http://[your_server_ip]:3333` or `https://ferdium_server.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured.
+
+## Configuration
+
+See the default configuration options for Ferdium Server at [`roles/ferdium_server/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/ferdium_server/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+{/* 
+
+## Breaking Changes
+
+*/}
+
+## Recent Changes
+
+<RecentChanges application="ferdium_server" />
