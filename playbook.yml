@@ -462,6 +462,10 @@
       tags: transmission
       when: transmission_enabled or (transmission_container_names | intersect(running_containers) | length > 0)
 
+    - role: ts3web
+      tags: ts3web
+      when: ts3web_enabled or (ts3web_container_names | intersect(running_containers) | length > 0)
+
     - role: ttrss
       tags: ttrss
       when: ttrss_enabled or (ttrss_container_names | intersect(running_containers) | length > 0)

@@ -1,0 +1,72 @@
+---
+title: TS3Web
+tags: ["Voice Chat", "Monitoring"]
+---
+
+import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
+
+[Homepage](https://github.com/felbinger/TS3Web) |
+[Repository](https://github.com/felbinger/TS3Web)
+
+<Tags tags={frontmatter.tags} />
+
+TS3Web is a read-only web view of a [TeamSpeak 3](../teamspeak3/) server: who is connected, which channels they are in, and who is talking. It reads the server over its ServerQuery interface and renders a channel tree, so anyone on your network can see who is around without opening a TeamSpeak client.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+ts3web_enabled: true
+```
+
+Everything else has a working default when the [TeamSpeak 3](../teamspeak3/) role runs on the same host.
+
+By default, TS3Web can be accessed at `http://[your_server_ip]:8105` or `https://ts3web.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured.
+
+### The image is built locally
+
+Upstream publishes no image and the repository was archived in 2020, so this role clones the source onto the Docker host and builds it there. The first run therefore takes noticeably longer than a role that pulls a published image.
+
+`ts3web_image_version` doubles as the git ref to build from, so the running image stays reproducible and pinned. The clone is recursive because the PHP application lives in the `webinterface` submodule; without it the image builds with an empty web root.
+
+## Configuration
+
+See the default configuration options for TS3Web at [`roles/ts3web/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/ts3web/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+`ts3web_ts_host` defaults to the Docker host's LAN address rather than a container name, because the TeamSpeak container publishes ServerQuery on the host and shares no user-defined network with this one. Point it elsewhere to view a server on another machine.
+
+### Two pages
+
+| Path | What it is |
+|---|---|
+| `/tsviewpub.php` | upstream's viewer, rendered once per request |
+| `/viewer.html` | auto-refresh wrapper around it, templated by this role |
+
+`tsviewpub.php` has no refresh of its own, so talk indicators go stale as soon as the page loads. `viewer.html` embeds it in an iframe and reloads only the iframe every `ts3web_refresh_seconds`. Point dashboard links at `/viewer.html`.
+
+`ts3web_viewer_params` is passed straight through to `tsviewpub.php`. `skey=0` selects the server configured by the role; the rest sets the virtual server id, icon placement and colours.
+
+### ServerQuery flood limits
+
+TeamSpeak rate-limits ServerQuery per source address, and every refresh is a fresh query. If the viewer intermittently reports that the host "isn't a ts3 instance", the refresh rate is tripping that limit. Either raise `ts3web_refresh_seconds`, or exempt the source with [TeamSpeak 3's](../teamspeak3/) allow list. Connections arrive from the Docker bridge rather than the host's LAN address, so the exemption is the bridge subnet:
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+teamspeak3_ip_whitelist: "127.0.0.1,::1,172.17.0.0/16"
+```
+
+With the source exempted, `ts3web_refresh_seconds: 1` is fine. Note the limit applies per source address, not per viewer, so simultaneous viewers multiply the query rate.
+
+### Access
+
+With `ts3web_available_externally: false` (the default), the Traefik router sits behind the `blockExternal` middleware and the viewer is reachable on your local network only. It exposes a TeamSpeak server's member list without authentication, so consider that before changing it.
+
+{/* 
+
+## Breaking Changes
+
+*/}
+
+## Recent Changes
+
+<RecentChanges application="ts3web" />
