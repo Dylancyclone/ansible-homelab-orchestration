@@ -19,4 +19,6 @@ stirlingpdf_container_names: # Used to check if app is running
   - "{{ stirlingpdf_container_name }}"
 
 # specs
-stirlingpdf_memory: 1g
+# The image derives JVM heap and metaspace sizing from the container limit.
+# Below 1025MB it caps metaspace at 128m, which the app exhausts during startup.
+stirlingpdf_memory: 4g
