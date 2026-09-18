@@ -1,0 +1,38 @@
+---
+umtk_enabled: false
+umtk_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+umtk_available_externally: false
+
+# directories
+umtk_data_directory: "{{ docker_home }}/umtk/"
+umtk_config_directory: "{{ docker_home }}/umtk/config/"
+# UMTK writes its Kometa YAML here. Kometa reads it as `/config/umtk/`
+umtk_output_directory: "{{ kometa_config_directory }}/umtk"
+
+# network
+umtk_hostname: umtk
+umtk_port: 2120
+
+# containers
+umtk_container_name: umtk
+umtk_image_name: netplexflix/umtk
+umtk_image_version: latest
+
+umtk_container_names: # Used to check if app is running
+  - "{{ umtk_container_name }}"
+
+# specs
+umtk_memory: 1g
+umtk_user_id: "1000"
+umtk_group_id: "1000"
+
+# config
+umtk_environment_variables:
+  # Seeds the schedule on first launch only. UMTK writes the schedule into its
+  # own config file and the web UI owns it from then on, so changing this later
+  # has no effect
+  CRON: "0 2 * * *"
+  DOCKER: "true" # important for path reference
+  PUID: "{{ umtk_user_id }}"
+  PGID: "{{ umtk_group_id }}"
+  TZ: "{{ computer_timezone }}"

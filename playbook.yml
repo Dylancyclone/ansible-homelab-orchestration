@@ -470,6 +470,10 @@
       tags: ubooquity
       when: ubooquity_enabled or (ubooquity_container_names | intersect(running_containers) | length > 0)
 
+    - role: umtk
+      tags: umtk
+      when: umtk_enabled or (umtk_container_names | intersect(running_containers) | length > 0)
+
     - role: wallabag
       tags: wallabag
       when: wallabag_enabled or (wallabag_container_names | intersect(running_containers) | length > 0)

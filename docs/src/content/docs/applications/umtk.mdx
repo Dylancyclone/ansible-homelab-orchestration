@@ -1,0 +1,42 @@
+---
+title: UMTK
+tags: ["Movies", "TV"]
+---
+
+import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
+
+[Repository](https://github.com/netplexflix/Upcoming-Movies-TV-Shows-for-Kometa)
+
+<Tags tags={frontmatter.tags} />
+
+UMTK (Upcoming Movies & TV Shows for Kometa) checks Radarr and Sonarr for upcoming and trending movies and TV shows and creates .yml files which can be used by Kometa to create collections and overlays. It also bundles TSSK (TV Show Status for Kometa), which tracks the status of the shows already in your library.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+umtk_enabled: true
+```
+
+UMTK writes its .yml files into Kometa's config directory, so Kometa must be enabled and set up first. Point Kometa at the generated files by adding them to its `collection_files` and `overlay_files`, where they appear as `/config/umtk/`.
+
+By default, UMTK can be accessed at `http://[your_server_ip]:2120` or `https://umtk.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured. The web UI asks you to set a password the first time it is opened.
+
+## Configuration
+
+See the default configuration options for UMTK at [`roles/umtk/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/umtk/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+UMTK's own settings (Radarr and Sonarr connections, which categories to process, overlay styling) live in `umtk/config/` in your `docker_home`, not in Ansible. The application rewrites those files itself when you save from the web UI, so the role creates the directory and leaves the contents alone. The same directory holds your Radarr and Sonarr API keys and the web UI password, so it is created with `0700` permissions.
+
+`CRON` in `umtk_environment_variables` only seeds the schedule on first launch. After that the web UI owns it, and changing the variable has no effect.
+
+{/* 
+
+## Breaking Changes
+
+*/}
+
+## Recent Changes
+
+<RecentChanges application="umtk" />
