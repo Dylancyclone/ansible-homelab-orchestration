@@ -25,8 +25,9 @@
         env:
           SHIFT_USER: "{{ autoshift_username }}"
           SHIFT_PASS: "{{ autoshift_password }}"
-          SHIFT_GAMES: "{{ autoshift_games }}"
-          SHIFT_PLATFORMS: "{{ autoshift_platform }}"
+          # The image sets SHIFT_REDEEM, so its entrypoint ignores SHIFT_GAMES/SHIFT_PLATFORMS
+          # and passes SHIFT_REDEEM as a single argument. A later --redeem overrides it.
+          SHIFT_ARGS: "--schedule --redeem {{ autoshift_games.split() | product([autoshift_platform.split() | join(',')]) | map('join', ':') | join(' ') }}"
         restart_policy: unless-stopped
         memory: "{{ autoshift_memory }}"
 
