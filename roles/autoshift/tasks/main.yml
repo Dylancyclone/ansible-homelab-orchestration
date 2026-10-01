@@ -16,6 +16,9 @@
         - "{{ autoshift_data_directory }}/data"
 
     - name: AutoShift Docker Container
+      # Passes secret env (SHIFT_PASS); no_log keeps it out of the
+      # target host journal on rebuild.
+      no_log: true
       community.docker.docker_container:
         name: "{{ autoshift_container_name }}"
         image: "{{ autoshift_image_name }}:{{ autoshift_image_version }}"
