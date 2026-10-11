@@ -1,0 +1,45 @@
+---
+- name: Start LubeLogger
+  when: lubelogger_enabled
+  block:
+    - name: Check for LubeLogger Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: lubelogger
+
+    - name: Create LubeLogger Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ lubelogger_data_directory }}"
+
+    - name: LubeLogger Docker Container
+      community.docker.docker_container:
+        name: "{{ lubelogger_container_name }}"
+        image: "{{ lubelogger_image_name }}:{{ lubelogger_image_version }}"
+        pull: true
+        volumes:
+          - "{{ lubelogger_data_directory }}/data:/App/data"
+          - "{{ lubelogger_data_directory }}/keys:/root/.aspnet/DataProtection-Keys"
+        ports:
+          - "{{ lubelogger_port }}:8080"
+        restart_policy: unless-stopped
+        memory: "{{ lubelogger_memory }}"
+        labels:
+          traefik.enable: "{{ (lubelogger_dns_accessible or lubelogger_available_externally) | string }}"
+          traefik.http.services.lubelogger.loadbalancer.server.port: "8080"
+          traefik.http.routers.lubelogger.rule: "Host(`{{ lubelogger_hostname ~ '.' if lubelogger_hostname else '' }}{{ dns_domain }}`)"
+          traefik.http.routers.lubelogger.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.lubelogger.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.lubelogger.tls.certresolver: "letsencrypt"
+          traefik.http.routers.lubelogger.middlewares: "{{ omit if lubelogger_available_externally else 'blockExternal@file' }}"
+
+- name: Stop LubeLogger
+  when: not lubelogger_enabled
+  block:
+    - name: Stop LubeLogger
+      community.docker.docker_container:
+        name: "{{ lubelogger_container_name }}"
+        state: absent

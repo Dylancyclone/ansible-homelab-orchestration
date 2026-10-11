@@ -234,6 +234,10 @@
       tags: lidarr
       when: lidarr_enabled or (lidarr_container_names | intersect(running_containers) | length > 0)
 
+    - role: lubelogger
+      tags: lubelogger
+      when: lubelogger_enabled or (lubelogger_container_names | intersect(running_containers) | length > 0)
+
     - role: mealie
       tags: mealie
       when: mealie_enabled or (mealie_container_names | intersect(running_containers) | length > 0)
