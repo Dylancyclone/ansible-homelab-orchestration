@@ -1,0 +1,22 @@
+---
+lubelogger_enabled: false
+lubelogger_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+lubelogger_available_externally: false
+
+# directories
+lubelogger_data_directory: "{{ docker_home }}/lubelogger/"
+
+# network
+lubelogger_hostname: lubelogger
+lubelogger_port: 8183
+
+# containers
+lubelogger_container_name: lubelogger
+lubelogger_image_name: hargata/lubelogger
+lubelogger_image_version: latest
+
+lubelogger_container_names: # Used to check if app is running
+  - "{{ lubelogger_container_name }}"
+
+# specs
+lubelogger_memory: 1g
