@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+{# Auto-refresh wrapper for the read-only ts3web viewer. Reloads the embedded tsviewpub.php #}
+{# every ts3web_refresh_seconds so talk indicators update, while keeping the query rate low #}
+{# enough to avoid TS3 ServerQuery flood bans. Point dashboard links at this page. #}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ ts3web_alias }} viewer</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #ffffff; }
+    iframe { border: 0; width: 100%; height: 100%; display: block; }
+  </style>
+</head>
+<body>
+  <iframe id="ts3" src="tsviewpub.php?{{ ts3web_viewer_params }}"></iframe>
+  <script>
+    // Reload only the iframe (same-origin) so the outer page stays put.
+    setInterval(function () {
+      document.getElementById('ts3').contentWindow.location.reload();
+    }, {{ ts3web_refresh_seconds }} * 1000);
+  </script>
+</body>
+</html>

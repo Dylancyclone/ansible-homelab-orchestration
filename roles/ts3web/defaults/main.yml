@@ -1,0 +1,50 @@
+---
+ts3web_enabled: false
+ts3web_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+ts3web_available_externally: false
+
+# directories
+# The upstream image (felbinger/TS3Web, the Psychokiller ts3wi viewer) is NOT published to any
+# registry and the repo was archived in 2020, so the image is built locally from a pinned commit.
+# This is where that source is cloned and built from.
+ts3web_build_directory: "{{ docker_home }}/ts3web/build"
+# Host dir for the templated auto-refresh wrapper page (bind-mounted into the web root).
+ts3web_data_directory: "{{ docker_home }}/ts3web/data"
+
+# TeamSpeak 3 ServerQuery connection that the viewer reads from.
+# Defaults to the Docker host's LAN IP + the teamspeak3 role's published ServerQuery port: the
+# teamspeak3 container publishes 10011 on the host and shares no user-defined network with us,
+# so reaching it via the host IP is the reliable path.
+ts3web_ts_host: "{{ ansible_default_ipv4.address }}"
+ts3web_ts_query_port: "{{ teamspeak3_serverquery_port | default(10011) }}"
+
+# Viewer display
+ts3web_alias: "TeamSpeak 3"
+ts3web_lang: en  # de, en, or nl
+
+# viewer
+# Point dashboard links at the auto-refresh wrapper page:
+#   https://{{ ts3web_hostname }}.{{ dns_domain }}/viewer.html
+# It embeds tsviewpub.php (read anonymously; skey=0 selects this env-configured server) and
+# reloads it every ts3web_refresh_seconds. Keep >=3s to stay under TS3 ServerQuery flood limits;
+# raise it if you see intermittent "host isn't a ts3 instance" errors (or whitelist the IP in TS3).
+# Note: the flood rate is per-source not per-viewer, so many simultaneous viewers multiply it.
+ts3web_refresh_seconds: 3
+ts3web_viewer_params: "skey=0&sid=1&showicons=right&bgcolor=ffffff&fontcolor=000000"
+
+# network
+ts3web_hostname: ts3web
+ts3web_port: 8105
+
+# containers
+ts3web_container_name: ts3web
+# No registry image exists; built locally (see tasks). ts3web_image_version doubles as the git
+# ref to build from, so the running image is reproducible and pinned against an archived upstream.
+ts3web_image_name: ts3web
+ts3web_image_version: dd21eea11c2229abfda573580f605014107f9e4f
+
+ts3web_container_names: # Used to check if app is running
+  - "{{ ts3web_container_name }}"
+
+# specs
+ts3web_memory: 256m
