@@ -34,6 +34,8 @@ Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` 
 
 Unpackerr mounts the downloads directory at `/downloads`, the same path Sonarr, Radarr and Lidarr use, so the paths they report line up. If you change any of their download directories, set `unpackerr_download_directory` to match.
 
+Unpackerr only tracks extractions in memory. If the container is recreated while it is extracting, the files it already extracted are never cleaned up and stay next to the original archives.
+
 {/* 
 
 ## Breaking Changes
