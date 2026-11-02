@@ -20,11 +20,12 @@ unpackerr_enabled: true
 unpackerr_sonarr_api_key: "your_sonarr_api_key"
 unpackerr_radarr_api_key: "your_radarr_api_key"
 unpackerr_lidarr_api_key: "your_lidarr_api_key"
+unpackerr_ui_password: "your_password"
 ```
 
 Each API key is found in that app under Settings > General > API Key. Only the apps with an API key set are watched, so leave out any you don't use.
 
-Unpackerr has no web interface. Check `docker logs unpackerr` to see what it is extracting.
+By default, Unpackerr can be accessed at `http://[your_server_ip]:5656` or `https://unpackerr.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured. Log in as `admin` with the password set in `unpackerr_ui_password`.
 
 ## Configuration
 

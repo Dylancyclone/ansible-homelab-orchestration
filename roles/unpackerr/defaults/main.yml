@@ -1,4 +1,6 @@
 unpackerr_enabled: false
+unpackerr_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+unpackerr_available_externally: false
 
 # directories
 # Must be the same host directory mounted at /downloads in Sonarr, Radarr and Lidarr
@@ -16,6 +18,15 @@ unpackerr_radarr_url: "http://{{ hostvars[inventory_hostname]['ansible_default_i
 unpackerr_radarr_api_key: ""
 unpackerr_lidarr_url: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ lidarr_port }}"
 unpackerr_lidarr_api_key: ""
+
+# web ui login
+unpackerr_ui_username: admin
+# CHANGE THIS to your own value! Generate one with: openssl rand -base64 24
+unpackerr_ui_password: change-this-password
+
+# network
+unpackerr_hostname: unpackerr
+unpackerr_port: 5656
 
 # containers
 unpackerr_container_name: unpackerr
