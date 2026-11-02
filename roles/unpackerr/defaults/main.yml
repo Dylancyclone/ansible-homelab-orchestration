@@ -1,0 +1,40 @@
+unpackerr_enabled: false
+unpackerr_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+unpackerr_available_externally: false
+
+# directories
+# Must be the same host directory mounted at /downloads in Sonarr, Radarr and Lidarr
+unpackerr_download_directory: "{{ downloads_root }}"
+
+# uid / gid
+unpackerr_user_id: "1000"
+unpackerr_group_id: "1000"
+
+# starr apps
+# An app is only watched when its API key is set (Settings > General > API Key in that app)
+unpackerr_sonarr_url: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ sonarr_port }}"
+unpackerr_sonarr_api_key: ""
+unpackerr_radarr_url: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ radarr_port }}"
+unpackerr_radarr_api_key: ""
+unpackerr_lidarr_url: "http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ lidarr_port }}"
+unpackerr_lidarr_api_key: ""
+
+# web ui login
+unpackerr_ui_username: admin
+# CHANGE THIS to your own value! Generate one with: openssl rand -base64 24
+unpackerr_ui_password: change-this-password
+
+# network
+unpackerr_hostname: unpackerr
+unpackerr_port: 5656
+
+# containers
+unpackerr_container_name: unpackerr
+unpackerr_image_name: golift/unpackerr
+unpackerr_image_version: latest
+
+unpackerr_container_names: # Used to check if app is running
+  - "{{ unpackerr_container_name }}"
+
+# specs
+unpackerr_memory: 1g

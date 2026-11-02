@@ -1,0 +1,47 @@
+---
+title: Unpackerr
+tags: ["*arr", "Download Manager"]
+---
+
+import Tags from "../../../components/Tags.astro"
+import RecentChanges from "../../../components/RecentChanges.astro"
+
+[Homepage](https://unpackerr.zip/) |
+[Repository](https://github.com/Unpackerr/unpackerr)
+
+<Tags tags={frontmatter.tags} />
+
+Unpackerr extracts archived downloads (RAR, ZIP, 7z and others) for Sonarr, Radarr and Lidarr. When a finished download in an app's queue only contains archives, Unpackerr extracts it in place so the app can import it, then removes the extracted files once the import is done.
+
+## Setting up
+
+```yaml title="inventories/homelab/group_vars/homelab.yml"
+unpackerr_enabled: true
+unpackerr_sonarr_api_key: "your_sonarr_api_key"
+unpackerr_radarr_api_key: "your_radarr_api_key"
+unpackerr_lidarr_api_key: "your_lidarr_api_key"
+unpackerr_ui_password: "your_password"
+```
+
+Each API key is found in that app under Settings > General > API Key. Only the apps with an API key set are watched, so leave out any you don't use.
+
+By default, Unpackerr can be accessed at `http://[your_server_ip]:5656` or `https://unpackerr.[your_domain].com` if you have [DNS access](../../guides/dns-access/) configured. Log in as `admin` with the password set in `unpackerr_ui_password`.
+
+## Configuration
+
+See the default configuration options for Unpackerr at [`roles/unpackerr/defaults/main.yml`](https://github.com/Dylancyclone/ansible-homelab-orchestration/blob/main/roles/unpackerr/defaults/main.yml).
+Add any overrides to your `inventories/[your_inventory]/group_vars/homelab.yml` file.
+
+Unpackerr mounts the downloads directory at `/downloads`, the same path Sonarr, Radarr and Lidarr use, so the paths they report line up. If you change any of their download directories, set `unpackerr_download_directory` to match.
+
+Unpackerr only tracks extractions in memory. If the container is recreated while it is extracting, the files it already extracted are never cleaned up and stay next to the original archives.
+
+{/* 
+
+## Breaking Changes
+
+*/}
+
+## Recent Changes
+
+<RecentChanges application="unpackerr" />

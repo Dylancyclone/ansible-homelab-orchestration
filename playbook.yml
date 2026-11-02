@@ -474,6 +474,10 @@
       tags: ubooquity
       when: ubooquity_enabled or (ubooquity_container_names | intersect(running_containers) | length > 0)
 
+    - role: unpackerr
+      tags: unpackerr
+      when: unpackerr_enabled or (unpackerr_container_names | intersect(running_containers) | length > 0)
+
     - role: wallabag
       tags: wallabag
       when: wallabag_enabled or (wallabag_container_names | intersect(running_containers) | length > 0)

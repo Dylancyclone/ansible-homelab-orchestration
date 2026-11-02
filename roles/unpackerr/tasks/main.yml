@@ -1,0 +1,50 @@
+- name: Start Unpackerr
+  when: unpackerr_enabled
+  block:
+    - name: Check for Unpackerr Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: unpackerr
+
+    - name: Create Unpackerr Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ unpackerr_download_directory }}"
+
+    - name: Unpackerr Docker Container
+      community.docker.docker_container:
+        name: "{{ unpackerr_container_name }}"
+        image: "{{ unpackerr_image_name }}:{{ unpackerr_image_version }}"
+        pull: true
+        user: "{{ unpackerr_user_id }}:{{ unpackerr_group_id }}"
+        volumes:
+          - "{{ unpackerr_download_directory }}:/downloads:rw"
+        ports:
+          - "{{ unpackerr_port }}:5656"
+        env: >-
+          {{ {'TZ': computer_timezone, 'UN_WEBSERVER_UI_PASSWORD': unpackerr_ui_username ~ ':' ~ unpackerr_ui_password}
+             | combine({'UN_SONARR_0_URL': unpackerr_sonarr_url, 'UN_SONARR_0_API_KEY': unpackerr_sonarr_api_key} if unpackerr_sonarr_api_key else {})
+             | combine({'UN_RADARR_0_URL': unpackerr_radarr_url, 'UN_RADARR_0_API_KEY': unpackerr_radarr_api_key} if unpackerr_radarr_api_key else {})
+             | combine({'UN_LIDARR_0_URL': unpackerr_lidarr_url, 'UN_LIDARR_0_API_KEY': unpackerr_lidarr_api_key} if unpackerr_lidarr_api_key else {}) }}
+        restart_policy: unless-stopped
+        memory: "{{ unpackerr_memory }}"
+        labels:
+          traefik.enable: "{{ (unpackerr_dns_accessible or unpackerr_available_externally) | string }}"
+          traefik.http.services.unpackerr.loadbalancer.server.port: "5656"
+          traefik.http.routers.unpackerr.rule: "Host(`{{ unpackerr_hostname ~ '.' if unpackerr_hostname else ''}}{{ dns_domain }}`)"
+          traefik.http.routers.unpackerr.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.unpackerr.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.unpackerr.tls.certresolver: "letsencrypt"
+          traefik.http.routers.unpackerr.middlewares: "{{ omit if unpackerr_available_externally else 'blockExternal@file' }}"
+      no_log: true
+
+- name: Stop Unpackerr
+  when: not unpackerr_enabled
+  block:
+    - name: Stop Unpackerr
+      community.docker.docker_container:
+        name: "{{ unpackerr_container_name }}"
+        state: absent
