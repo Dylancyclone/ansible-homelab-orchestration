@@ -1,0 +1,30 @@
+---
+wg_easy_enabled: false
+wg_easy_dns_accessible: "{{ traefik_enable_dns_for_all }}"
+wg_easy_available_externally: false
+
+# directories
+wg_easy_data_directory: "{{ docker_home }}/wg_easy/"
+
+# network
+wg_easy_hostname: wg_easy
+wg_easy_vpn_port: 51820 # Port-forward with UDP
+wg_easy_web_port: 51821 # Not recommended to port-forward
+
+# web interface
+wg_easy_web_username: admin
+wg_easy_web_password: password
+wg_easy_web_hostname: example.com # The hostname or IP address of your server
+wg_easy_web_allow_http: "true" # Set to "false" if you want to force HTTPS
+wg_easy_web_disable_ipv6: "true" # Set to "true" if you only intend to use IPv4 VPN tunnels, preventing ip6tables errors
+
+# containers
+wg_easy_container_name: wg_easy
+wg_easy_image_name: ghcr.io/wg-easy/wg-easy
+wg_easy_image_version: 15
+
+wg_easy_container_names: # Used to check if app is running
+  - "{{ wg_easy_container_name }}"
+
+# specs
+wg_easy_memory: 1g
