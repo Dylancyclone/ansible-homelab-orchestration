@@ -482,6 +482,10 @@
       tags: watchtower
       when: watchtower_enabled or (watchtower_container_names | intersect(running_containers) | length > 0)
 
+    - role: wg_easy
+      tags: wg_easy
+      when: wg_easy_enabled or (wg_easy_container_names | intersect(running_containers) | length > 0)
+
     - role: wireshark
       tags: wireshark
       when: wireshark_enabled or (wireshark_container_names | intersect(running_containers) | length > 0)

@@ -1,0 +1,59 @@
+---
+- name: Start wg-easy
+  when: wg_easy_enabled
+  block:
+    - name: Check for wg-easy Breaking Changes
+      ansible.builtin.include_role:
+        name: breaking_changes
+      vars:
+        breaking_changes_application: wg_easy
+
+    - name: Create wg-easy Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ wg_easy_data_directory }}"
+
+    - name: wg-easy Docker Container
+      community.docker.docker_container:
+        name: "{{ wg_easy_container_name }}"
+        image: "{{ wg_easy_image_name }}:{{ wg_easy_image_version }}"
+        pull: true
+        volumes:
+          - "{{ wg_easy_data_directory }}:/etc/wireguard:rw"
+          - "/lib/modules:/lib/modules:ro"
+        env:
+          INIT_ENABLED: "true"
+          INIT_USERNAME: "{{ wg_easy_web_username }}"
+          INIT_PASSWORD: "{{ wg_easy_web_password }}"
+          INIT_HOST: "{{ wg_easy_web_hostname }}"
+          INSECURE: "{{ wg_easy_web_allow_http }}"
+          WG_IPV6_DISABLED: "{{ wg_easy_web_disable_ipv6 }}"
+        ports:
+          - "{{ wg_easy_vpn_port }}:51820/udp"
+          - "{{ wg_easy_web_port }}:51821/tcp"
+        restart_policy: unless-stopped
+        memory: "{{ wg_easy_memory }}"
+        capabilities:
+          - NET_ADMIN
+          - SYS_MODULE
+        sysctls:
+          net.ipv4.conf.all.src_valid_mark: "1"
+          net.ipv4.ip_forward: "1"
+        labels:
+          traefik.enable: "{{ (wg_easy_dns_accessible or wg_easy_available_externally) | string }}"
+          traefik.http.services.wg_easy.loadbalancer.server.port: "51821"
+          traefik.http.routers.wg_easy.rule: "Host(`{{ wg_easy_hostname ~ '.' if wg_easy_hostname else '' }}{{ dns_domain }}`)"
+          traefik.http.routers.wg_easy.tls.domains[0].main: "{{ dns_domain }}"
+          traefik.http.routers.wg_easy.tls.domains[0].sans: "*.{{ dns_domain }}"
+          traefik.http.routers.wg_easy.tls.certresolver: "letsencrypt"
+          traefik.http.routers.wg_easy.middlewares: "{{ omit if wg_easy_available_externally else 'blockExternal@file' }}"
+
+- name: Stop wg-easy
+  when: not wg_easy_enabled
+  block:
+    - name: Stop wg-easy
+      community.docker.docker_container:
+        name: "{{ wg_easy_container_name }}"
+        state: absent
